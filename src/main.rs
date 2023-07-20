@@ -1,0 +1,150 @@
+#[macro_use] extern crate rocket;
+
+mod game;
+use game::*;
+
+use chashmap;
+
+use chashmap::CHashMap;
+use rand::Rng;
+
+use std::path::{Path};
+use rocket::{State, Shutdown, Rocket, Build};
+use rocket::fs::{relative, FileServer, NamedFile};
+use rocket::form::Form;
+use rocket::response::stream::{EventStream, Event};
+use rocket::response::content;
+use rocket::tokio::sync::broadcast::{channel, error::RecvError};
+use rocket::tokio::select;
+
+use std::sync::Mutex;
+
+
+/// Returns an infinite stream of server-sent events.
+// #[get("/host/<game_id>")]
+// async fn events(game_id: i32, games: &State<CHashMap<i32, Game>>, mut end: Shutdown) -> Option<EventStream![]> {
+//     if !games.contains_key(&game_id) {
+//         return Option::None;
+//     }
+
+//     let whiteboard = games.get(&game_id);
+
+//     let mut rx = whiteboard.unwrap().queue.subscribe();
+//     Some(EventStream! {
+//         loop {
+//             let msg = select! {
+//                 msg = rx.recv() => match msg {
+//                     Ok(msg) => msg,
+//                     Err(RecvError::Closed) => break,
+//                     Err(RecvError::Lagged(_)) => continue,
+//                 },
+//                 _ = &mut end => break,
+//             };
+
+//             yield Event::json(&msg);
+//         }
+//     })
+// }
+
+/// Receive a message from a form submission and broadcast it to any receivers.
+// #[post("/message/<game_id>", data = "<form>")]
+// fn post_drawing(game_id: i32, form: Form<Message>, games: &State<CHashMap<i32, Game>>) {
+//     let whiteboard = games.get(&game_id);
+//     if whiteboard.is_some() {
+//         let wb = whiteboard.unwrap();
+//         wb.state
+//                 .lock()
+//                 .expect("locked whiteboard")
+//                 .push(form.message.clone());
+
+//         // A send 'fails' if there are no active subscribers. That's okay.
+//         let _res = wb.queue.send(form.into_inner());
+//     }
+// }
+
+#[get("/create_game")]
+fn create_game(games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
+    let mut rng = rand::thread_rng();
+    let id: i32 = rng.gen();
+    let (tx, _) = channel::<Message>(1024);
+    let game = Game {
+        id,
+        queue: tx,
+        players: Mutex::new(vec![]),
+        words: Mutex::new(vec![])
+    };
+    games.insert(id, game);
+
+    content::RawJson(format!("{}", id))
+}
+
+// #[get("/whiteboard_state/<game_id>")]
+// fn whiteboard_state(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Option<content::RawJson<String>>{
+//     let whiteboard = games.get(&game_id);
+//     if whiteboard.is_some() {
+//         Some(content::RawJson(
+//             whiteboard.unwrap().state
+//                 .lock()
+//                 .expect("locked whiteboard")
+//                 .join(";"))
+//         )
+//     } else {
+//         Option::None
+//     }
+// }
+
+
+// #[get("/whiteboard/<game_id>")]
+// async fn whiteboard_by_id(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Option<NamedFile> {
+//     return if games.contains_key(&game_id) {
+//         NamedFile::open(Path::new("static/whiteboard.html")).await.ok()
+//     } else {
+//         Option::None
+//     };
+// }
+
+#[get("/home")]
+async fn home() -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/home.html")).await.ok()
+}
+
+#[get("/join")]
+async fn join() -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/join.html")).await.ok()
+}
+
+#[get("/join_game/<game_id>/<name>")]
+async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String> {
+    if games.contains_key(&game_id) {
+        let game = games.get(&game_id).unwrap();
+        if game.players
+            .lock()
+            .expect("locked game")
+            .contains(&name.to_string()) {
+
+            // return .to_string();
+            content::RawJson("Name already exists".to_string())
+        } else {
+            game.players
+                .lock()
+                .expect("locked game")
+                .push(name.to_string());
+            content::RawJson("You have joined".to_string())
+        }
+    } else {
+        content::RawJson("Game not found".to_string())
+    }
+}
+
+
+#[launch]
+fn rocket() -> Rocket<Build> {
+    let games: CHashMap<i32, Game> = CHashMap::new();
+
+
+    rocket::build()
+        .manage(games)
+        .mount("/", routes![home, create_game,
+                            join_game, join])
+        .mount("/", FileServer::from(relative!("static")))
+}

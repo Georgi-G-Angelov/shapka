@@ -1,0 +1,7 @@
+/* Canvas */
+#can {
+    background-color: white;
+    display: block;
+    border:2px solid;
+    border-color: #000;
+}
