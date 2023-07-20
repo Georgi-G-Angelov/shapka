@@ -65,7 +65,11 @@ use std::sync::Mutex;
 #[get("/create_game")]
 fn create_game(games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
     let mut rng = rand::thread_rng();
-    let id: i32 = rng.gen();
+    let mut id: i32 = rng.gen_range(0..100000);
+
+    while games.contains_key(&id) {
+        id = rng.gen_range(0..100000);
+    }
     let (tx, _) = channel::<Message>(1024);
     let game = Game {
         id,
@@ -77,6 +81,8 @@ fn create_game(games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
 
     content::RawJson(format!("{}", id))
 }
+
+
 
 // #[get("/whiteboard_state/<game_id>")]
 // fn whiteboard_state(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Option<content::RawJson<String>>{
@@ -113,6 +119,21 @@ async fn join() -> Option<NamedFile> {
     NamedFile::open(Path::new("static/join.html")).await.ok()
 }
 
+#[get("/create")]
+async fn create() -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/create.html")).await.ok()
+}
+
+#[get("/host/<game_id>/<name>")]
+async fn host(game_id: i32, name: &str) -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/host.html")).await.ok()
+}
+
+#[get("/await/<game_id>/<name>")]
+async fn await_game(game_id: i32, name: &str) -> Option<NamedFile> {
+    NamedFile::open(Path::new("static/await.html")).await.ok()
+}
+
 #[get("/join_game/<game_id>/<name>")]
 async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String> {
     if games.contains_key(&game_id) {
@@ -124,15 +145,18 @@ async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>)
 
             // return .to_string();
             content::RawJson("Name already exists".to_string())
+
         } else {
             game.players
                 .lock()
                 .expect("locked game")
                 .push(name.to_string());
-            content::RawJson("You have joined".to_string())
+            content::RawJson(game_id.to_string())
+
         }
     } else {
         content::RawJson("Game not found".to_string())
+
     }
 }
 
@@ -144,7 +168,7 @@ fn rocket() -> Rocket<Build> {
 
     rocket::build()
         .manage(games)
-        .mount("/", routes![home, create_game,
-                            join_game, join])
+        .mount("/", routes![home, create_game, create,
+                            join_game, join, host, await_game])
         .mount("/", FileServer::from(relative!("static")))
 }
