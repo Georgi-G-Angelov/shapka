@@ -16,6 +16,7 @@ use rocket::response::stream::{EventStream, Event};
 use rocket::response::content;
 use rocket::tokio::sync::broadcast::{channel, error::RecvError};
 use rocket::tokio::select;
+use string_builder::Builder;
 
 use std::sync::Mutex;
 
@@ -62,8 +63,8 @@ use std::sync::Mutex;
 //     }
 // }
 
-#[get("/create_game")]
-fn create_game(games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
+#[get("/create_game/<name>")]
+fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
     let mut rng = rand::thread_rng();
     let mut id: i32 = rng.gen_range(0..100000);
 
@@ -77,7 +78,12 @@ fn create_game(games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
         players: Mutex::new(vec![]),
         words: Mutex::new(vec![])
     };
+    game.players
+        .lock()
+        .expect("game players locked")
+        .push(name.to_string());
     games.insert(id, game);
+
 
     content::RawJson(format!("{}", id))
 }
@@ -160,6 +166,29 @@ async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>)
     }
 }
 
+#[get("/fetch_players/<game_id>")]
+async fn fetch_players(game_id: i32, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String> {
+    if games.contains_key(&game_id) {
+        let game = games.get(&game_id).unwrap();
+        let mut builder = Builder::default();
+        
+        let mut players = game.players.lock().expect("locked players");
+
+        for i in 0..players.len() {
+            builder.append(players[i].as_str());
+            if i < players.len() - 1 {
+                builder.append(",");
+            }
+        }
+        
+        content::RawJson(builder.string().unwrap())
+
+        
+    } else {
+        content::RawJson("Game not found".to_string())
+    }
+}
+
 
 #[launch]
 fn rocket() -> Rocket<Build> {
@@ -169,6 +198,6 @@ fn rocket() -> Rocket<Build> {
     rocket::build()
         .manage(games)
         .mount("/", routes![home, create_game, create,
-                            join_game, join, host, await_game])
+                            join_game, join, host, await_game, fetch_players])
         .mount("/", FileServer::from(relative!("static")))
 }

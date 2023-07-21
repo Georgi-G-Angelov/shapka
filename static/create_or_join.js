@@ -13,7 +13,7 @@ function create_game() {
     console.log(currentLocation);
     console.log(hostURL);
 
-    fetch(hostURL + "/create_game", {
+    fetch(hostURL + "/create_game/" + name, {
     method: "GET",
     })
     .then(response => response.text())
@@ -36,8 +36,8 @@ function join_game() {
 
     var currentLocation = window.location.href;
     var hostURL = currentLocation.substring(0, currentLocation.lastIndexOf('/'));
-    console.log(currentLocation);
-    console.log(hostURL);
+    // console.log(currentLocation);
+    // console.log(hostURL);
 
     fetch(hostURL + "/join_game/" + gameId + "/" + name, {
     method: "GET",
