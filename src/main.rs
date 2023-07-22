@@ -9,9 +9,10 @@ use chashmap::CHashMap;
 use rand::Rng;
 
 use std::path::{Path};
+use std::collections::HashMap;
 use rocket::{State, Shutdown, Rocket, Build};
 use rocket::fs::{relative, FileServer, NamedFile};
-use rocket::form::Form;
+// use rocket::form::Form;
 use rocket::response::stream::{EventStream, Event};
 use rocket::response::content;
 use rocket::tokio::sync::broadcast::{channel, error::RecvError};
@@ -76,7 +77,8 @@ fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJs
         id,
         queue: tx,
         players: Mutex::new(vec![]),
-        words: Mutex::new(vec![])
+        words: Mutex::new(vec![]),
+        num_words_per_player: Mutex::new(HashMap::new())
     };
     game.players
         .lock()
@@ -86,6 +88,38 @@ fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJs
 
 
     content::RawJson(format!("{}", id))
+}
+
+#[get("/add_word/<game_id>/<name>/<word>")]
+fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
+    let word_limit: i32 = 4;
+
+    let game = games.get(&game_id).unwrap();
+    if !game.num_words_per_player
+            .lock()
+            .expect("locked num words per player")
+            .contains_key(name) {
+        game.num_words_per_player
+            .lock()
+            .expect("locked num words per player")
+            .insert(name.to_string(), 0);
+    }
+
+    let game = games.get(&game_id).unwrap();
+
+    if game.num_words_per_player
+            .lock()
+            .expect("locked num words per player")
+            .get(name).unwrap() < &word_limit {
+        game.words
+            .lock()
+            .expect("List of words locked")
+            .push(word.to_string());
+
+        content::RawJson("Word added".to_string())
+    } else {
+        content::RawJson("You can't add more words".to_string())
+    }
 }
 
 
@@ -175,7 +209,7 @@ async fn fetch_players(game_id: i32, games: &State<CHashMap<i32, Game>>) -> cont
         let game = games.get(&game_id).unwrap();
         let mut builder = Builder::default();
         
-        let mut players = game.players.lock().expect("locked players");
+        let players = game.players.lock().expect("locked players");
 
         for i in 0..players.len() {
             builder.append(players[i].as_str());
@@ -202,6 +236,6 @@ fn rocket() -> Rocket<Build> {
         .manage(games)
         .mount("/", routes![home, create_game, create,
                             join_game, join, host, await_game, fetch_players,
-                            new_players])
+                            new_players, add_word])
         .mount("/", FileServer::from(relative!("static")))
 }
