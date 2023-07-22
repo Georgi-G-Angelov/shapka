@@ -22,44 +22,44 @@ use std::sync::Mutex;
 
 
 /// Returns an infinite stream of server-sent events.
-// #[get("/host/<game_id>")]
-// async fn events(game_id: i32, games: &State<CHashMap<i32, Game>>, mut end: Shutdown) -> Option<EventStream![]> {
-//     if !games.contains_key(&game_id) {
-//         return Option::None;
-//     }
+#[get("/newplayers/<game_id>")]
+async fn new_players(game_id: i32, games: &State<CHashMap<i32, Game>>, mut end: Shutdown) -> Option<EventStream![]> {
+    if !games.contains_key(&game_id) {
+        return Option::None;
+    }
 
-//     let whiteboard = games.get(&game_id);
+    let game = games.get(&game_id);
 
-//     let mut rx = whiteboard.unwrap().queue.subscribe();
-//     Some(EventStream! {
-//         loop {
-//             let msg = select! {
-//                 msg = rx.recv() => match msg {
-//                     Ok(msg) => msg,
-//                     Err(RecvError::Closed) => break,
-//                     Err(RecvError::Lagged(_)) => continue,
-//                 },
-//                 _ = &mut end => break,
-//             };
+    let mut rx = game.unwrap().queue.subscribe();
+    Some(EventStream! {
+        loop {
+            let msg = select! {
+                msg = rx.recv() => match msg {
+                    Ok(msg) => msg,
+                    Err(RecvError::Closed) => break,
+                    Err(RecvError::Lagged(_)) => continue,
+                },
+                _ = &mut end => break,
+            };
 
-//             yield Event::json(&msg);
-//         }
-//     })
-// }
+            yield Event::json(&msg);
+        }
+    })
+}
 
 /// Receive a message from a form submission and broadcast it to any receivers.
-// #[post("/message/<game_id>", data = "<form>")]
-// fn post_drawing(game_id: i32, form: Form<Message>, games: &State<CHashMap<i32, Game>>) {
-//     let whiteboard = games.get(&game_id);
-//     if whiteboard.is_some() {
-//         let wb = whiteboard.unwrap();
-//         wb.state
-//                 .lock()
-//                 .expect("locked whiteboard")
-//                 .push(form.message.clone());
+// #[get("/playerjoined/<game_id>/<name>")]
+// fn post_drawing(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) {
+//     let game = games.get(&game_id);
+//     if game.is_some() {
+//         let wb = game.unwrap();
+//         // wb.state
+//         //         .lock()
+//         //         .expect("locked game")
+//         //         .push(name.to_string());
 
 //         // A send 'fails' if there are no active subscribers. That's okay.
-//         let _res = wb.queue.send(form.into_inner());
+//         let _res = wb.queue.send(name.to_string());
 //     }
 // }
 
@@ -71,7 +71,7 @@ fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJs
     while games.contains_key(&id) {
         id = rng.gen_range(0..100000);
     }
-    let (tx, _) = channel::<Message>(1024);
+    let (tx, _) = channel::<String>(1024);
     let game = Game {
         id,
         queue: tx,
@@ -92,12 +92,12 @@ fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJs
 
 // #[get("/whiteboard_state/<game_id>")]
 // fn whiteboard_state(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Option<content::RawJson<String>>{
-//     let whiteboard = games.get(&game_id);
-//     if whiteboard.is_some() {
+//     let game = games.get(&game_id);
+//     if game.is_some() {
 //         Some(content::RawJson(
-//             whiteboard.unwrap().state
+//             game.unwrap().state
 //                 .lock()
-//                 .expect("locked whiteboard")
+//                 .expect("locked game")
 //                 .join(";"))
 //         )
 //     } else {
@@ -106,10 +106,10 @@ fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJs
 // }
 
 
-// #[get("/whiteboard/<game_id>")]
+// #[get("/game/<game_id>")]
 // async fn whiteboard_by_id(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Option<NamedFile> {
 //     return if games.contains_key(&game_id) {
-//         NamedFile::open(Path::new("static/whiteboard.html")).await.ok()
+//         NamedFile::open(Path::new("static/game.html")).await.ok()
 //     } else {
 //         Option::None
 //     };
@@ -157,6 +157,9 @@ async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>)
                 .lock()
                 .expect("locked game")
                 .push(name.to_string());
+
+            let _res = game.queue.send(name.to_string());
+
             content::RawJson(game_id.to_string())
 
         }
@@ -198,6 +201,7 @@ fn rocket() -> Rocket<Build> {
     rocket::build()
         .manage(games)
         .mount("/", routes![home, create_game, create,
-                            join_game, join, host, await_game, fetch_players])
+                            join_game, join, host, await_game, fetch_players,
+                            new_players])
         .mount("/", FileServer::from(relative!("static")))
 }
