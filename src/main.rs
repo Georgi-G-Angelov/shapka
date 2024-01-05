@@ -180,12 +180,34 @@ async fn create() -> Option<NamedFile> {
 }
 
 #[get("/host/<game_id>/<name>")]
-async fn host(game_id: i32, name: &str) -> Option<NamedFile> {
+async fn host(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Option<NamedFile> {
+    if !games.contains_key(&game_id) {
+        error!("Game does not exist");
+        return Option::<NamedFile>::None;
+    }
+    let game = games.get(&game_id).unwrap();
+    if !game.players
+        .lock()
+        .expect("locked game")
+        .contains(&name.to_string()) {
+        return Option::<NamedFile>::None;
+    }
     NamedFile::open(Path::new("static/host.html")).await.ok()
 }
 
 #[get("/await/<game_id>/<name>")]
-async fn await_game(game_id: i32, name: &str) -> Option<NamedFile> {
+async fn await_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Option<NamedFile> {
+    if !games.contains_key(&game_id) {
+        error!("Game does not exist");
+        return Option::<NamedFile>::None;
+    }
+    let game = games.get(&game_id).unwrap();
+    if !game.players
+        .lock()
+        .expect("locked game")
+        .contains(&name.to_string()) {
+        return Option::<NamedFile>::None;
+    }
     NamedFile::open(Path::new("static/await.html")).await.ok()
 }
 
