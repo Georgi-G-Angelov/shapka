@@ -3,23 +3,25 @@
 mod game;
 use game::*;
 
+mod game_init_controller;
+use game_init_controller::*;
+
+mod home_pages_controller;
+use home_pages_controller::*;
+
 use chashmap;
 
 use chashmap::CHashMap;
-use rand::Rng;
 
 use std::path::{Path};
-use std::collections::HashMap;
 use rocket::{State, Shutdown, Rocket, Build};
 use rocket::fs::{relative, FileServer, NamedFile};
 // use rocket::form::Form;
 use rocket::response::stream::{EventStream, Event};
 use rocket::response::content;
-use rocket::tokio::sync::broadcast::{channel, error::RecvError};
+use rocket::tokio::sync::broadcast::{error::RecvError};
 use rocket::tokio::select;
 use string_builder::Builder;
-
-use std::sync::Mutex;
 
 
 /// Returns an infinite stream of server-sent events.
@@ -64,31 +66,31 @@ async fn new_players(game_id: i32, games: &State<CHashMap<i32, Game>>, mut end: 
 //     }
 // }
 
-#[get("/create_game/<name>")]
-fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
-    let mut rng = rand::thread_rng();
-    let mut id: i32 = rng.gen_range(0..100000);
+// #[get("/create_game/<name>")]
+// fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
+//     let mut rng = rand::thread_rng();
+//     let mut id: i32 = rng.gen_range(0..100000);
 
-    while games.contains_key(&id) {
-        id = rng.gen_range(0..100000);
-    }
-    let (tx, _) = channel::<String>(1024);
-    let game = Game {
-        id,
-        queue: tx,
-        players: Mutex::new(vec![]),
-        words: Mutex::new(vec![]),
-        num_words_per_player: Mutex::new(HashMap::new())
-    };
-    game.players
-        .lock()
-        .expect("game players locked")
-        .push(name.to_string());
-    games.insert(id, game);
+//     while games.contains_key(&id) {
+//         id = rng.gen_range(0..100000);
+//     }
+//     let (tx, _) = channel::<String>(1024);
+//     let game = Game {
+//         id,
+//         queue: tx,
+//         players: Mutex::new(vec![]),
+//         words: Mutex::new(vec![]),
+//         num_words_per_player: Mutex::new(HashMap::new())
+//     };
+//     game.players
+//         .lock()
+//         .expect("game players locked")
+//         .push(name.to_string());
+//     games.insert(id, game);
 
 
-    content::RawJson(format!("{}", id))
-}
+//     content::RawJson(format!("{}", id))
+// }
 
 #[get("/add_word/<game_id>/<name>/<word>")]
 fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
@@ -164,20 +166,20 @@ fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Ga
 //     };
 // }
 
-#[get("/home")]
-async fn home() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/home.html")).await.ok()
-}
+// #[get("/home")]
+// async fn home() -> Option<NamedFile> {
+//     NamedFile::open(Path::new("static/home.html")).await.ok()
+// }
 
-#[get("/join")]
-async fn join() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/join.html")).await.ok()
-}
+// #[get("/join")]
+// async fn join() -> Option<NamedFile> {
+//     NamedFile::open(Path::new("static/join.html")).await.ok()
+// }
 
-#[get("/create")]
-async fn create() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/create.html")).await.ok()
-}
+// #[get("/create")]
+// async fn create() -> Option<NamedFile> {
+//     NamedFile::open(Path::new("static/create.html")).await.ok()
+// }
 
 #[get("/host/<game_id>/<name>")]
 async fn host(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Option<NamedFile> {
