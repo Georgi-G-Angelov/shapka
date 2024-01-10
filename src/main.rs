@@ -2,27 +2,22 @@
 
 mod game;
 use game::*;
-
 mod game_init_controller;
 use game_init_controller::*;
-
 mod home_pages_controller;
 use home_pages_controller::*;
 
-use chashmap;
-
-use chashmap::CHashMap;
-
-use std::path::{Path};
 use rocket::{State, Shutdown, Rocket, Build};
 use rocket::fs::{relative, FileServer, NamedFile};
-// use rocket::form::Form;
 use rocket::response::stream::{EventStream, Event};
 use rocket::response::content;
 use rocket::tokio::sync::broadcast::{error::RecvError};
 use rocket::tokio::select;
-use string_builder::Builder;
 
+use std::path::{Path};
+
+use chashmap::CHashMap;
+use string_builder::Builder;
 
 /// Returns an infinite stream of server-sent events.
 #[get("/newplayers/<game_id>")]
