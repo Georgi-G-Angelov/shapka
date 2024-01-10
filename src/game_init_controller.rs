@@ -6,9 +6,9 @@ use chashmap::CHashMap;
 use rand::Rng;
 
 use std::collections::HashMap;
-use rocket::{State};
+use rocket::State;
 use rocket::response::content;
-use rocket::tokio::sync::broadcast::{channel};
+use rocket::tokio::sync::broadcast::channel;
 
 use std::sync::Mutex;
 

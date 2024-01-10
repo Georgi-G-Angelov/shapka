@@ -1,5 +1,5 @@
 use std::sync::Mutex;
-use rocket::tokio::sync::broadcast::{Sender};
+use rocket::tokio::sync::broadcast::Sender;
 use std::collections::HashMap;
 
 pub struct Game {
