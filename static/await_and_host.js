@@ -2,12 +2,12 @@ var currentLocation = window.location.href;
 
 var hostURL = currentLocation.substring(0, currentLocation.indexOf('/', 8));
 
-var name = currentLocation.substring(currentLocation.lastIndexOf('/') + 1);
+var playerName = currentLocation.substring(currentLocation.lastIndexOf('/') + 1);
 
 var locNoName = currentLocation.substring(0, currentLocation.lastIndexOf('/'));
 var gameId = locNoName.substring(locNoName.lastIndexOf('/')+1);
 
-console.log(name)
+console.log(playerName)
 console.log(hostURL)
 console.log(gameId)
 
@@ -15,7 +15,7 @@ function fill_all() {
     fill_game_id();
     fill_players();
 
-    subscribe(hostURL + "/newplayers/" + gameId);
+    subscribe(hostURL + "/gameevents/" + gameId);
 }
 
 function fill_game_id() {
@@ -48,38 +48,57 @@ function fill_players() {
         });
 }
 
+function startGame() {
+    fetch(hostURL + "/start_game/" + gameId, {
+        method: "GET",
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log("data is: " + data);
+        });
+}
+
 // Subscribe to the event source at `uri` with exponential backoff reconnect.
 function subscribe(uri) {
     var retryTime = 1;
   
     function connect(uri) {
-      const events = new EventSource(uri);
-  
-      events.addEventListener("message", (ev) => {
-        var newPlayer = ev.data.replaceAll("\"", "");
+        const events = new EventSource(uri);
 
-        var ul = document.getElementById("players");
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(newPlayer));
-        ul.appendChild(li);
 
-      });
-  
-      events.addEventListener("open", () => {
-        // setConnectedStatus(true);
-        console.log(`connected to event stream at ${uri}`);
-        retryTime = 1;
-      });
-  
-      events.addEventListener("error", () => {
-        // setConnectedStatus(false);
-        events.close();
-  
-        let timeout = retryTime;
-        retryTime = Math.min(64, retryTime * 2);
-        console.log(`connection lost. attempting to reconnect in ${timeout}s`);
-        setTimeout(() => connect(uri), (() => timeout * 1000)());
-      });
+        // Figure out where to store these constants
+        const newPlayerPrefix = "new_player:";
+
+        events.addEventListener("message", (ev) => {
+            var message = ev.data.replaceAll("\"", "");
+
+            if (message.startsWith(newPlayerPrefix)) {
+                var newPlayer = message.substring(newPlayerPrefix.length);
+
+                var ul = document.getElementById("players");
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode(newPlayer));
+                ul.appendChild(li);
+            } else if (message.startsWith("start_game")) {
+                window.location.replace(hostURL + "/game/" + gameId + '/' + playerName);
+            }
+        });
+
+        events.addEventListener("open", () => {
+            // setConnectedStatus(true);
+            console.log(`connected to event stream at ${uri}`);
+            retryTime = 1;
+        });
+
+        events.addEventListener("error", () => {
+            // setConnectedStatus(false);
+            events.close();
+
+            let timeout = retryTime;
+            retryTime = Math.min(64, retryTime * 2);
+            console.log(`connection lost. attempting to reconnect in ${timeout}s`);
+            setTimeout(() => connect(uri), (() => timeout * 1000)());
+        });
     }
   
     connect(uri);
@@ -90,7 +109,7 @@ function add_word() {
     console.log("Attempting to add: " + word);
 
 
-    fetch(hostURL + "/add_word/" + gameId + "/" + name + "/" + word, {
+    fetch(hostURL + "/add_word/" + gameId + "/" + playerName + "/" + word, {
         method: "GET",
         })
         .then(response => response.text())

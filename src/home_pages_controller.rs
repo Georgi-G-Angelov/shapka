@@ -69,7 +69,10 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
                 .expect("locked game")
                 .push(name.to_string());
 
-            let _res = game.queue.send(name.to_string());
+            let mut event: String = "new_player:".to_owned();
+            event.push_str(name);
+
+            let _res = game.game_events.send(event.to_string());
 
             content::RawJson(game_id.to_string())
 

@@ -23,7 +23,7 @@ pub fn create_game(name: &str, games: &State<CHashMap<i32, Game>>) -> content::R
     let (tx, _) = channel::<String>(1024);
     let game = Game {
         id,
-        queue: tx,
+        game_events: tx,
         players: Mutex::new(vec![]),
         words: Mutex::new(vec![]),
         num_words_per_player: Mutex::new(HashMap::new())

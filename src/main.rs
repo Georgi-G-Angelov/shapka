@@ -10,6 +10,10 @@ mod players_controller;
 use players_controller::*;
 mod words_controller;
 use words_controller::*;
+mod game_events_controller;
+use game_events_controller::*;
+mod turns_controller;
+use turns_controller::*;
 
 use rocket::{Rocket, Build};
 use rocket::fs::{relative, FileServer};
@@ -24,6 +28,6 @@ fn rocket() -> Rocket<Build> {
         .manage(games)
         .mount("/", routes![home, create_game, create,
                             join_game, join, host, await_game, fetch_players,
-                            new_players, add_word])
+                            game_events, add_word, start_game])
         .mount("/", FileServer::from(relative!("static")))
 }
