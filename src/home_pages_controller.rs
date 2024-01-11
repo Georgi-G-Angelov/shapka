@@ -6,17 +6,17 @@ use crate::game::Game;
 
 #[get("/home")]
 pub async fn home() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/home.html")).await.ok()
+    NamedFile::open(Path::new("static/html/home.html")).await.ok()
 }
 
 #[get("/join")]
 pub async fn join() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/join.html")).await.ok()
+    NamedFile::open(Path::new("static/html/join.html")).await.ok()
 }
 
 #[get("/create")]
 pub async fn create() -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/create.html")).await.ok()
+    NamedFile::open(Path::new("static/html/create.html")).await.ok()
 }
 
 
@@ -33,7 +33,7 @@ pub async fn host(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) 
         .contains(&name.to_string()) {
         return Option::<NamedFile>::None;
     }
-    NamedFile::open(Path::new("static/host.html")).await.ok()
+    NamedFile::open(Path::new("static/html/host.html")).await.ok()
 }
 
 #[get("/await/<game_id>/<name>")]
@@ -49,36 +49,5 @@ pub async fn await_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Ga
         .contains(&name.to_string()) {
         return Option::<NamedFile>::None;
     }
-    NamedFile::open(Path::new("static/await.html")).await.ok()
-}
-
-#[get("/join_game/<game_id>/<name>")]
-pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String> {
-    if games.contains_key(&game_id) {
-        let game = games.get(&game_id).unwrap();
-        if game.players
-            .lock()
-            .expect("locked game")
-            .contains(&name.to_string()) {
-
-            content::RawJson("Name already exists".to_string())
-
-        } else {
-            game.players
-                .lock()
-                .expect("locked game")
-                .push(name.to_string());
-
-            let mut event: String = "new_player:".to_owned();
-            event.push_str(name);
-
-            let _res = game.game_events.send(event.to_string());
-
-            content::RawJson(game_id.to_string())
-
-        }
-    } else {
-        content::RawJson("Game not found".to_string())
-
-    }
+    NamedFile::open(Path::new("static/html/await.html")).await.ok()
 }
