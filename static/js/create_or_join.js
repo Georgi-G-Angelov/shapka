@@ -4,8 +4,9 @@ function create_redirect() {
 
 function create_game() {
     var name = document.getElementById("name").value;
+    var wordLimit = document.getElementById("word-limit").value;
 
-    fetch(getHostUrl() + "/create_game/" + name, {
+    fetch(getHostUrl() + "/create_game/" + name + "/" + wordLimit, {
     method: "GET",
     })
     .then(response => response.text())

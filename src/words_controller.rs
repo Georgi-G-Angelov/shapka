@@ -7,8 +7,7 @@ use crate::game::Game;
 
 #[get("/add_word/<game_id>/<name>/<word>")]
 pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String>{
-    let word_limit: i32 = 4;
-
+    
     let game = games.get(&game_id).unwrap();
     if !game.num_words_per_player
             .lock()
@@ -25,7 +24,7 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
     if game.num_words_per_player
             .lock()
             .expect("locked num words per player")
-            .get(name).unwrap() < &word_limit {
+            .get(name).unwrap() < &game.words_per_player_limit {
         game.words
             .lock()
             .expect("List of words locked")

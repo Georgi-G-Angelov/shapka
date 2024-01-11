@@ -1,8 +1,5 @@
 use rocket::response::content;
-use rocket::{State, Shutdown};
-use rocket::response::stream::{Event, EventStream};
-use rocket::tokio::sync::broadcast::error::RecvError;
-use rocket::tokio::select;
+use rocket::State;
 
 use chashmap::CHashMap;
 
@@ -13,7 +10,7 @@ pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> con
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
 
-            let mut event: String = "start_game".to_owned();
+            let event: String = "start_game".to_owned();
             let _res = game.game_events.send(event.to_string());
 
             content::RawJson(game_id.to_string())

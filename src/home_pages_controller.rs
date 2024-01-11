@@ -1,6 +1,6 @@
 use std::path::Path;
 use chashmap::CHashMap;
-use rocket::{fs::NamedFile, State, response::content};
+use rocket::{fs::NamedFile, State};
 
 use crate::game::Game;
 
