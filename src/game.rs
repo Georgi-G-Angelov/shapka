@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 use rocket::tokio::sync::broadcast::Sender;
+use serde::Serialize;
 use std::collections::HashMap;
 use rocket::tokio::sync::broadcast::channel;
 use rand::thread_rng;
@@ -15,6 +16,7 @@ pub struct Game {
     pub game_state: Mutex<GameState>
 }
 
+#[derive(Serialize)]
 pub struct GameState {
     pub timer: i32, // number from 0 to 60
     pub turn_player: String,
@@ -89,7 +91,7 @@ pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
 
             game_state.lock().unwrap().teammates.insert(player.to_string(), current_player.clone());
             game_state.lock().unwrap().teammates.insert(current_player.clone(), player.to_string());
-            game_state.lock().unwrap().team_member_to_team_index.insert(current_player.clone(), team_index);
+            game_state.lock().unwrap().team_member_to_team_index.insert(player.to_string(), team_index);
             game_state.lock().unwrap().team_member_to_team_index.insert(current_player.clone(), team_index);
             team_index += 1;
         }

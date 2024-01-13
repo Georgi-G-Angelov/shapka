@@ -28,6 +28,6 @@ fn rocket() -> Rocket<Build> {
         .manage(games)
         .mount("/", routes![home, create_game, create,
                             join_game, join, host, await_game, in_game, fetch_players,
-                            game_events, add_word, start_game])
+                            game_events, add_word, start_game, fetch_game_state])
         .mount("/", FileServer::from(relative!("static")))
 }
