@@ -12,7 +12,6 @@ pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> con
         let game_state = &game.game_state;
         let players = &game.players;
 
-        // init_teams(&mut game);
         init_teams(game_state, players);
 
         let event: String = "start_game".to_owned();

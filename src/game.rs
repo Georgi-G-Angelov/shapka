@@ -20,6 +20,8 @@ pub struct GameState {
     pub current_player: String,
     pub num_words_guessed_per_team: HashMap<i32, i32>,
     pub teams: Vec<Vec<String>>,
+    pub teammates: HashMap<String, String>,
+    pub team_member_to_team_index: HashMap<String, i32>,
     pub words_guessed: Vec<String>,
     pub words_in_play: Vec<String>, // from 0 to 2 elements
     pub words_to_guess: Vec<String>,
@@ -52,6 +54,8 @@ pub fn init_game_state() -> GameState {
         current_player: "".to_string(),
         num_words_guessed_per_team: HashMap::new(),
         teams: Vec::new(),
+        teammates: HashMap::new(),
+        team_member_to_team_index: HashMap::new(),
         words_guessed: Vec::new(),
         words_in_play: Vec::new(),
         words_to_guess: Vec::new(),
@@ -66,19 +70,28 @@ pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
         .unwrap()
         .shuffle(&mut thread_rng());
 
-    let mut is_first_player_in_team = true;
+    let mut is_first_player_in_team: bool = true;
+    let mut current_player: String = "".to_string();
+    let mut team_index = 0;
     for player in players.lock().unwrap().iter() {
         if is_first_player_in_team {
             let mut team: Vec<String> = Vec::new();
             team.push(player.to_string());
             game_state.lock().unwrap().teams.push(team);
             is_first_player_in_team = false;
+            current_player = player.to_string();
         } else {
             game_state.lock().unwrap()
                 .teams
                 .last_mut().unwrap()
                 .push(player.to_string());
             is_first_player_in_team = true;
+
+            game_state.lock().unwrap().teammates.insert(player.to_string(), current_player.clone());
+            game_state.lock().unwrap().teammates.insert(current_player.clone(), player.to_string());
+            game_state.lock().unwrap().team_member_to_team_index.insert(current_player.clone(), team_index);
+            game_state.lock().unwrap().team_member_to_team_index.insert(current_player.clone(), team_index);
+            team_index += 1;
         }
     }
 
