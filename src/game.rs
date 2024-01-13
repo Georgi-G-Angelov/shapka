@@ -17,7 +17,7 @@ pub struct Game {
 
 pub struct GameState {
     pub timer: i32, // number from 0 to 60
-    pub current_player: String,
+    pub turn_player: String,
     pub num_words_guessed_per_team: HashMap<i32, i32>,
     pub teams: Vec<Vec<String>>,
     pub teammates: HashMap<String, String>,
@@ -51,7 +51,7 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: i32) -> Game
 pub fn init_game_state() -> GameState {
     return GameState {
         timer: 60,
-        current_player: "".to_string(),
+        turn_player: "".to_string(),
         num_words_guessed_per_team: HashMap::new(),
         teams: Vec::new(),
         teammates: HashMap::new(),
@@ -95,6 +95,12 @@ pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
         }
     }
 
+    // Set first player of the game
+    current_player = game_state.lock().unwrap().teams.get(0).unwrap().get(0).unwrap().to_string();
+    game_state.lock().unwrap().turn_player = current_player;
+
+
+    // For debugging
     for team in game_state.lock().unwrap().teams.iter() {
         for player in team {
             print!("{player}");
