@@ -1,6 +1,7 @@
 // Constants
 const NEW_PLAYER_PREFIX = "new_player:";
 const START_GAME_MESSAGE = "start_game";
+const TIMER_UPDATE_PREFIX = "timer_update:";
 
 // -----------------------------------------------
 // Data from URL utils
@@ -40,6 +41,29 @@ function isWhiteSpace(char) {
 function isPunct(char) {
     return ";:.,?!-'\"(){}".includes(char);
 }
+
+function getPossesiveNoun(name) {
+    if (name.toLowerCase().endsWith('s')) {
+        return name + "'";
+    } else {
+        return name + "'s";
+    }
+}
+
+function millisecondsToString(millis) {
+    minutes = Math.floor(millis / 1000 / 60);
+    seconds = Math.floor(millis / 1000) - minutes * 60;
+    millis = millis - seconds * 1000 - minutes * 60 * 1000;
+    return integerToTwoDigits(minutes) + ":" + integerToTwoDigits(seconds) + ":" + integerToTwoDigits(millis)
+}
+
+function integerToTwoDigits(integer) {
+    let string = (integer).toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false});
+    if (string.length > 2) {
+        return string.substring(0,2);
+    }
+    return string;
+}
 //-------------------------------------------------
 
 // Subscribe to the event source at `uri` with exponential backoff reconnect.
@@ -61,6 +85,9 @@ function subscribe(uri) {
                 ul.appendChild(li);
             } else if (message.startsWith(START_GAME_MESSAGE)) {
                 window.location.replace(getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName());
+            } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
+                let millis = message.substring(TIMER_UPDATE_PREFIX.length);
+                document.getElementById("timer").textContent = millisecondsToString(millis);
             }
         });
 

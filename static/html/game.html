@@ -9,11 +9,17 @@
     <script src="../../js/game.js" charset="utf-8" defer></script>
   </head>
   <body onload="fetchGameState()">
-    <h1 id="gameId">pesho</h1>
+    <h1>Game id:</h1>
+    <h1 id="gameId">game id</h1>
 
-    <ul id="players">
+    <h1>Teams:</h1>
+    <ul id="teams">
 
     </ul>
+    <h3 id="turnPlayer">turn player message</h3>
+    <h3>Timer:</h3>
+    <h2 id="timer"></h2>
+    <button id="toggleTimer" style="display: none;" onclick="toggleTimer()">Toggle timer</button>
     <p id="message"></p>
     
   </body>
