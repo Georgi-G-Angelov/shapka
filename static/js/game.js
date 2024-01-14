@@ -70,8 +70,8 @@ function fill_all_game_mode() {
     setTimerButtonText();
 
     // Set initial timer values
-    timerValueSeconds = 60;
-    timerValueMillis = 60 * 1000;
+    timerValueSeconds = gameState.timer / 1000;
+    timerValueMillis = gameState.timer;
     document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
     timerDeltaSinceLastServerUpdate = 0;
 
@@ -117,11 +117,12 @@ function startTimer() {
         if (timerValueMillis < 0) {
             clearInterval(timer);
             document.getElementById("timer").textContent = millisecondsToString(0);
+            updateTimerState(0);
         }
 
         // Update server
         timerDeltaSinceLastServerUpdate += delta;
-        if (timerDeltaSinceLastServerUpdate >= 500) {
+        if (timerDeltaSinceLastServerUpdate >= 500 && timerValueMillis >= 0) {
             updateTimerState(timerValueMillis);
             timerDeltaSinceLastServerUpdate = 0;
         }

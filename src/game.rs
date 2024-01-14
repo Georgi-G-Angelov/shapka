@@ -52,7 +52,7 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: i32) -> Game
 
 pub fn init_game_state() -> GameState {
     return GameState {
-        timer: 60,
+        timer: 60000,
         turn_player: "".to_string(),
         num_words_guessed_per_team: HashMap::new(),
         teams: Vec::new(),
