@@ -63,9 +63,10 @@ function fill_all_game_mode() {
     fillTurnPlayerMessage();
     fillTeams();
 
-    // Show timer button
+    // Show timer button and fetch word button
     if (gameState.turn_player == getPlayerName()) {
         document.getElementById("toggleTimer").style.display = "block";
+        document.getElementById("fetchWord").style.display = "block";
     }
     setTimerButtonText();
 
@@ -160,5 +161,22 @@ async function updateTimerState(millis) {
         .then(response => response.text())
         .then(data => {
             console.log("timer updated to: " + data);
+        });
+}
+
+function fetchWord() {
+    fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
+        method: "GET",
+    })
+        .then(response => response.text())
+        .then(data => {
+            if (data.startsWith("Error")) {
+                console.log(data);
+            } else {
+                var ul = document.getElementById("wordsInPlay");
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode(data));
+                ul.appendChild(li);
+            }
         });
 }
