@@ -70,6 +70,8 @@ function fill_all_game_mode() {
     }
     setTimerButtonText();
 
+    fillWordsInPlay();
+
     // Set initial timer values
     timerValueSeconds = gameState.timer / 1000;
     timerValueMillis = gameState.timer;
@@ -98,6 +100,12 @@ function fillTeams() {
         var li = document.createElement("li");
         li.appendChild(document.createTextNode(team[0] + " and " + team[1]));
         ul.appendChild(li);
+    });
+}
+
+function fillWordsInPlay() {
+    gameState.words_in_play.forEach(word => {
+        addWordInPlay(word);
     });
 }
 
@@ -173,10 +181,57 @@ function fetchWord() {
             if (data.startsWith("Error")) {
                 console.log(data);
             } else {
-                var ul = document.getElementById("wordsInPlay");
-                var li = document.createElement("li");
-                li.appendChild(document.createTextNode(data));
-                ul.appendChild(li);
+                addWordInPlay(data);
             }
         });
+}
+
+function guessWord(word) {
+    fetch(getHostUrl() + "/guess_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
+        method: "GET",
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            if (data.startsWith("Error")) {
+                console.log(data);
+            } else {
+                removeWordInPlay(data);
+            }
+        });
+}
+
+function addWordInPlay(word) {
+    // Get list of words
+    var ul = document.getElementById("wordsInPlay");
+
+    // Create new list entry
+    var li = document.createElement("li");
+
+    // Add word
+    var newWordParagraph = document.createElement("p");
+    newWordParagraph.appendChild(document.createTextNode(word));
+    li.appendChild(newWordParagraph);
+
+    // Add button which marks word as guessed
+    var guessButton = document.createElement("button");
+    guessButton.textContent = "Guess word";
+    guessButton.onclick = function() { guessWord(word); };
+    li.appendChild(guessButton);
+
+    ul.appendChild(li);
+}
+
+function removeWordInPlay(word) {
+    // Get list of words
+    let ul = document.getElementById("wordsInPlay");
+
+    let listEntries = ul.getElementsByTagName("li");
+    for (let i = 0; i < listEntries.length; i++) {
+        let paragraphElement = listEntries[i].getElementsByTagName("p")[0];
+        if (paragraphElement.textContent == word) {
+            ul.removeChild(listEntries[i]);
+            break;
+        }
+    }
 }
