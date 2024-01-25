@@ -6,6 +6,8 @@ use rocket::tokio::sync::broadcast::channel;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
+use crate::constants::TIMER_START_VALUE;
+
 pub struct Game {
     pub id: i32,
     pub game_events: Sender<String>,
@@ -18,7 +20,7 @@ pub struct Game {
 
 #[derive(Serialize)]
 pub struct GameState {
-    pub timer: i32, // number from 0 to 60
+    pub timer: i32, // number from 0 to 60000
     pub turn_player: String,
     pub num_words_guessed_per_team: HashMap<i32, i32>,
     pub teams: Vec<Vec<String>>,
@@ -52,7 +54,7 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: i32) -> Game
 
 pub fn init_game_state() -> GameState {
     return GameState {
-        timer: 60000,
+        timer: TIMER_START_VALUE,
         turn_player: "".to_string(),
         num_words_guessed_per_team: HashMap::new(),
         teams: Vec::new(),

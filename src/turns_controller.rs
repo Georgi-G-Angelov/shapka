@@ -6,7 +6,7 @@ use rand::seq::SliceRandom;
 
 use chashmap::CHashMap;
 
-use crate::game::{Game, init_teams};
+use crate::{constants::*, game::{Game, init_teams}};
 
 #[get("/start_game/<game_id>")]
 pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> content::RawJson<String> {
@@ -77,7 +77,7 @@ pub async fn fetch_word_to_guess(game_id: i32, name: &str, games: &State<CHashMa
             return content::RawJson("Error: you are not the turn player".to_string());
         }
 
-        if game_state.lock().unwrap().words_in_play.len() >= 2 {
+        if game_state.lock().unwrap().words_in_play.len() >= MAX_WORDS_IN_PLAY {
             return content::RawJson("Error: you already have enough words in play".to_string());
         }
 

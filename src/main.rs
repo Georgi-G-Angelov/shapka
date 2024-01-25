@@ -14,6 +14,7 @@ mod game_events_controller;
 use game_events_controller::*;
 mod turns_controller;
 use turns_controller::*;
+mod constants;
 
 use rocket::{Rocket, Build};
 use rocket::fs::{relative, FileServer};
