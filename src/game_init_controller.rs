@@ -15,7 +15,6 @@ pub fn create_game(player_name: &str, word_limit: i32, games: &State<CHashMap<i3
     let mut rng = rand::thread_rng();
 
     if word_limit < MIN_WORDS_PER_PLAYER || word_limit > MAX_WORDS_PER_PLAYER {
-        error!("Word limit per player is either too high or too low.");
         return Err(BadRequest(Some("Word limit per player is either too high or too low.".to_owned())));
     }
 
@@ -35,25 +34,18 @@ pub fn create_game(player_name: &str, word_limit: i32, games: &State<CHashMap<i3
 pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
-        if game.players
-            .lock()
-            .expect("locked game")
-            .contains(&name.to_string()) {
+        let mut players = game.players.lock().unwrap();
 
+        if players.contains(&name.to_string()) {
             Err(BadRequest(Some("Name already exists".to_owned())))
         } else {
-            game.players
-                .lock()
-                .expect("locked game")
-                .push(name.to_string());
+            players.push(name.to_string());
 
             let mut event: String = NEW_PLAYER_EVENT_PREFIX.to_owned();
             event.push_str(name);
 
             let _res = game.game_events.send(event.to_string());
-
             Ok(content::RawJson(game_id.to_string()))
-
         }
     } else {
         Err(BadRequest(Some("Game not found".to_owned())))

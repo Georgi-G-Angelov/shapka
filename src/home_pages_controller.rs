@@ -19,7 +19,6 @@ pub async fn create() -> Option<NamedFile> {
     NamedFile::open(Path::new("static/html/create.html")).await.ok()
 }
 
-
 #[get("/host/<game_id>/<name>")]
 pub async fn host(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Option<NamedFile> {
     if !games.contains_key(&game_id) {
