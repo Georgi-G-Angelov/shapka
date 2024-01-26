@@ -173,32 +173,50 @@ async function updateTimerState(millis) {
 }
 
 function fetchWord() {
+    let responseOk;
+    let responseStatus;
+
     fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
     })
-        .then(response => response.text())
-        .then(data => {
-            if (data.startsWith("Error")) {
-                console.log(data);
-            } else {
-                addWordInPlay(data);
-            }
-        });
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (responseOk) {
+            addWordInPlay(data);
+        } else {
+            console.log(data);
+            console.log(responseStatus);
+        }
+    });
 }
 
 function guessWord(word) {
+    let responseOk;
+    let responseStatus;
+
     fetch(getHostUrl() + "/guess_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
         method: "GET",
     })
-        .then(response => response.text())
-        .then(data => {
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        if (responseOk) {
+            removeWordInPlay(data);
+        } else {
             console.log(data);
-            if (data.startsWith("Error")) {
-                console.log(data);
-            } else {
-                removeWordInPlay(data);
-            }
-        });
+            console.log(responseStatus);
+        }
+    });
 }
 
 function addWordInPlay(word) {
