@@ -22,10 +22,12 @@ pub struct Game {
 pub struct GameState {
     pub timer: i32, // number from 0 to 60000
     pub turn_player: String,
+    pub turn_player_index: usize,
     pub num_words_guessed_per_team: HashMap<i32, i32>,
     pub teams: Vec<Vec<String>>,
     pub teammates: HashMap<String, String>,
     pub team_member_to_team_index: HashMap<String, i32>,
+    pub player_rotation: Vec<String>,
     pub words_guessed: Vec<String>,
     pub words_in_play: Vec<String>, // from 0 to 2 elements
     pub words_to_guess: Vec<String>,
@@ -57,10 +59,12 @@ pub fn init_game_state() -> GameState {
     return GameState {
         timer: TIMER_START_VALUE,
         turn_player: "".to_string(),
+        turn_player_index: 0,
         num_words_guessed_per_team: HashMap::new(),
         teams: Vec::new(),
         teammates: HashMap::new(),
         team_member_to_team_index: HashMap::new(),
+        player_rotation: Vec::new(),
         words_guessed: Vec::new(),
         words_in_play: Vec::new(),
         words_to_guess: Vec::new(),
@@ -76,6 +80,9 @@ pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
         .unwrap()
         .shuffle(&mut thread_rng());
 
+    let mut first_players: Vec<String> = Vec::new();
+    let mut second_players: Vec<String> = Vec::new();
+
     let mut is_first_player_in_team: bool = true;
     let mut current_player: String = "".to_string();
     let mut team_index = 0;
@@ -86,6 +93,8 @@ pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
             game_state.lock().unwrap().teams.push(team);
             is_first_player_in_team = false;
             current_player = player.to_string();
+
+            first_players.push(player.to_string());
         } else {
             game_state.lock().unwrap()
                 .teams
@@ -98,12 +107,17 @@ pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
             game_state.lock().unwrap().team_member_to_team_index.insert(player.to_string(), team_index);
             game_state.lock().unwrap().team_member_to_team_index.insert(current_player.clone(), team_index);
             team_index += 1;
+
+            second_players.push(player.to_string());
         }
     }
 
     // Set first player of the game
-    current_player = game_state.lock().unwrap().teams.get(0).unwrap().get(0).unwrap().to_string();
-    game_state.lock().unwrap().turn_player = current_player;
+    game_state.lock().unwrap().player_rotation.append(&mut first_players);
+    game_state.lock().unwrap().player_rotation.append(&mut second_players);
+    let starting_player = game_state.lock().unwrap().player_rotation.get(0).unwrap().to_string();
+    game_state.lock().unwrap().turn_player = starting_player;
+    game_state.lock().unwrap().turn_player_index = 0;
 
 
     // For debugging

@@ -143,3 +143,26 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
         Err(BadRequest(Some("Game not found".to_owned())))
     }
 }
+
+#[get("/next_turn/<game_id>")]
+pub async fn next_turn(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+    if games.contains_key(&game_id) {
+        let game = games.get(&game_id).unwrap();
+        let game_state = &mut game.game_state.lock().unwrap();
+        
+        let mut turn_player_index = game_state.turn_player_index;
+        if turn_player_index == game_state.player_rotation.len() - 1 {
+            turn_player_index = 0;
+        } else {
+            turn_player_index += 1;
+        }
+        let turn_player = game_state.player_rotation.get(turn_player_index).unwrap();
+        game_state.turn_player = turn_player.to_string();
+
+        let _ = game.game_events.send(NEXT_TURN_EVENT.to_owned());
+
+        Err(BadRequest(Some("No words left".to_owned())))
+    } else {
+        Err(BadRequest(Some("Game not found".to_owned())))
+    }
+}

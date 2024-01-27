@@ -68,6 +68,9 @@ function fill_all_game_mode() {
     if (gameState.turn_player == getPlayerName()) {
         document.getElementById("toggleTimer").style.display = "block";
         document.getElementById("fetchWord").style.display = "block";
+    } else {
+        document.getElementById("toggleTimer").style.display = "none";
+        document.getElementById("fetchWord").style.display = "none";        
     }
     setTimerButtonText();
 
@@ -79,7 +82,7 @@ function fill_all_game_mode() {
     document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
     timerDeltaSinceLastServerUpdate = 0;
 
-    subscribe(getHostUrl() + "/gameevents/" + getGameId());
+    subscribe(getHostUrl() + "/gameevents/" + getGameId()); // ????????????
 }
 
 function fillTurnPlayerMessage() {
@@ -133,6 +136,7 @@ function startTimer() {
             document.getElementById("timer").textContent = millisecondsToString(0);
             gameState.is_turn_active = false;
             updateTimerState(0);
+            showNextTurnButton();
         }
 
         // Update server
@@ -280,4 +284,32 @@ function removeWordInPlay(word) {
 
 function anyWordsInPlay() {
     return document.getElementById("wordsInPlay").getElementsByTagName("li").length > 0;
+}
+
+function showNextTurnButton() {
+    document.getElementById("nextTurn").style.display = "block";
+}
+
+async function nextTurn() {
+    fetch(getHostUrl() + "/next_turn/" + getGameId(), {
+        method: "GET",
+    })
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        // if (responseOk) {
+        //     removeWordInPlay(data);
+        //     if (!anyWordsInPlay()) {
+        //         fetchWord();
+        //     }
+        // } else {
+        //     console.log(data);
+        //     console.log(responseStatus);
+        // }
+    });
 }

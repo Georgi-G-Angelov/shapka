@@ -3,7 +3,8 @@ const NEW_PLAYER_PREFIX = "new_player:";
 const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
 const OUT_OF_WORDS_EVENT = "out_of_words";
-const INITIAL_TIMER = 60000;
+const INITIAL_TIMER = 5000;
+const NEXT_TURN_EVENT = "next_turn";
 
 // -----------------------------------------------
 // Data from URL utils
@@ -93,6 +94,8 @@ function subscribe(uri) {
             } else if (message == OUT_OF_WORDS_EVENT) {
                 gameState.is_round_active = false;
                 stopTimer();
+            } else if (message == NEXT_TURN_EVENT) {
+                fetchGameState();
             }
         });
 
