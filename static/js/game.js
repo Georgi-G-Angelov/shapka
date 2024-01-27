@@ -70,7 +70,8 @@ function fill_all_game_mode() {
         document.getElementById("fetchWord").style.display = "block";
     } else {
         document.getElementById("toggleTimer").style.display = "none";
-        document.getElementById("fetchWord").style.display = "none";        
+        document.getElementById("fetchWord").style.display = "none";
+        document.getElementById("nextTurn").style.display = "none";
     }
     setTimerButtonText();
 
@@ -113,12 +114,12 @@ function fillWordsInPlay() {
     });
 }
 
-function startTimer() {
+async function startTimer() {
     var currentTime = Date.now();
     isTimerOn = true;
     gameState.is_turn_active = true;
     if (timerValueMillis == INITIAL_TIMER) { 
-        fetchWord();
+        await fetchWord();
     }
 
     timer = setInterval(function() {
@@ -132,6 +133,7 @@ function startTimer() {
         document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
 
         if (timerValueMillis < 0) {
+            isTimerOn = false;
             clearInterval(timer);
             document.getElementById("timer").textContent = millisecondsToString(0);
             gameState.is_turn_active = false;
@@ -189,7 +191,7 @@ async function updateTimerState(millis) {
     });
 }
 
-function fetchWord() {
+async function fetchWord() {
     if (!isTimerOn) {
         return;
     }
@@ -197,7 +199,7 @@ function fetchWord() {
     let responseOk;
     let responseStatus;
 
-    fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
+    await fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
     })
     .then(function(response) {
@@ -312,4 +314,13 @@ async function nextTurn() {
         //     console.log(responseStatus);
         // }
     });
+}
+
+function cleanDOM() {
+    document.getElementById("teams").innerHTML = '';
+    document.getElementById("wordsInPlay").innerHTML = '';
+
+    document.getElementById("toggleTimer").style.display = "none";
+    document.getElementById("fetchWord").style.display = "none";
+    document.getElementById("nextTurn").style.display = "none";
 }

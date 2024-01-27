@@ -95,6 +95,7 @@ function subscribe(uri) {
                 gameState.is_round_active = false;
                 stopTimer();
             } else if (message == NEXT_TURN_EVENT) {
+                cleanDOM();
                 fetchGameState();
             }
         });

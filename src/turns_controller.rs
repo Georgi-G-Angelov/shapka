@@ -151,13 +151,20 @@ pub async fn next_turn(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Resu
         let game_state = &mut game.game_state.lock().unwrap();
         
         let mut turn_player_index = game_state.turn_player_index;
-        if turn_player_index == game_state.player_rotation.len() - 1 {
+        turn_player_index += 1;
+        if turn_player_index == game_state.player_rotation.len() {
             turn_player_index = 0;
-        } else {
-            turn_player_index += 1;
         }
+        game_state.turn_player_index = turn_player_index;
         let turn_player = game_state.player_rotation.get(turn_player_index).unwrap();
         game_state.turn_player = turn_player.to_string();
+
+        game_state.timer = TIMER_START_VALUE;
+        let mut removed_words_in_play: Vec<String> = Vec::new();
+        removed_words_in_play.append(&mut game_state.words_in_play);
+        game_state.words_to_guess.append(&mut removed_words_in_play);
+        game_state.words_to_guess.shuffle(&mut thread_rng());
+
 
         let _ = game.game_events.send(NEXT_TURN_EVENT.to_owned());
 
