@@ -30,7 +30,8 @@ pub struct GameState {
     pub words_in_play: Vec<String>, // from 0 to 2 elements
     pub words_to_guess: Vec<String>,
     pub round: i32, // from 0 to 3
-    pub is_turn_active: bool
+    pub is_turn_active: bool,
+    pub is_round_active: bool
 }
 
 pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Game {
@@ -63,8 +64,9 @@ pub fn init_game_state() -> GameState {
         words_guessed: Vec::new(),
         words_in_play: Vec::new(),
         words_to_guess: Vec::new(),
-        round: 0,
-        is_turn_active: false
+        round: 1,
+        is_turn_active: false,
+        is_round_active: true
     }
 }
 

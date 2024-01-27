@@ -57,13 +57,16 @@ pub async fn fetch_game_state(game_id: i32, games: &State<CHashMap<i32, Game>>) 
     }
 }
 
-#[get("/update_timer_state/<game_id>/<millis>")]
-pub async fn update_timer_state(game_id: i32, millis: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+#[get("/update_timer_state/<game_id>/<millis>/<turn_active>/<round_active>/<round>")]
+pub async fn update_timer_state(game_id: i32, millis: i32, turn_active: bool, round_active: bool, round: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
-        let game_state = &game.game_state;
+        let game_state = &mut game.game_state.lock().unwrap();
 
-        game_state.lock().unwrap().timer = millis;
+        game_state.timer = millis;
+        game_state.is_turn_active = turn_active;
+        game_state.is_round_active = round_active;
+        game_state.round = round;
 
         let mut event: String = TIMER_UPDATE_EVENT_PREFIX.to_owned();
         event.push_str(millis.to_string().as_str());

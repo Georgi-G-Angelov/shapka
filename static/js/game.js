@@ -29,8 +29,9 @@ Example value for game state:
     "words_guessed": [],
     "words_in_play": [],
     "words_to_guess": [],
-    "round": 0,
-    "is_turn_active": false
+    "round": 1,
+    "is_turn_active": false,
+    "is_round_active": true
 }
 */
 var gameState;
@@ -112,6 +113,7 @@ function fillWordsInPlay() {
 function startTimer() {
     var currentTime = Date.now();
     isTimerOn = true;
+    gameState.is_turn_active = true;
     if (timerValueMillis == INITIAL_TIMER) { 
         fetchWord();
     }
@@ -129,6 +131,7 @@ function startTimer() {
         if (timerValueMillis < 0) {
             clearInterval(timer);
             document.getElementById("timer").textContent = millisecondsToString(0);
+            gameState.is_turn_active = false;
             updateTimerState(0);
         }
 
@@ -143,7 +146,12 @@ function startTimer() {
 
 function stopTimer() {
     isTimerOn = false;
+    gameState.is_turn_active = false;
     clearInterval(timer);
+
+    if (getPlayerName() == gameState.turn_player) {
+        updateTimerState(timerValueMillis);
+    }
 }
 
 function toggleTimer() {
@@ -166,13 +174,15 @@ function setTimerButtonText() {
 }
 
 async function updateTimerState(millis) {
-    fetch(getHostUrl() + "/update_timer_state/" + getGameId() + "/" + millis, {
+    gameState.timer = millis;
+
+    fetch(getHostUrl() + "/update_timer_state/" + getGameId() + "/" + millis + "/" + gameState.is_turn_active + "/" + gameState.is_round_active + "/" + gameState.round, {
         method: "GET",
     })
-        .then(response => response.text())
-        .then(data => {
-            console.log("timer updated to: " + data);
-        });
+    .then(response => response.text())
+    .then(data => {
+        console.log("timer updated to: " + data);
+    });
 }
 
 function fetchWord() {
