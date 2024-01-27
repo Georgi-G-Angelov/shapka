@@ -112,6 +112,9 @@ function fillWordsInPlay() {
 function startTimer() {
     var currentTime = Date.now();
     isTimerOn = true;
+    if (timerValueMillis == INITIAL_TIMER) { 
+        fetchWord();
+    }
 
     timer = setInterval(function() {
         if (!isTimerOn) {

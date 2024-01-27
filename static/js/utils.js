@@ -2,6 +2,7 @@
 const NEW_PLAYER_PREFIX = "new_player:";
 const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
+const INITIAL_TIMER = 60000;
 
 // -----------------------------------------------
 // Data from URL utils
