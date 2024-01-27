@@ -20,7 +20,7 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
             .unwrap()
             .push(word.to_string());
 
-        let curr_words: i32 = *num_words_per_player.get(name).unwrap();
+        let curr_words: usize = *num_words_per_player.get(name).unwrap();
         num_words_per_player.insert(name.to_string(), curr_words + 1);
 
         Ok(content::RawJson("Word added: ".to_owned() + word))

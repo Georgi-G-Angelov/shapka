@@ -10,11 +10,20 @@ use chashmap::CHashMap;
 use crate::{constants::*, game::{Game, init_teams}};
 
 #[get("/start_game/<game_id>")]
-pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
+pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
         let game_state = &game.game_state;
         let players = &game.players;
+
+        if players.lock().unwrap().len() % 2 != 0 {
+            return Err(BadRequest(Some("Game cannot start with an odd number of players".to_owned())));
+        }
+
+        if game.words.lock().unwrap().len() <
+                players.lock().unwrap().len() * game.words_per_player_limit {
+            return Err(BadRequest(Some("Players still need to add words".to_owned())));
+        }
 
         init_teams(game_state, players);
 
@@ -30,7 +39,7 @@ pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Res
 
         Ok(content::RawJson(game_id.to_string()))
     } else {
-        Err(NotFound("Game not found".to_owned()))
+        Err(BadRequest(Some("Game not found".to_owned())))
     }
 }
 

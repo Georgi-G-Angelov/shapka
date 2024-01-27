@@ -13,8 +13,8 @@ pub struct Game {
     pub game_events: Sender<String>,
     pub players: Mutex<Vec<String>>,
     pub words: Mutex<Vec<String>>,
-    pub words_per_player_limit: i32,
-    pub num_words_per_player: Mutex<HashMap<String, i32>>,
+    pub words_per_player_limit: usize,
+    pub num_words_per_player: Mutex<HashMap<String, usize>>,
     pub game_state: Mutex<GameState>
 }
 
@@ -33,7 +33,7 @@ pub struct GameState {
     pub is_turn_active: bool
 }
 
-pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: i32) -> Game {
+pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Game {
     let (tx, _) = channel::<String>(1024);
     let game = Game {
         id,

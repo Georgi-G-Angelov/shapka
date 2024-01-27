@@ -11,7 +11,7 @@ use rocket::State;
 use rocket::response::content;
 
 #[get("/create_game/<player_name>/<word_limit>")]
-pub fn create_game(player_name: &str, word_limit: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>>{
+pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>>{
     let mut rng = rand::thread_rng();
 
     if word_limit < MIN_WORDS_PER_PLAYER || word_limit > MAX_WORDS_PER_PLAYER {
