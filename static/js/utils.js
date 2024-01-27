@@ -91,6 +91,7 @@ function subscribe(uri) {
                 let millis = message.substring(TIMER_UPDATE_PREFIX.length);
                 document.getElementById("timer").textContent = millisecondsToString(millis);
             } else if (message == OUT_OF_WORDS_EVENT) {
+                gameState.is_round_active = false;
                 stopTimer();
             }
         });
