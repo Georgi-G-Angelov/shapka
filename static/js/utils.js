@@ -2,6 +2,7 @@
 const NEW_PLAYER_PREFIX = "new_player:";
 const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
+const OUT_OF_WORDS_EVENT = "out_of_words";
 const INITIAL_TIMER = 60000;
 
 // -----------------------------------------------
@@ -89,6 +90,8 @@ function subscribe(uri) {
             } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
                 let millis = message.substring(TIMER_UPDATE_PREFIX.length);
                 document.getElementById("timer").textContent = millisecondsToString(millis);
+            } else if (message == OUT_OF_WORDS_EVENT) {
+                stopTimer();
             }
         });
 

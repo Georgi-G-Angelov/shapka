@@ -176,6 +176,10 @@ async function updateTimerState(millis) {
 }
 
 function fetchWord() {
+    if (!isTimerOn) {
+        return;
+    }
+
     let responseOk;
     let responseStatus;
 
@@ -199,6 +203,10 @@ function fetchWord() {
 }
 
 function guessWord(word) {
+    if (!isTimerOn) {
+        return;
+    }
+
     let responseOk;
     let responseStatus;
 
@@ -215,6 +223,9 @@ function guessWord(word) {
         console.log(data);
         if (responseOk) {
             removeWordInPlay(data);
+            if (!anyWordsInPlay()) {
+                fetchWord();
+            }
         } else {
             console.log(data);
             console.log(responseStatus);
@@ -255,4 +266,8 @@ function removeWordInPlay(word) {
             break;
         }
     }
+}
+
+function anyWordsInPlay() {
+    return document.getElementById("wordsInPlay").getElementsByTagName("li").length > 0;
 }

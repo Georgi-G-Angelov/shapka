@@ -127,6 +127,10 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
         }
         if guessed_word.eq(word) {
             game_state.words_guessed.push(guessed_word.clone());
+
+            if game_state.words_to_guess.len() == 0 {
+                let _ = game.game_events.send(OUT_OF_WORDS_EVENT.to_owned());
+            }
             return Ok(content::RawJson(guessed_word))
         }
 
