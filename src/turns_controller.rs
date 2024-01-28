@@ -1,5 +1,6 @@
 use rocket::response::status::{BadRequest, NotFound};
 use rocket::response::content;
+use rocket::tokio::sync::MutexGuard;
 use rocket::State;
 use serde_json;
 use rand::thread_rng;
@@ -7,6 +8,7 @@ use rand::seq::SliceRandom;
 
 use chashmap::CHashMap;
 
+use crate::{game_events, GameState};
 use crate::{constants::*, game::{Game, init_teams}};
 
 #[get("/start_game/<game_id>")]
@@ -132,7 +134,6 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
             game_state.words_guessed.push(guessed_word.clone());
 
             if game_state.words_to_guess.len() == 0 {
-                game_state.round += 1;
                 let _ = game.game_events.send(OUT_OF_WORDS_EVENT.to_owned());
             }
             return Ok(content::RawJson(guessed_word))
@@ -145,19 +146,12 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
 }
 
 #[get("/next_turn/<game_id>")]
-pub async fn next_turn(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+pub async fn next_turn(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
     if games.contains_key(&game_id) {
-        let game = games.get(&game_id).unwrap();
-        let game_state = &mut game.game_state.lock().unwrap();
+        let game: chashmap::ReadGuard<'_, i32, Game> = games.get(&game_id).unwrap();
+        let game_state: &mut std::sync::MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
         
-        let mut turn_player_index = game_state.turn_player_index;
-        turn_player_index += 1;
-        if turn_player_index == game_state.player_rotation.len() {
-            turn_player_index = 0;
-        }
-        game_state.turn_player_index = turn_player_index;
-        let turn_player = game_state.player_rotation.get(turn_player_index).unwrap();
-        game_state.turn_player = turn_player.to_string();
+        rotate_to_next_turn_player(game_state);
 
         game_state.timer = TIMER_START_VALUE;
         let mut removed_words_in_play: Vec<String> = Vec::new();
@@ -168,8 +162,46 @@ pub async fn next_turn(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Resu
 
         let _ = game.game_events.send(NEXT_TURN_EVENT.to_owned());
 
-        Err(BadRequest(Some("No words left".to_owned())))
+        Ok(content::RawJson(game_id.to_string()))
     } else {
-        Err(BadRequest(Some("Game not found".to_owned())))
+        Err(NotFound("Game not found".to_owned()))
     }
+}
+
+#[get("/next_round/<game_id>")]
+pub async fn next_round(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
+    if games.contains_key(&game_id) {
+        let game = games.get(&game_id).unwrap();
+        let game_state: &mut std::sync::MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
+
+        let mut guessed_words: Vec<String> = Vec::new();
+        guessed_words.append(&mut game_state.words_guessed);
+        game_state.words_to_guess.append(&mut guessed_words);
+        game_state.words_to_guess.shuffle(&mut thread_rng());
+
+        game_state.round += 1;
+        game_state.is_round_active = true;
+
+        // If less than a second left in round, don't bother
+        if game_state.timer < 1000 {
+            rotate_to_next_turn_player(game_state);
+        }
+
+        let _ = game.game_events.send(NEXT_ROUND_EVENT.to_owned());
+
+        Ok(content::RawJson(game_id.to_string()))
+    } else {
+        Err(NotFound("Game not found".to_owned()))
+    }
+}
+
+fn rotate_to_next_turn_player(game_state: &mut std::sync::MutexGuard<'_, GameState>) {
+    let mut turn_player_index = game_state.turn_player_index;
+    turn_player_index += 1;
+    if turn_player_index == game_state.player_rotation.len() {
+        turn_player_index = 0;
+    }
+    game_state.turn_player_index = turn_player_index;
+    let turn_player = game_state.player_rotation.get(turn_player_index).unwrap();
+    game_state.turn_player = turn_player.to_string();
 }

@@ -9,3 +9,4 @@ pub const NEW_PLAYER_EVENT_PREFIX: &str = "new_player:";
 pub const TIMER_UPDATE_EVENT_PREFIX: &str = "timer_update:";
 pub const OUT_OF_WORDS_EVENT: &str = "out_of_words";
 pub const NEXT_TURN_EVENT: &str = "next_turn";
+pub const NEXT_ROUND_EVENT: &str = "next_round";

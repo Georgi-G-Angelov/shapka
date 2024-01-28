@@ -43,6 +43,8 @@ var timerValueMillis;
 var timerValueSeconds;
 var timerDeltaSinceLastServerUpdate; // we need to update the server every around 500 millis
 
+var isConnectedToEvents = false;
+
 async function fetchGameState() {
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
         method: "GET",
@@ -72,6 +74,7 @@ function fill_all_game_mode() {
         document.getElementById("toggleTimer").style.display = "none";
         document.getElementById("fetchWord").style.display = "none";
         document.getElementById("nextTurn").style.display = "none";
+        document.getElementById("nextRound").style.display = "none";
     }
     setTimerButtonText();
 
@@ -83,7 +86,19 @@ function fill_all_game_mode() {
     document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
     timerDeltaSinceLastServerUpdate = 0;
 
-    subscribe(getHostUrl() + "/gameevents/" + getGameId()); // ????????????
+    //
+    if (!gameState.is_round_active) {
+        showNextRoundButton();
+    }
+
+    // if (!gameState.is_turn_active) {
+    //     showNextTurnButton();
+    // }
+
+    if (!isConnectedToEvents) {
+        subscribe(getHostUrl() + "/gameevents/" + getGameId());
+        isConnectedToEvents = true;
+    }
 }
 
 function fillTurnPlayerMessage() {
@@ -118,7 +133,7 @@ async function startTimer() {
     var currentTime = Date.now();
     isTimerOn = true;
     gameState.is_turn_active = true;
-    if (timerValueMillis == INITIAL_TIMER) { 
+    if (timerValueMillis == INITIAL_TIMER) { // or new round just started ???
         await fetchWord();
     }
 
@@ -304,15 +319,25 @@ async function nextTurn() {
     .then(response => response.text())
     .then(data => {
         console.log(data);
-        // if (responseOk) {
-        //     removeWordInPlay(data);
-        //     if (!anyWordsInPlay()) {
-        //         fetchWord();
-        //     }
-        // } else {
-        //     console.log(data);
-        //     console.log(responseStatus);
-        // }
+    });
+}
+
+function showNextRoundButton() {
+    document.getElementById("nextRound").style.display = "block";
+}
+
+async function nextRound() {
+    fetch(getHostUrl() + "/next_round/" + getGameId(), {
+        method: "GET",
+    })
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
     });
 }
 
@@ -323,4 +348,5 @@ function cleanDOM() {
     document.getElementById("toggleTimer").style.display = "none";
     document.getElementById("fetchWord").style.display = "none";
     document.getElementById("nextTurn").style.display = "none";
+    document.getElementById("nextRound").style.display = "none";
 }
