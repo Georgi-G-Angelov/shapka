@@ -26,7 +26,7 @@ fn rocket() -> Rocket<Build> {
     let games: CHashMap<i32, Game> = CHashMap::new();
 
     rocket::build()
-        .configure(rocket::Config::figment().merge(("port", 443)))
+        // .configure(rocket::Config::figment().merge(("port", 443)))
         .manage(games)
         .mount("/", routes![home, create_game, create,
                             join_game, join, host, await_game, in_game, fetch_players,
