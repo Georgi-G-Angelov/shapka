@@ -57,7 +57,7 @@ button:active {
 }
 
 #create_game {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 @media all and (max-width: 1000px) {
@@ -69,5 +69,9 @@ button:active {
 
     body {
         font-size: 150%;
+    }
+
+    #create_game {
+        margin-bottom: 5vh;
     }
 }
