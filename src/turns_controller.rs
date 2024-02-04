@@ -1,3 +1,5 @@
+use std::sync::MutexGuard;
+
 use rocket::response::status::{BadRequest, NotFound};
 use rocket::response::content;
 use rocket::State;
@@ -7,7 +9,7 @@ use rand::seq::SliceRandom;
 
 use chashmap::CHashMap;
 
-use crate::GameState;
+use crate::{game_events, GameState};
 use crate::{constants::*, game::{Game, init_teams}};
 
 #[get("/start_game/<game_id>")]
@@ -112,7 +114,7 @@ pub async fn fetch_word_to_guess(game_id: i32, name: &str, games: &State<CHashMa
 pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
-        let game_state = &mut game.game_state.lock().unwrap();
+        let game_state: &mut MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
 
         if !game_state.turn_player.eq(name) {
             return Err(BadRequest(Some("You are not the turn player".to_owned())));
@@ -129,10 +131,26 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
                 break;
             }
         }
+
         if guessed_word.eq(word) {
+            // Update guessed words per round per team
+            let round: i32 = game_state.round;
+            let team_index: i32 = game_state.team_member_to_team_index.get(name).unwrap().to_be();
+            let words_per_team = game_state.words_guessed_per_team_per_round.get_mut(&round).unwrap();
+            if !words_per_team.contains_key(&team_index) {
+                words_per_team.insert(team_index, Vec::new());
+            }
+            words_per_team.get_mut(&team_index).unwrap().push(guessed_word.clone());
+
+            // Update game state words guessed
             game_state.words_guessed.push(guessed_word.clone());
 
+            // If there are no more words to guess, round is over
             if game_state.words_to_guess.len() == 0 {
+                if game_state.round == NUM_ROUNDS {
+                    game_state.is_game_finished = true;
+                }
+
                 let _ = game.game_events.send(OUT_OF_WORDS_EVENT.to_owned());
             }
             return Ok(content::RawJson(guessed_word))

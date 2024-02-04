@@ -66,3 +66,19 @@ pub async fn in_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>
     }
     NamedFile::open(Path::new("static/html/game.html")).await.ok()
 }
+
+#[get("/results/<game_id>/<name>")]
+pub async fn results(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Option<NamedFile> {
+    if !games.contains_key(&game_id) {
+        error!("Game does not exist");
+        return Option::<NamedFile>::None;
+    }
+    let game = games.get(&game_id).unwrap();
+    if !game.players
+        .lock()
+        .expect("locked game")
+        .contains(&name.to_string()) {
+        return Option::<NamedFile>::None;
+    }
+    NamedFile::open(Path::new("static/html/results.html")).await.ok()
+}

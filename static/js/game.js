@@ -31,7 +31,8 @@ Example value for game state:
     "words_to_guess": [],
     "round": 1,
     "is_turn_active": false,
-    "is_round_active": true
+    "is_round_active": true,
+    "is_game_finished": false
 }
 */
 var gameState;
@@ -56,8 +57,11 @@ async function fetchGameState() {
             gameState = JSON.parse(data);
 
             console.log(gameState);
-
-            fill_all_game_mode();
+            if (gameState.is_game_finished) {
+                fillResults();
+            } else {
+                fill_all_game_mode();
+            }
         });
 }
 

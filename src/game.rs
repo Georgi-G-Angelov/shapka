@@ -6,7 +6,7 @@ use rocket::tokio::sync::broadcast::channel;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
 
-use crate::constants::TIMER_START_VALUE;
+use crate::constants::{NUM_ROUNDS, TIMER_START_VALUE};
 
 pub struct Game {
     pub id: i32,
@@ -20,10 +20,10 @@ pub struct Game {
 
 #[derive(Serialize)]
 pub struct GameState {
-    pub timer: i32, // number from 0 to 60000
+    pub timer: i32, // number from 0 to TIMER_START_VALUE
     pub turn_player: String,
     pub turn_player_index: usize,
-    pub num_words_guessed_per_team: HashMap<i32, i32>,
+    pub words_guessed_per_team_per_round: HashMap<i32, HashMap<i32, Vec<String>>>,
     pub teams: Vec<Vec<String>>,
     pub teammates: HashMap<String, String>,
     pub team_member_to_team_index: HashMap<String, i32>,
@@ -31,9 +31,10 @@ pub struct GameState {
     pub words_guessed: Vec<String>,
     pub words_in_play: Vec<String>, // from 0 to 2 elements
     pub words_to_guess: Vec<String>,
-    pub round: i32, // from 0 to 3
+    pub round: i32, // from 1 to 3
     pub is_turn_active: bool,
-    pub is_round_active: bool
+    pub is_round_active: bool,
+    pub is_game_finished: bool
 }
 
 pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Game {
@@ -56,11 +57,16 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
 }
 
 pub fn init_game_state() -> GameState {
+    let mut words_guessed_per_team_per_round: HashMap<i32, HashMap<i32, Vec<String>>> = HashMap::new();
+    for i in 1..NUM_ROUNDS+1 {
+        words_guessed_per_team_per_round.insert(i, HashMap::new());
+    }
+
     return GameState {
         timer: TIMER_START_VALUE,
         turn_player: "".to_string(),
         turn_player_index: 0,
-        num_words_guessed_per_team: HashMap::new(),
+        words_guessed_per_team_per_round,
         teams: Vec::new(),
         teammates: HashMap::new(),
         team_member_to_team_index: HashMap::new(),
@@ -70,7 +76,8 @@ pub fn init_game_state() -> GameState {
         words_to_guess: Vec::new(),
         round: 1,
         is_turn_active: false,
-        is_round_active: true
+        is_round_active: true,
+        is_game_finished: false
     }
 }
 

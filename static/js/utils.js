@@ -135,3 +135,7 @@ function hideTimerAndFetchWordButtons() {
     document.getElementById("toggleTimer").style.display = "none";
     document.getElementById("fetchWord").style.display = "none";
 }
+
+function showResults() {
+    window.location.replace(getHostUrl() + "/results/" + getGameId() + '/' + getPlayerName());
+}
