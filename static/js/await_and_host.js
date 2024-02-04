@@ -10,7 +10,7 @@ function fill_all() {
 }
 
 function fill_game_id() {
-    document.getElementById("gameId").textContent = getGameId();
+    document.getElementById("gameId").textContent = `Game ${getGameId()}`;
 }
 
 function fill_players() { 

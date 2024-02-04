@@ -32,6 +32,10 @@ html, body {
     margin-bottom: 10%;
 }
 
+#gameId {
+    text-align: center;
+}
+
 .button-box {
     display: flex;
     justify-content: center;
@@ -53,7 +57,7 @@ html, body {
 }
 
 input {
-    width: 300px;
+    width: 350px;
     height: 60px;
     font-size: 22px;
     font-weight: bold;
@@ -82,7 +86,7 @@ button:active {
     background-color: #67DDFF;
 }
 
-#create_game {
+#create_game, #add_word {
     margin-bottom: 30px;
 }
 
@@ -97,7 +101,7 @@ button:active {
         font-size: 200%;
     }
 
-    #create_game {
+    #create_game, #add_word {
         margin-bottom: 5vh;
     }
     

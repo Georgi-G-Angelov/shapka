@@ -10,15 +10,18 @@
   </head>
   <body onload="fill_all()">
     <img src="/shapka-logo.png" id="logo">
+
     <h1 id="gameId">pesho</h1>
 
+    <div class="input-box">
+      <input type="text" id="word" name="word" placeholder="your new word..."><br><br>
+    </div>
+
+    <div class="button-box">
+      <button id="add_word" onclick="add_word()">Add</button>
+    </div>
     <ul id="players">
-
     </ul>
-
-    <label for="word">Enter a word:</label>
-    <input type="text" id="word" name="word"><br><br>
-    <button id="add_word" onclick="add_word()">Add word</button>
     <p id="message"></p>
   </body>
 </html>
