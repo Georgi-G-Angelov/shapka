@@ -11,6 +11,7 @@ body {
     color: aliceblue;
     height: 100%;
     font-family: andale mono, monospace;
+    justify-content: center;
 }
 
 html, body {
@@ -80,6 +81,7 @@ button {
     font-family: andale mono, monospace;
     border: none;
     color: #000;
+    background-color: azure;
 }
 
 button:active {
@@ -88,6 +90,29 @@ button:active {
 
 #create_game, #add_word {
     margin-bottom: 30px;
+}
+
+#players {
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+}
+
+#players > li {
+    color: #000;
+    display: inline-block;
+    margin: 2%;
+    background-color: #CAA6FF;
+    padding: 1%;
+    font-weight: bold;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
 }
 
 @media all and (max-width: 1000px) {
@@ -109,5 +134,9 @@ button:active {
         width: 65%;
         height: 8vh;
         font-size: 150%;
+    }
+
+    #players > li {
+        font-size: 100%;
     }
 }
