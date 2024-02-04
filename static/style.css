@@ -123,6 +123,14 @@ hr {
     border-style: solid;
 }
 
+#timer {
+    font-size: 250%;
+}
+
+#toggleTimer {
+    margin-right: 30px;
+}
+
 @media all and (max-width: 1000px) {
     button {
         width: 50%;
@@ -149,5 +157,14 @@ hr {
 
     #players > li {
         font-size: 150%;
+    }
+
+    #toggleTimer {
+        width: 40%;
+        margin-right: 10vw;
+    }
+
+    #fetchWord {
+        width: 40%;
     }
 }
