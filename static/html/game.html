@@ -12,30 +12,34 @@
   </head>
   <body onload="fetchGameState()">
     <img src="/shapka-logo.png" id="logo">
-
-    <h1>Game id:</h1>
     <h1 id="gameId">game id</h1>
+    <h3 id="turnPlayer">turn player message</h3>
 
     <h1>Teams:</h1>
     <ul id="teams">
 
     </ul>
-    <h3 id="turnPlayer">turn player message</h3>
-    <h3>Timer:</h3>
     <h2 id="timer"></h2>
-    <button id="toggleTimer" style="display: none;" onclick="toggleTimer()">Toggle timer</button>
+    <div class="button-box">
+      <button id="toggleTimer" style="display: none;" onclick="toggleTimer()">Toggle timer</button>
+    </div>
     <p id="message"></p>
 
-    <button id="fetchWord" style="display: none;" onclick="fetchWord()">Fetch word</button>
+    <div class="button-box">
+      <button id="fetchWord" style="display: none;" onclick="fetchWord()">Fetch word</button>
+    </div>
 
     <ul id="wordsInPlay">
 
     </ul>
-
-    <button id="nextTurn" style="display: none;" onclick="nextTurn()">Next turn</button>
-
-    <button id="nextRound" style="display: none;" onclick="nextRound()">Next round</button>
-
-    <button id="showResults" style="display: none;" onclick="showResults()">Show results</button>
+    <div class="button-box">
+      <button id="nextTurn" style="display: none;" onclick="nextTurn()">Next turn</button>
+    </div>
+    <div class="button-box">
+      <button id="nextRound" style="display: none;" onclick="nextRound()">Next round</button>
+    </div>
+    <div class="button-box">
+      <button id="showResults" style="display: none;" onclick="showResults()">Show results</button>
+    </div>
   </body>
 </html>

@@ -12,6 +12,7 @@ body {
     height: 100%;
     font-family: andale mono, monospace;
     justify-content: center;
+    text-align: center;
 }
 
 html, body {
@@ -140,6 +141,10 @@ hr {
     input {
         width: 65%;
         height: 8vh;
+    }
+
+    #players {
+        width: 100%;
     }
 
     #players > li {
