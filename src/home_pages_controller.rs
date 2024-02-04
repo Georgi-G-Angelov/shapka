@@ -4,7 +4,7 @@ use rocket::{fs::NamedFile, State};
 
 use crate::game::Game;
 
-#[get("/home")]
+#[get("/")]
 pub async fn home() -> Option<NamedFile> {
     NamedFile::open(Path::new("static/html/home.html")).await.ok()
 }
