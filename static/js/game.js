@@ -89,6 +89,7 @@ function fill_all_game_mode() {
     //
     if (!gameState.is_round_active) {
         showNextRoundButton();
+        hideTimerAndFetchWordButtons();
     }
 
     // if (!gameState.is_turn_active) {
@@ -124,16 +125,18 @@ function fillTeams() {
 }
 
 function fillWordsInPlay() {
-    gameState.words_in_play.forEach(word => {
-        addWordInPlay(word);
-    });
+    if (getPlayerName() == gameState.turn_player) {
+        gameState.words_in_play.forEach(word => {
+            addWordInPlay(word);
+        });
+    }
 }
 
 async function startTimer() {
     var currentTime = Date.now();
     isTimerOn = true;
     gameState.is_turn_active = true;
-    if (timerValueMillis == INITIAL_TIMER) { // or new round just started ???
+    if (timerValueMillis == INITIAL_TIMER || !anyWordsInPlay()) {
         await fetchWord();
     }
 
@@ -195,6 +198,11 @@ function setTimerButtonText() {
 }
 
 async function updateTimerState(millis) {
+    // Synchronization is hard
+    if (millis < 0) {
+        millis = 0;
+    }
+
     gameState.timer = millis;
 
     fetch(getHostUrl() + "/update_timer_state/" + getGameId() + "/" + millis + "/" + gameState.is_turn_active + "/" + gameState.is_round_active + "/" + gameState.round, {
@@ -226,6 +234,11 @@ async function fetchWord() {
     .then(data => {
         if (responseOk) {
             addWordInPlay(data);
+        } else if (responseStatus == 400) { // no words left, so round is over
+            gameState.is_round_active = false;
+            stopTimer();
+            showNextRoundButton();
+            hideTimerAndFetchWordButtons();
         } else {
             console.log(data);
             console.log(responseStatus);
@@ -320,10 +333,6 @@ async function nextTurn() {
     .then(data => {
         console.log(data);
     });
-}
-
-function showNextRoundButton() {
-    document.getElementById("nextRound").style.display = "block";
 }
 
 async function nextRound() {

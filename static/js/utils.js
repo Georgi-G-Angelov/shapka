@@ -92,9 +92,9 @@ function subscribe(uri) {
             } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
                 let millis = message.substring(TIMER_UPDATE_PREFIX.length);
                 document.getElementById("timer").textContent = millisecondsToString(millis);
-            } else if (message == OUT_OF_WORDS_EVENT) {
+            } else if (message == OUT_OF_WORDS_EVENT) { // could potentially never need this
                 gameState.is_round_active = false;
-                stopTimer();
+                showNextRoundButton();
             } else if (message == NEXT_TURN_EVENT || message == NEXT_ROUND_EVENT) {
                 cleanDOM();
                 fetchGameState();
@@ -119,4 +119,19 @@ function subscribe(uri) {
     }
   
     connect(uri);
+}
+
+function showNextRoundButton() {
+    if (gameState.round < 3) {
+        if (getPlayerName() == gameState.turn_player) {
+            document.getElementById("nextRound").style.display = "block";
+        }
+    } else {
+        document.getElementById("showResults").style.display = "block";
+    }
+}
+
+function hideTimerAndFetchWordButtons() {
+    document.getElementById("toggleTimer").style.display = "none";
+    document.getElementById("fetchWord").style.display = "none";
 }

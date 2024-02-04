@@ -183,6 +183,7 @@ pub async fn next_round(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Res
 
         // If less than a second left in round, don't bother
         if game_state.timer < 1000 {
+            game_state.timer = TIMER_START_VALUE;
             rotate_to_next_turn_player(game_state);
         }
 
