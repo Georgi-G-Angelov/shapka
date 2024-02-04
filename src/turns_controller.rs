@@ -9,7 +9,7 @@ use rand::seq::SliceRandom;
 
 use chashmap::CHashMap;
 
-use crate::{game_events, GameState};
+use crate::GameState;
 use crate::{constants::*, game::{Game, init_teams}};
 
 #[get("/start_game/<game_id>")]

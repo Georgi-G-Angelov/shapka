@@ -4,6 +4,7 @@ const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
 const OUT_OF_WORDS_EVENT = "out_of_words";
 const INITIAL_TIMER = 5000;
+const NUM_ROUNDS = 3;
 const NEXT_TURN_EVENT = "next_turn";
 const NEXT_ROUND_EVENT = "next_round";
 
