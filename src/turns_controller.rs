@@ -1,6 +1,5 @@
 use rocket::response::status::{BadRequest, NotFound};
 use rocket::response::content;
-use rocket::tokio::sync::MutexGuard;
 use rocket::State;
 use serde_json;
 use rand::thread_rng;
@@ -8,7 +7,7 @@ use rand::seq::SliceRandom;
 
 use chashmap::CHashMap;
 
-use crate::{game_events, GameState};
+use crate::GameState;
 use crate::{constants::*, game::{Game, init_teams}};
 
 #[get("/start_game/<game_id>")]
