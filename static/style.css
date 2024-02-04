@@ -119,12 +119,8 @@ button:active {
     button {
         width: 50%;
         height: 10vh;
-        font-size: 200%;
     }
 
-    body {
-        font-size: 200%;
-    }
 
     #create_game, #add_word {
         margin-bottom: 5vh;
@@ -133,10 +129,9 @@ button:active {
     input {
         width: 65%;
         height: 8vh;
-        font-size: 150%;
     }
 
     #players > li {
-        font-size: 100%;
+        font-size: 150%;
     }
 }
