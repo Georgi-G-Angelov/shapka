@@ -238,7 +238,7 @@ async function fetchWord() {
     .then(data => {
         if (responseOk) {
             addWordInPlay(data);
-        } else if (responseStatus == 400) { // no words left, so round is over
+        } else if (responseStatus == 400 && !anyWordsInPlay()) { // no words left, so round is over
             gameState.is_round_active = false;
             stopTimer();
             showNextRoundButton();
@@ -294,10 +294,16 @@ function addWordInPlay(word) {
     li.appendChild(newWordParagraph);
 
     // Add button which marks word as guessed
-    var guessButton = document.createElement("button");
-    guessButton.textContent = "Guess word";
-    guessButton.onclick = function() { guessWord(word); };
-    li.appendChild(guessButton);
+    // var guessButton = document.createElement("button");
+    // guessButton.textContent = "Guess word";
+    // guessButton.onclick = function() { guessWord(word); };
+    // li.appendChild(guessButton);
+
+    // Add green tick image
+    let tick = new Image();
+    tick.src = "/tick-min.ico";
+    tick.onclick = function() { guessWord(word); };
+    newWordParagraph.appendChild(tick);
 
     ul.appendChild(li);
 }

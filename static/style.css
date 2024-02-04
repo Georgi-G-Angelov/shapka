@@ -131,6 +131,37 @@ hr {
     margin-right: 30px;
 }
 
+#wordsInPlay {
+    padding: 0;
+}
+
+#wordsInPlay > li {
+    display: block;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#wordsInPlay > li > p {
+    padding: 0;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: #000;
+    border-radius: 10px;
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#wordsInPlay > li > p > img {
+    text-align: right;
+    float: right;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 100%;
+}
+
+
 @media all and (max-width: 1000px) {
     button {
         width: 50%;
@@ -166,5 +197,14 @@ hr {
 
     #fetchWord {
         width: 40%;
+    }
+
+    #wordsInPlay > li {
+        width: 100%;
+    }
+
+    #wordsInPlay > li > p {
+        border: none;
+        border-radius: 0px;
     }
 }

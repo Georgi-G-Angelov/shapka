@@ -146,7 +146,7 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
             game_state.words_guessed.push(guessed_word.clone());
 
             // If there are no more words to guess, round is over
-            if game_state.words_to_guess.len() == 0 {
+            if game_state.words_to_guess.len() == 0 && game_state.words_in_play.len() == 0 {
                 if game_state.round == NUM_ROUNDS {
                     game_state.is_game_finished = true;
                 }
