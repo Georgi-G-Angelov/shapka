@@ -301,7 +301,7 @@ function addWordInPlay(word) {
 
     // Add green tick image
     let tick = new Image();
-    tick.src = "/tick-min.ico";
+    tick.src = "/tick-min.png";
     tick.onclick = function() { guessWord(word); };
     newWordParagraph.appendChild(tick);
 
