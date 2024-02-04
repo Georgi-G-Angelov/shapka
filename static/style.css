@@ -49,6 +49,7 @@ button {
     font-weight: bold;
     font-family: andale mono, monospace;
     border: none;
+    color: #000;
 }
 
 button:active {
@@ -57,4 +58,10 @@ button:active {
 
 #create_game {
     margin-bottom: 20px;
+}
+
+@media all and (max-width: 1000px) {
+    button {
+        width: 70%;
+    }
 }
