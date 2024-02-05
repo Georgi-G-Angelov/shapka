@@ -32,6 +32,9 @@ pub async fn host(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) 
         .contains(&name.to_string()) {
         return Option::<NamedFile>::None;
     }
+    if games.get(&game_id).unwrap().game_state.lock().unwrap().is_game_finished {
+        return Option::<NamedFile>::None;
+    }
     NamedFile::open(Path::new("static/html/host.html")).await.ok()
 }
 
@@ -46,6 +49,9 @@ pub async fn await_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Ga
         .lock()
         .expect("locked game")
         .contains(&name.to_string()) {
+        return Option::<NamedFile>::None;
+    }
+    if games.get(&game_id).unwrap().game_state.lock().unwrap().is_game_finished {
         return Option::<NamedFile>::None;
     }
     NamedFile::open(Path::new("static/html/await.html")).await.ok()

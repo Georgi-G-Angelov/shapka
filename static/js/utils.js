@@ -27,6 +27,14 @@ function getGameId() {
     return locationWithoutPlayerName.substring(locationWithoutPlayerName.lastIndexOf('/')+1);
 }
 
+// Only works if URL ends with <endpoint>/<game-id>/<player-name>
+function getEndpoint() {
+    let currentLocation = window.location.href;
+    let locationWithoutPlayerName = currentLocation.substring(0, currentLocation.lastIndexOf('/'));
+    let locationWithoutGameId = locationWithoutPlayerName.substring(0, locationWithoutPlayerName.lastIndexOf('/'));
+    return locationWithoutGameId.substring(locationWithoutGameId.lastIndexOf('/')+1);
+}
+
 // -----------------------------------------------
 // String utils
 function containsWhitespaceOrPunctuation(word) {
@@ -89,7 +97,7 @@ function subscribe(uri) {
                 li.appendChild(document.createTextNode(newPlayer));
                 ul.appendChild(li);
             } else if (message.startsWith(START_GAME_MESSAGE)) {
-                window.location.replace(getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName());
+                window.location.href = getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName();
             } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
                 let millis = message.substring(TIMER_UPDATE_PREFIX.length);
                 document.getElementById("timer").textContent = millisecondsToString(millis);
@@ -138,5 +146,13 @@ function hideTimerAndFetchWordButtons() {
 }
 
 function showResults() {
-    window.location.replace(getHostUrl() + "/results/" + getGameId() + '/' + getPlayerName());
+    window.location.href = getHostUrl() + "/results/" + getGameId() + '/' + getPlayerName();
+}
+
+function home() {
+    window.location.href = getHostUrl();
+}
+
+function toggleTeams() {
+    document.getElementById("teamsList").classList.toggle("show");
 }

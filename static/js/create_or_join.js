@@ -1,5 +1,5 @@
 function create_redirect() {
-    window.location.replace(getHostUrl() + "/create");
+    window.location.href = getHostUrl() + "/create";
 }
 
 function create_game() {
@@ -20,7 +20,7 @@ function create_game() {
     .then(data => {
         if (responseOk) {
             let gameId = data;
-            window.location.replace(getHostUrl() + "/host/" + gameId + '/' + name);
+            window.location.href = getHostUrl() + "/host/" + gameId + '/' + name;
         } else {
             let errorMessage = data;
             console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
@@ -32,7 +32,7 @@ function create_game() {
 }
 
 function join_redirect() {
-    window.location.replace(getHostUrl() + "/join");
+    window.location.href = getHostUrl() + "/join";
 }
 
 function join_game() {
@@ -52,7 +52,7 @@ function join_game() {
     .then(response => response.text())
     .then(errorMessage => {
         if (responseOk) {
-            window.location.replace(getHostUrl() + "/await/" + gameId + '/' + name);
+            window.location.href = getHostUrl() + "/await/" + gameId + '/' + name;
         } else {
             console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
         }

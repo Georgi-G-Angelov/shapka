@@ -12,12 +12,15 @@
     <script src="../../js/await_and_host.js" charset="utf-8" defer></script>
   </head>
   <body onload="fetchGameState()">
-    <img src="/shapka-logo.png" id="logo">
+    <img src="/shapka-logo.png" id="logo" onclick="home()">
     <h1 id="gameId">game id</h1>
 
-    <h1>Teams:</h1>
-    <ul id="teams">
+    <div class="banner">
+        <h3 class="team">Team</h3>
+        <h3 class="score">Score</h3>
+    </div>
+    <div id="results">
 
-    </ul>
+    </div>
   </body>
 </html>

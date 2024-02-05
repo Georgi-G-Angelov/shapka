@@ -11,14 +11,16 @@
     <script src="../../js/game.js" charset="utf-8" defer></script>
   </head>
   <body onload="fetchGameState()">
-    <img src="/shapka-logo.png" id="logo">
+    <img src="/shapka-logo.png" id="logo" onclick="home()">
     <h1 id="gameId">game id</h1>
     <h3 id="turnPlayer">turn player message</h3>
 
-    <h1>Teams:</h1>
-    <ul id="teams">
+    <div class="dropdown" id="teams">
+      <button onclick="toggleTeams()" class="dropbtn">Teams</button>
+      <div id="teamsList" class="dropdown-content">
+      </div>
+    </div>
 
-    </ul>
     <h2 id="timer"></h2>
     <div class="button-box">
       <button id="toggleTimer" style="display: none;" onclick="toggleTimer()">Toggle timer</button>
@@ -26,10 +28,6 @@
 
     </div>
     <p id="message"></p>
-
-    <!-- <div class="button-box">
-      <button id="fetchWord" style="display: none;" onclick="fetchWord()">Fetch word</button>
-    </div> -->
 
     <ul id="wordsInPlay">
 

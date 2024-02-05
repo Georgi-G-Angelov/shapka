@@ -2,7 +2,7 @@
 #can {
     background-color: white;
     display: block;
-    border:2px solid;
+    border: 2px solid;
     border-color: #000;
 }
 
@@ -15,7 +15,8 @@ body {
     text-align: center;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     height: 100%;
 }
@@ -71,7 +72,7 @@ input {
 }
 
 ::placeholder {
-    text-align: center; 
+    text-align: center;
 }
 
 button {
@@ -89,7 +90,8 @@ button:active {
     background-color: #67DDFF;
 }
 
-#create_game, #add_word {
+#create_game,
+#add_word {
     margin-bottom: 30px;
 }
 
@@ -103,7 +105,7 @@ button:active {
     padding: 0;
 }
 
-#players > li {
+#players>li {
     color: white;
     display: inline-block;
     margin: 2%;
@@ -125,6 +127,8 @@ hr {
 
 #timer {
     font-size: 250%;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 #toggleTimer {
@@ -135,14 +139,14 @@ hr {
     padding: 0;
 }
 
-#wordsInPlay > li {
+#wordsInPlay>li {
     display: block;
     width: 350px;
     margin-left: auto;
     margin-right: auto;
 }
 
-#wordsInPlay > li > p {
+#wordsInPlay>li>p {
     padding: 4px;
     font-size: 30px;
     font-weight: bold;
@@ -153,13 +157,161 @@ hr {
     padding-right: 20px;
     color: #3B1433;
     margin-bottom: 0;
+    /* margin-top: 5px; */
 }
 
-#wordsInPlay > li > p > img {
+#wordsInPlay>li>p>img {
     float: right;
     height: 35px;
 }
 
+/* #teams > li {
+    display: none;
+} */
+
+/* DROPDOWN STUFF */
+/* Dropdown Button */
+.dropbtn {
+    background-color: azure;
+    color: black;
+    padding: 16px;
+    font-size: 22px;
+    border: none;
+    cursor: pointer;
+    width: 530px;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover,
+.dropbtn:focus {
+    background-color: azure;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: azure;
+    color: #3B1433;
+    width: 530px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-top: #000;
+    border-bottom: #000;
+    border-left-width: 0;
+    border-style: solid;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {
+    display: block;
+}
+
+/* END DROPDOWN STUFF */
+
+.banner {
+    width: 510px;
+    background-color: azure;
+    color: #000;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: left;
+    clear: both;
+    border-bottom: #3B1433;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-style: solid;
+}
+
+.banner > h3 {
+    display: inline-block;
+}
+
+.banner > ul {
+    padding: 0;
+    background-color: azure;
+    margin-top: 0;
+    margin-bottom: 0;
+
+}
+
+.banner > ul > h4 {
+    margin: 0;
+    border-bottom: #3B1433;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-style: solid;
+}
+
+/* .banner > ul > p {
+    display: inline-block;
+} */
+
+.score {
+    /* text-align: right; */
+    float: right;
+}
+
+#results {
+    color: azure;
+}
+
+.gold {
+    background-image: linear-gradient(to right,
+            #462523 0,
+            #cb9b51 22%,
+            #f6e27a 45%,
+            #f6f2c0 50%,
+            #f6e27a 55%,
+            #cb9b51 78%,
+            #462523 100%);
+}
+
+.silver {
+    background-image: linear-gradient(to right,
+            #758087 0,
+            #a1a8ad 22%,
+            #ccd0d3 45%,
+            #f8f8f9 50%,
+            #ccd0d3 55%,
+            #a1a8ad 78%,
+            #758087 100%);
+}
+
+.bronze {
+    background-image: linear-gradient(to right,
+            #d0722c 0,
+            #e09f6e 22%,
+            #eecbb1 45%,
+            #fcf8f4 50%,
+            #eecbb1 55%,
+            #e09f6e 78%,
+            #d0722c 100%);
+}
 
 @media all and (max-width: 1000px) {
     button {
@@ -168,14 +320,15 @@ hr {
     }
 
 
-    #create_game, #add_word {
+    #create_game,
+    #add_word {
         margin-bottom: 5vh;
     }
 
     hr {
         margin-top: 5vh;
     }
-    
+
     input {
         width: 65%;
         height: 8vh;
@@ -185,7 +338,7 @@ hr {
         width: 100%;
     }
 
-    #players > li {
+    #players>li {
         font-size: 150%;
     }
 
@@ -198,12 +351,42 @@ hr {
         width: 40%;
     }
 
-    #wordsInPlay > li {
+    #wordsInPlay>li {
         width: 100%;
     }
 
-    #wordsInPlay > li > p {
+    #wordsInPlay>li>p {
         border: none;
         border-radius: 0px;
+    }
+
+    .dropdown {
+        width: 100%;
+    }
+
+    .dropbtn {
+        width: 100%;
+        height: 6vh;
+    }
+
+    .dropdown-content {
+        width: 100%;
+    }
+
+    .banner {
+        width: 100%;
+    }
+
+    .banner > ul {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .score {
+        margin-right: 20px;
+    }
+
+    .team {
+        margin-left: 10px;
     }
 }

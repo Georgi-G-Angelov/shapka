@@ -58,6 +58,9 @@ async function fetchGameState() {
 
             console.log(gameState);
             if (gameState.is_game_finished) {
+                if (getEndpoint() != "results") {
+                    showResults();
+                }
                 fillResults();
             } else {
                 fill_all_game_mode();
@@ -121,10 +124,10 @@ function fillTurnPlayerMessage() {
 
 function fillTeams() {
     gameState.teams.forEach(team => {
-        var ul = document.getElementById("teams");
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(team[0] + " and " + team[1]));
-        ul.appendChild(li);
+        var teams = document.getElementById("teamsList");
+        var p = document.createElement("p");
+        p.appendChild(document.createTextNode(team[0] + " and " + team[1]));
+        teams.appendChild(p);
     });
 }
 
@@ -361,7 +364,7 @@ async function nextRound() {
 }
 
 function cleanDOM() {
-    document.getElementById("teams").innerHTML = '';
+    document.getElementById("teamsList").innerHTML = '';
     document.getElementById("wordsInPlay").innerHTML = '';
 
     document.getElementById("toggleTimer").style.display = "none";

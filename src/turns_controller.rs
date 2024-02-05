@@ -135,7 +135,7 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
         if guessed_word.eq(word) {
             // Update guessed words per round per team
             let round: i32 = game_state.round;
-            let team_index: i32 = game_state.team_member_to_team_index.get(name).unwrap().to_be();
+            let team_index: i32 = game_state.team_member_to_team_index.get(name).unwrap().to_owned();
             let words_per_team = game_state.words_guessed_per_team_per_round.get_mut(&round).unwrap();
             if !words_per_team.contains_key(&team_index) {
                 words_per_team.insert(team_index, Vec::new());
