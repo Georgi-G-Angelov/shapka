@@ -56,6 +56,7 @@ function join_game() {
             window.location.href = getHostUrl() + "/await/" + gameId + '/' + name;
         } else {
             console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
+            document.getElementById("message").textContent = errorMessage;
         }
     });
 }
