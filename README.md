@@ -6,4 +6,4 @@ Features:
 - delete games
 - only allow the host to use the host page
 - if the host goes to await page, redirect them to host page
-- slider for words limit
+- slider for words limit (maybe also random button)
