@@ -40,13 +40,27 @@ function fill_players() {
 }
 
 function startGame() {
+    let responseOk;
+    let responseStatus;
     fetch(getHostUrl() + "/start_game/" + getGameId(), {
-        method: "GET",
-        })
-        .then(response => response.text())
-        .then(data => {
-            console.log("data is: " + data);
-        });
+    method: "GET",
+    })
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (!responseOk) {
+            let errorMessage = data;
+            console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
+            document.getElementById("message").textContent = errorMessage;
+        }
+    })
+    .catch(error => {
+        console.log(error);
+    });
 }
 
 function add_word() {

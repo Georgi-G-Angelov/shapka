@@ -24,6 +24,7 @@ function create_game() {
         } else {
             let errorMessage = data;
             console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
+            document.getElementById("message").textContent = errorMessage;
         }
     })
     .catch(error => {
