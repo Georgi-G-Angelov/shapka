@@ -9,3 +9,4 @@ Features:
 - slider for words limit (maybe also random button)
 - custom time limit
 - maybe max players?
+- num rounds for sure
