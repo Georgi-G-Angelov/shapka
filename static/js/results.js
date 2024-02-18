@@ -56,7 +56,7 @@ function fillResults() {
     }
     teamScoresWithIndex.sort(function(left, right) {
         return left[0] < right[0] ? -1 : 1;
-    });
+    }).reverse();
     let teamsScoresIndices = [];
     teamScores = [];
     for (let i in teamScoresWithIndex) {
