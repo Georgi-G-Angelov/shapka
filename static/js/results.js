@@ -63,6 +63,8 @@ function fillResults() {
         teamScores.push(teamScoresWithIndex[i][0]);
         teamsScoresIndices.push(teamScoresWithIndex[i][1]);
     }
+    console.log(teamScoresWithIndex);
+    console.log(teamsScoresIndices);
 
     // build DOM
     // for (let i = 0; i < gameState.teams.length; i++) {
