@@ -49,7 +49,7 @@ function fillResults() {
 
 
     // Get teams in order of scores
-    teamsScores = teamScoresCopy;
+    teamScores = teamScoresCopy;
     teamScoresWithIndex = [];
     for(let i = 0; i < teamScores.length; i++) {
         teamScoresWithIndex.push([teamScores[i], i]);
