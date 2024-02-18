@@ -78,5 +78,7 @@ function add_word() {
             console.log("data is: " + data);
             
             document.getElementById("message").textContent = data;
+
+            document.getElementById("word").value = "";
         });
 }
