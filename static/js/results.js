@@ -38,8 +38,8 @@ function fillResults() {
         for (let j = 0; j < teamScoresCopy.length; j++) {
             if (teamScoresCopy[j] == teamScores[i]) {
                 winners[j] = winnerClasses[i];
+                teamsAwarded += 1;
             }
-            teamsAwarded += 1;
         }
         if (teamsAwarded >= 3) {
             break;
