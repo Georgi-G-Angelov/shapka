@@ -21,6 +21,16 @@ function fillResults() {
     let teamScoresCopy = teamScores.slice();
     // teamScores.sort().reverse();
     // teamScores = teamScores.sort();
+
+    function compareDecimals(a, b) {
+        if (a === b) 
+             return 0;
+    
+        return a < b ? -1 : 1;
+    }
+
+    teamScores.sort(compareDecimals).reverse();
+
     console.log("team scores copy: " + teamScoresCopy);
     console.log("team scores: " + teamScores);
     let teamsAwarded = 0;
