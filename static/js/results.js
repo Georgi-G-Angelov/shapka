@@ -19,6 +19,7 @@ function fillResults() {
     let winnerClasses = ["gold", "silver", "bronze"] // Gold, silver, bronze
     let winners = {};
     let teamScoresCopy = teamsScores.slice();
+    console.log("team scores: " + teamScoresCopy);
     teamsScores.sort().reverse();
     let teamsAwarded = 0;
     for(let i = 0; i < 3; i++) {
