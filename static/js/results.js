@@ -41,9 +41,9 @@ function fillResults() {
             }
             teamsAwarded += 1;
         }
-        // if (teamsAwarded >= 3) {
-        //     break;
-        // }
+        if (teamsAwarded >= 3) {
+            break;
+        }
     }
     console.log(winners);
 
