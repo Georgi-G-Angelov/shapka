@@ -48,8 +48,25 @@ function fillResults() {
     console.log(winners);
 
 
+    // Get teams in order of scores
+    teamsScores = teamScoresCopy;
+    teamScoresWithIndex = [];
+    for(let i = 0; i < teamScores.length; i++) {
+        teamScoresWithIndex.push([teamScores[i], i]);
+    }
+    teamScoresWithIndex.sort(function(left, right) {
+        return left[0] < right[0] ? -1 : 1;
+    });
+    let teamsScoresIndices = [];
+    teamScores = [];
+    for (let i in teamScoresWithIndex) {
+        teamScores.push(teamScoresWithIndex[i][0]);
+        teamsScoresIndices.push(teamScoresWithIndex[i][1]);
+    }
+
     // build DOM
-    for (let i = 0; i < gameState.teams.length; i++) {
+    // for (let i = 0; i < gameState.teams.length; i++) {
+    for (let i = 0; i < teamsScoresIndices.length; i++) {
         let team = gameState.teams[i];
         let perTeamElement = document.createElement("div");
         perTeamElement.classList.add("banner");
