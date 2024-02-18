@@ -53,12 +53,13 @@ function fillResults() {
         let resultsPerRound = document.createElement("ul");
         let totalWords = 0;
         for (let j = 1; j <= NUM_ROUNDS; j++) {
-            totalWords += gameState.words_guessed_per_team_per_round[j][i].length;
-            let numWordsForRoundMessage = `Round ${j} (${gameState.words_guessed_per_team_per_round[j][i].length} words): ${gameState.words_guessed_per_team_per_round[j][i].join(", ")}`;
-            let perRoundHeader = document.createElement("h4");
-            perRoundHeader.appendChild(document.createTextNode(numWordsForRoundMessage))
-            resultsPerRound.appendChild(perRoundHeader);
-
+            if (totalWords += gameState.words_guessed_per_team_per_round[j][i].length != undefined) {
+                totalWords += gameState.words_guessed_per_team_per_round[j][i].length;
+                let numWordsForRoundMessage = `Round ${j} (${gameState.words_guessed_per_team_per_round[j][i].length} words): ${gameState.words_guessed_per_team_per_round[j][i].join(", ")}`;
+                let perRoundHeader = document.createElement("h4");
+                perRoundHeader.appendChild(document.createTextNode(numWordsForRoundMessage))
+                resultsPerRound.appendChild(perRoundHeader);
+            }
             // let perRoundWords = document.createElement("div");
             // perRoundWords.appendChild(document.createTextNode(gameState.words_guessed_per_team_per_round[j][0].join(", ")));
             // perRoundHeader.appendChild(perRoundWords);
