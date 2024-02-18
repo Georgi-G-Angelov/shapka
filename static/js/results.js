@@ -34,16 +34,16 @@ function fillResults() {
     console.log("team scores copy: " + teamScoresCopy);
     console.log("team scores: " + teamScores);
     let teamsAwarded = 0;
-    for(let i = 0; i < 3; i++) {
+    for(let i = 0; i < teamScores.length; i++) {
         for (let j = 0; j < teamScoresCopy.length; j++) {
             if (teamScoresCopy[j] == teamScores[i]) {
                 winners[j] = winnerClasses[i];
             }
             teamsAwarded += 1;
         }
-        if (teamsAwarded >= 3) {
-            break;
-        }
+        // if (teamsAwarded >= 3) {
+        //     break;
+        // }
     }
     console.log(winners);
 
