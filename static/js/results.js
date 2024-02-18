@@ -8,7 +8,9 @@ function fillResults() {
     for (let i = 0; i < gameState.teams.length; i++) {
         let totalWords = 0;
         for (let j = 1; j <= NUM_ROUNDS; j++) {
-            totalWords += gameState.words_guessed_per_team_per_round[j][i].length;
+            if (gameState.words_guessed_per_team_per_round[j][i] != undefined) {
+                totalWords += gameState.words_guessed_per_team_per_round[j][i].length;
+            }
         }
         teamsScores.push(totalWords);
     };
