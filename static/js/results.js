@@ -4,7 +4,7 @@ function fillResults() {
     let teamsList = document.getElementById("results");
 
     // Score calculation
-    let teamsScores = []
+    let teamScores = []
     for (let i = 0; i < gameState.teams.length; i++) {
         let totalWords = 0;
         for (let j = 1; j <= NUM_ROUNDS; j++) {
@@ -12,20 +12,20 @@ function fillResults() {
                 totalWords += gameState.words_guessed_per_team_per_round[j][i].length;
             }
         }
-        teamsScores.push(totalWords);
+        teamScores.push(totalWords);
     };
 
-    // Get top 3 teams
+    // Get top 3 teams // doesnt work
     let winnerClasses = ["gold", "silver", "bronze"] // Gold, silver, bronze
     let winners = {};
-    let teamScoresCopy = teamsScores.slice();
-    teamScoresCopy.sort().reverse();
+    let teamScoresCopy = teamScores.slice();
+    teamScores.sort().reverse();
     console.log("team scores copy: " + teamScoresCopy);
-    console.log("team scores: " + teamsScores);
+    console.log("team scores: " + teamScores);
     let teamsAwarded = 0;
     for(let i = 0; i < 3; i++) {
         for (let j = 0; j < teamScoresCopy.length; j++) {
-            if (teamScoresCopy[j] == teamsScores[i]) {
+            if (teamScoresCopy[j] == teamScores[i]) {
                 winners[j] = winnerClasses[i];
             }
             teamsAwarded += 1;
@@ -37,7 +37,7 @@ function fillResults() {
     console.log(winners);
 
 
-
+    // build DOM
     for (let i = 0; i < gameState.teams.length; i++) {
         let team = gameState.teams[i];
         let perTeamElement = document.createElement("div");
