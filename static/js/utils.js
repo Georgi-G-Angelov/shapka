@@ -17,7 +17,8 @@ function getHostUrl() {
 // Only works if URL ends with /<player-name>
 function getPlayerName() {
     let currentLocation = window.location.href;
-    return currentLocation.substring(currentLocation.lastIndexOf('/') + 1);
+    let nameInURLFormat = currentLocation.substring(currentLocation.lastIndexOf('/') + 1);
+    return decodeURI(nameInURLFormat);
 }
 
 // Only works if URL ends with /<game-id>/<player-name>
