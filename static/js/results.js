@@ -20,7 +20,7 @@ function fillResults() {
     let winners = {};
     let teamScoresCopy = teamsScores.slice();
     console.log("team scores: " + teamScoresCopy);
-    teamsScores.sort().reverse();
+    teamScoresCopy.sort().reverse();
     let teamsAwarded = 0;
     for(let i = 0; i < 3; i++) {
         for (let j = 0; j < teamScoresCopy.length; j++) {
