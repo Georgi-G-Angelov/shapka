@@ -68,7 +68,8 @@ function fillResults() {
 
     // build DOM
     // for (let i = 0; i < gameState.teams.length; i++) {
-    for (let i = 0; i < teamsScoresIndices.length; i++) {
+    for (let j = 0; j < teamsScoresIndices.length; j++) {
+        let i = teamsScoresIndices[j];
         let team = gameState.teams[i];
         let perTeamElement = document.createElement("div");
         perTeamElement.classList.add("banner");
