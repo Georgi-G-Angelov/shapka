@@ -53,7 +53,7 @@ function fillResults() {
         let resultsPerRound = document.createElement("ul");
         let totalWords = 0;
         for (let j = 1; j <= NUM_ROUNDS; j++) {
-            if (totalWords += gameState.words_guessed_per_team_per_round[j][i].length != undefined) {
+            if (totalWords += gameState.words_guessed_per_team_per_round[j][i] != undefined) {
                 totalWords += gameState.words_guessed_per_team_per_round[j][i].length;
                 let numWordsForRoundMessage = `Round ${j} (${gameState.words_guessed_per_team_per_round[j][i].length} words): ${gameState.words_guessed_per_team_per_round[j][i].join(", ")}`;
                 let perRoundHeader = document.createElement("h4");
