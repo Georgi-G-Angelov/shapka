@@ -11,6 +11,8 @@ const NEXT_ROUND_EVENT = "next_round";
 const GREEN = "#48f542";
 const RED = "#f00202";
 
+const MESSAGE_DURATION_ON_SCREEN = 2000; // milliseconds
+
 // Globals
 let messageElementTimeout = undefined;
 
@@ -179,7 +181,7 @@ function showMessageElement(message, borderColor) {
     messageElement.style.borderColor = borderColor;
 
     clearTimeout(messageElementTimeout);
-    messageElementTimeout = setTimeout(hideMessageElement, 1000);
+    messageElementTimeout = setTimeout(hideMessageElement, MESSAGE_DURATION_ON_SCREEN);
 }
 
 function hideMessageElement() {
