@@ -120,7 +120,7 @@ function subscribe(uri) {
         });
 
         events.addEventListener("open", () => {
-            // setConnectedStatus(true);
+            // setConnectedStatus(true); // TODO resurrect this
             console.log(`connected to event stream at ${uri}`);
             retryTime = 1;
         });

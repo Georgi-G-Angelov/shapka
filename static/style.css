@@ -318,6 +318,7 @@ hr {
     min-height: 40px;
     font-weight: bold;
     border: 2px solid red;
+    border-radius: 10px;
     background-color: azure;
     position: fixed;
     top: -45px;
