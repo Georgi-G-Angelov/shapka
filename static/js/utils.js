@@ -8,6 +8,12 @@ const NUM_ROUNDS = 3;
 const NEXT_TURN_EVENT = "next_turn";
 const NEXT_ROUND_EVENT = "next_round";
 
+const GREEN = "#48f542";
+const RED = "#f00202";
+
+// Globals
+let messageElementTimeout = undefined;
+
 // -----------------------------------------------
 // Data from URL utils
 function getHostUrl() {
@@ -156,4 +162,28 @@ function home() {
 
 function toggleTeams() {
     document.getElementById("teamsList").classList.toggle("show");
+}
+
+function showError(errorMessage) {
+    showMessageElement(errorMessage, RED);
+}
+
+function showMessage(message) {
+    showMessageElement(message, GREEN);
+}
+
+function showMessageElement(message, borderColor) {
+    let messageElement = document.getElementById("message");
+    messageElement.textContent = message;
+    messageElement.style.top = "30px";
+    messageElement.style.borderColor = borderColor;
+
+    clearTimeout(messageElementTimeout);
+    messageElementTimeout = setTimeout(hideMessageElement, 1000);
+}
+
+function hideMessageElement() {
+    let messageElement = document.getElementById("message");
+    // messageElement.textContent = "";
+    messageElement.style.top = "-50px";
 }

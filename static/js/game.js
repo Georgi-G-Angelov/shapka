@@ -248,6 +248,7 @@ async function fetchWord() {
             hideTimerAndFetchWordButtons();
         } else {
             console.log(data);
+            showError(data);
             console.log(responseStatus);
         }
     });

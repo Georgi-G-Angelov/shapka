@@ -313,6 +313,24 @@ hr {
             #d0722c 100%);
 }
 
+#message {
+    width: 250px;
+    min-height: 40px;
+    font-weight: bold;
+    border: 2px solid red;
+    background-color: azure;
+    position: fixed;
+    top: -45px;
+    margin-top: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #3B1433;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: top 0.3s linear;
+}
+
 @media all and (max-width: 1000px) {
     button {
         width: 50%;

@@ -21,7 +21,6 @@ function fill_players() {
         .then(data => {
             console.log("data is: " + data);
             
-            // Simulate an HTTP redirect:
             if (data.includes(',')) {
                 players = data.split(',');
                 players.forEach(player => {
@@ -55,7 +54,7 @@ function startGame() {
         if (!responseOk) {
             let errorMessage = data;
             console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
-            document.getElementById("message").textContent = errorMessage;
+            showError(errorMessage);
         }
     })
     .catch(error => {
@@ -65,20 +64,34 @@ function startGame() {
 
 function add_word() {
     var word = document.getElementById("word").value.trim();
-    if (word == "" || containsWhitespaceOrPunctuation(word)) {
-        document.getElementById("message").textContent = word + " contains whitespace or punctuation";
+    if (word == "") {
         return;
     }
 
+    if (containsWhitespaceOrPunctuation(word)) {
+        document.getElementById("message").textContent = word + " contains whitespace or punctuation";
+        showError(word + " contains whitespace or punctuation");
+        return;
+    }
+
+    let responseOk;
+    let responseStatus;
     fetch(getHostUrl() + "/add_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
         method: "GET",
         })
+        .then(function(response) {
+            responseOk = response.ok;
+            responseStatus = response.status;
+            return response;
+        })
         .then(response => response.text())
         .then(data => {
+            if (responseOk) {
+                showMessage(data);
+                document.getElementById("word").value = "";
+            } else {
+                showError(data);
+            }
             console.log("data is: " + data);
-            
-            document.getElementById("message").textContent = data;
-
-            document.getElementById("word").value = "";
         });
 }
