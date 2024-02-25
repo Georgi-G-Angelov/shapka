@@ -276,8 +276,13 @@ hr {
     float: right;
 }
 
+#top-banner {
+    border-radius: 25px 25px 0 0;
+}
+
 #results {
     color: azure;
+    border-radius: 0 0 25px 25px;
 }
 
 .gold {
@@ -441,7 +446,7 @@ hr {
     }
 
     .banner {
-        width: 100%;
+        width: 90%;
     }
 
     .banner > ul {
