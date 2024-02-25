@@ -11,9 +11,12 @@
     <script src="../../js/game.js" charset="utf-8" defer></script>
   </head>
   <body onload="fetchGameState()">
+    <div id="status" class="pending"></div>
+    <div id="statusMessage">pending</div>
+
     <img src="/shapka-logo.png" id="logo" onclick="home()">
-    <h1 id="gameId">game id</h1>
-    <h3 id="turnPlayer">turn player message</h3>
+    <h1 id="gameId"></h1>
+    <h3 id="turnPlayer"></h3>
 
     <div class="dropdown" id="teams">
       <button onclick="toggleTeams()" class="dropbtn">Teams</button>

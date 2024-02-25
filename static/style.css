@@ -318,7 +318,7 @@ hr {
     min-height: 40px;
     font-weight: bold;
     border: 2px solid red;
-    border-radius: 10px;
+    /* border-radius: 10px; */
     background-color: azure;
     position: fixed;
     top: -45px;
@@ -330,6 +330,54 @@ hr {
     justify-content: center;
     align-items: center;
     transition: top 0.3s linear;
+}
+
+#status {
+    /* padding: 5px 10px; */
+    text-align: center;
+    /* font-size: 12px; */
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    border-radius: 20px;
+    border: 3px solid black;
+    width: 20px;
+    height: 20px;
+}
+
+/* #status.pending::before {
+  content: "status: pending";
+} */
+
+#status.pending {
+    background-color: yellow;
+    color: #000;
+}
+
+/* #status.connected::before {
+  content: "status: connected";
+} */
+
+#status.connected {
+    background-color: #48f542;
+    color: #fff;
+}
+
+/* #status.reconnecting::before {
+  content: "status: reconnecting";
+} */
+
+#status.reconnecting {
+    background-color: red;
+    color: #fff;
+}
+
+#statusMessage {
+    position: fixed;
+    top: 14px;
+    left: 40px;
+    font-weight: bold;
+    font-size: 12px;
 }
 
 @media all and (max-width: 1000px) {

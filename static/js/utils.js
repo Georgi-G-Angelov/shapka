@@ -124,13 +124,13 @@ function subscribe(uri) {
         });
 
         events.addEventListener("open", () => {
-            // setConnectedStatus(true); // TODO resurrect this
+            setConnectedStatus(true);
             console.log(`connected to event stream at ${uri}`);
             retryTime = 1;
         });
 
         events.addEventListener("error", () => {
-            // setConnectedStatus(false);
+            setConnectedStatus(false);
             events.close();
 
             let timeout = retryTime;
@@ -193,3 +193,11 @@ function hideMessageElement() {
     // messageElement.textContent = "";
     messageElement.style.top = "-50px";
 }
+
+function setConnectedStatus(status) {
+    // STATE.connected = status;
+    let statusDiv = document.getElementById("status");
+    statusDiv.className = (status) ? "connected" : "reconnecting";
+    let statusMessageDiv = document.getElementById("statusMessage");
+    statusMessageDiv.textContent = (status) ? "connected" : "reconnecting";
+  }
