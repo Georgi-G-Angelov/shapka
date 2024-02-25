@@ -286,6 +286,10 @@ hr {
     text-align: center;
 }
 
+#bot-space {
+    min-height: 20px;
+}
+
 #results {
     color: azure;
 }
