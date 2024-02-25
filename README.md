@@ -3,7 +3,6 @@ to run in separate background shell:
 screen -d -m cargo run
 
 Features:
-- leave game
 - undo guess word
 - delete games
 - only allow the host to use the host page
