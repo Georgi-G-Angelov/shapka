@@ -13,6 +13,10 @@ const RED = "#f00202";
 
 const MESSAGE_DURATION_ON_SCREEN = 2000; // milliseconds
 
+var noCacheHeaders = new Headers();
+noCacheHeaders.append('pragma', 'no-cache');
+noCacheHeaders.append('cache-control', 'no-cache');
+
 // Globals
 let messageElementTimeout = undefined;
 

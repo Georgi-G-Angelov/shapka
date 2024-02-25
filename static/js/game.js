@@ -231,6 +231,7 @@ async function fetchWord() {
 
     await fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
+        headers: noCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -264,6 +265,7 @@ function guessWord(word) {
 
     fetch(getHostUrl() + "/guess_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
         method: "GET",
+        headers: noCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -337,6 +339,7 @@ function showNextTurnButton() {
 async function nextTurn() {
     fetch(getHostUrl() + "/next_turn/" + getGameId(), {
         method: "GET",
+        headers: noCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -352,12 +355,13 @@ async function nextTurn() {
 async function nextRound() {
     fetch(getHostUrl() + "/next_round/" + getGameId(), {
         method: "GET",
+        headers: noCacheHeaders
     })
-    .then(function(response) {
-        responseOk = response.ok;
-        responseStatus = response.status;
-        return response;
-    })
+    // .then(function(response) {       // Might need this later to check if next round returned successfully, also potentially refresh page if it did return correctly but the next turn didn't start for the current player
+    //     responseOk = response.ok;
+    //     responseStatus = response.status;
+    //     return response;
+    // })
     .then(response => response.text())
     .then(data => {
         console.log(data);

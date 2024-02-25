@@ -9,7 +9,8 @@ function create_game() {
     let responseOk;
     let responseStatus;
     fetch(getHostUrl() + "/create_game/" + name + "/" + wordLimit, {
-    method: "GET",
+        method: "GET",
+        headers: noCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -43,7 +44,8 @@ function join_game() {
     let responseOk;
     let responseStatus;
     fetch(getHostUrl() + "/join_game/" + gameId + "/" + name, {
-    method: "GET",
+        method: "GET",
+        headers: noCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
