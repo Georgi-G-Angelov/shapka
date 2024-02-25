@@ -51,3 +51,33 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
         Err(BadRequest(Some("Game not found".to_owned())))
     }
 }
+
+#[get("/leave_game/<game_id>/<name>")]
+pub async fn leave_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+    if games.contains_key(&game_id) {
+        let game = games.get(&game_id).unwrap();
+        let mut players = game.players.lock().unwrap();
+
+        if !players.contains(&name.to_string()) {
+            Err(BadRequest(Some("Player not in game".to_owned())))
+        } else {
+            // remove player, probably exists much easier way
+            let mut player_index: usize = 0;
+            for i in 0..players.len() {
+                if players.get(i).unwrap() == name {
+                    player_index = i;
+                    break;
+                }
+            }
+            players.remove(player_index);
+
+            let mut event: String = PLAYER_LEFT_EVENT_PREFIX.to_owned();
+            event.push_str(name);
+
+            let _res = game.game_events.send(event.to_string());
+            Ok(content::RawJson(game_id.to_string()))
+        }
+    } else {
+        Err(BadRequest(Some("Game not found".to_owned())))
+    }
+}

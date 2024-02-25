@@ -6,6 +6,7 @@ pub const MAX_WORDS_PER_PLAYER: usize = 7;
 pub const NUM_ROUNDS: i32 = 3;
 
 pub const NEW_PLAYER_EVENT_PREFIX: &str = "new_player:";
+pub const PLAYER_LEFT_EVENT_PREFIX: &str = "player_left:";
 pub const TIMER_UPDATE_EVENT_PREFIX: &str = "timer_update:";
 pub const OUT_OF_WORDS_EVENT: &str = "out_of_words";
 pub const NEXT_TURN_EVENT: &str = "next_turn";

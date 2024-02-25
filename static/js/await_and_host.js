@@ -64,6 +64,33 @@ function startGame() {
     });
 }
 
+function leaveGame() {
+    let responseOk;
+    let responseStatus;
+    fetch(getHostUrl() + "/leave_game/" + getGameId() + "/" + getPlayerName(), {
+        method: "GET",
+        headers: noCacheHeaders
+    })
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (!responseOk) {
+            let errorMessage = data;
+            console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
+            showError(errorMessage);
+        } else {
+            window.location.href = getHostUrl();
+        }
+    })
+    .catch(error => {
+        console.log(error);
+    });
+}
+
 function add_word() {
     var word = document.getElementById("word").value.trim();
     if (word == "") {

@@ -1,5 +1,6 @@
 // Constants
 const NEW_PLAYER_PREFIX = "new_player:";
+const PLAYER_LEFT_PREFIX = "player_left:";
 const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
 const OUT_OF_WORDS_EVENT = "out_of_words";
@@ -130,6 +131,16 @@ function subscribe(uri) {
             } else if (message == NEXT_TURN_EVENT || message == NEXT_ROUND_EVENT) {
                 cleanDOM();
                 fetchGameState();
+            } else if (message.startsWith(PLAYER_LEFT_PREFIX)) {
+                let player = message.substring(PLAYER_LEFT_PREFIX.length);
+
+                let allListElements = document.getElementsByTagName("li");
+                for (i = 0; i < allListElements.length; i++) {
+                    if (allListElements[i].textContent == player && allListElements[i].parentNode.id == "players") {
+                        allListElements[i].parentNode.removeChild(allListElements[i]);
+                        break;
+                    }
+                }
             }
         });
 

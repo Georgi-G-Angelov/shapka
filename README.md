@@ -1,4 +1,6 @@
 # shapka
+to run in separate background shell:
+screen -d -m cargo run
 
 Features:
 - leave game
