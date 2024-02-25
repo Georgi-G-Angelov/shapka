@@ -68,6 +68,16 @@ function isPunct(char) {
     return ";:.,?!-'\"(){}".includes(char);
 }
 
+function containsDigits(word) {
+    for(i = 0; i < word.length; i++) {
+        let char = word.charAt(i);
+        if (char >= '0' && char <= '9') {
+            return true;
+        }
+    }
+    return false;
+}
+
 function getPossesiveNoun(name) {
     if (name.toLowerCase().endsWith('s')) {
         return name + "'";

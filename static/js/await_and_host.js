@@ -76,6 +76,11 @@ function add_word() {
         return;
     }
 
+    if (containsDigits(word)) {
+        showError(word + " contains digits");
+        return;
+    }
+
     let responseOk;
     let responseStatus;
     fetch(getHostUrl() + "/add_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
