@@ -3,7 +3,7 @@ use rocket::State;
 use rocket::response::content;
 
 use chashmap::CHashMap;
-use string_builder::Builder;
+use json::object;
 
 use crate::models::game::Game;
 
@@ -11,18 +11,14 @@ use crate::models::game::Game;
 pub async fn fetch_players(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
-        let mut builder = Builder::default();
-        
         let players = game.players.lock().unwrap();
 
-        for i in 0..players.len() {
-            builder.append(players[i].as_str());
-            if i < players.len() - 1 {
-                builder.append(",");
-            }
-        }
-        
-        Ok(content::RawJson(builder.string().unwrap()))
+        let response = object! {
+            players: players.to_vec(),
+            host: game.host_name.to_owned()
+        };
+
+        Ok(content::RawJson(response.dump()))
     } else {
         Err(NotFound("Game not found".to_owned()))
     }

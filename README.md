@@ -12,3 +12,4 @@ Features:
 - maybe max players?
 - num rounds for sure
 - jwt auth
+- frond end improvements

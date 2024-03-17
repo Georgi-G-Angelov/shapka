@@ -21,21 +21,21 @@ function fill_players() {
         .then(response => response.text())
         .then(data => {
             console.log("data is: " + data);
+            data = JSON.parse(data);
+
+            // Make sure the host uses the host page and the other players use the await page
+            if (getEndpoint() == AWAIT_ENDPOINT && getPlayerName() == data.host) {
+                window.location.href = getHostUrl() + "/" + HOST_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
+            } else if (getEndpoint() == HOST_ENDPOINT && getPlayerName() != data.host) {
+                window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
+            }
             
-            if (data.includes(',')) {
-                players = data.split(',');
-                players.forEach(player => {
-                    var ul = document.getElementById("players");
-                    var li = document.createElement("li");
-                    li.appendChild(document.createTextNode(player));
-                    ul.appendChild(li);
-                });
-            } else {
+            data.players.forEach(player => {
                 var ul = document.getElementById("players");
                 var li = document.createElement("li");
-                li.appendChild(document.createTextNode(data));
+                li.appendChild(document.createTextNode(player));
                 ul.appendChild(li);
-            }
+            });
         });
 }
 

@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use rocket::tokio::sync::broadcast::channel;
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+use guid_create::GUID;
 
 use crate::constants::{NUM_ROUNDS, TIMER_START_VALUE};
 
@@ -15,7 +16,9 @@ pub struct Game {
     pub words: Mutex<Vec<String>>,
     pub words_per_player_limit: usize,
     pub num_words_per_player: Mutex<HashMap<String, usize>>,
-    pub game_state: Mutex<GameState>
+    pub game_state: Mutex<GameState>,
+    pub host_name: String,
+    pub auth_secret: String
 }
 
 #[derive(Serialize)]
@@ -46,7 +49,9 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
         words: Mutex::new(vec![]),
         words_per_player_limit,
         num_words_per_player: Mutex::new(HashMap::new()),
-        game_state: Mutex::new(init_game_state())
+        game_state: Mutex::new(init_game_state()),
+        host_name: owner_name.to_owned(),
+        auth_secret: GUID::rand().to_string() // generate random string to use for auth tokens for players
     };
     game.players
         .lock()
