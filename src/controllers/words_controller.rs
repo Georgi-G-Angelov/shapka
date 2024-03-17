@@ -25,6 +25,6 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
 
         Ok(content::RawJson("Word added: ".to_owned() + word))
     } else {
-        Err(BadRequest(Some("You can't add more words".to_owned())))
+        Err(BadRequest("You can't add more words".to_owned()))
     }
 }

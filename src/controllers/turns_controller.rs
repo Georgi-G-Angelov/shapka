@@ -20,12 +20,12 @@ pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Res
         let players = &game.players;
 
         if players.lock().unwrap().len() % 2 != 0 {
-            return Err(BadRequest(Some("Game cannot start with an odd number of players".to_owned())));
+            return Err(BadRequest("Game cannot start with an odd number of players".to_owned()));
         }
 
         if game.words.lock().unwrap().len() <
                 players.lock().unwrap().len() * game.words_per_player_limit {
-            return Err(BadRequest(Some("Players still need to add words".to_owned())));
+            return Err(BadRequest("Players still need to add words".to_owned()));
         }
 
         init_teams(game_state, players);
@@ -42,7 +42,7 @@ pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Res
 
         Ok(content::RawJson(game_id.to_string()))
     } else {
-        Err(BadRequest(Some("Game not found".to_owned())))
+        Err(BadRequest("Game not found".to_owned()))
     }
 }
 
@@ -77,7 +77,7 @@ pub async fn update_timer_state(game_id: i32, millis: i32, turn_active: bool, ro
 
         Ok(content::RawJson(millis.to_string()))
     } else {
-        Err(BadRequest(Some("Game not found".to_owned())))
+        Err(BadRequest("Game not found".to_owned()))
     }
 }
 
@@ -88,11 +88,11 @@ pub async fn fetch_word_to_guess(game_id: i32, name: &str, games: &State<CHashMa
         let game_state = &game.game_state;
 
         if !game_state.lock().unwrap().turn_player.eq(name) {
-            return Err(BadRequest(Some("You are not the turn player".to_owned())));
+            return Err(BadRequest("You are not the turn player".to_owned()));
         }
 
         if game_state.lock().unwrap().words_in_play.len() >= MAX_WORDS_IN_PLAY {
-            return Err(BadRequest(Some("You already have enough words in play".to_owned())));
+            return Err(BadRequest("You already have enough words in play".to_owned()));
         }
 
         let maybe_word = game_state.lock().unwrap().words_to_guess.pop();
@@ -104,9 +104,9 @@ pub async fn fetch_word_to_guess(game_id: i32, name: &str, games: &State<CHashMa
             return Ok(content::RawJson(word_copy));
         }
 
-        Err(BadRequest(Some("No words left".to_owned())))
+        Err(BadRequest("No words left".to_owned()))
     } else {
-        Err(BadRequest(Some("Game not found".to_owned())))
+        Err(BadRequest("Game not found".to_owned()))
     }
 }
 
@@ -117,11 +117,11 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
         let game_state: &mut MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
 
         if !game_state.turn_player.eq(name) {
-            return Err(BadRequest(Some("You are not the turn player".to_owned())));
+            return Err(BadRequest("You are not the turn player".to_owned()));
         }
 
         if !game_state.words_in_play.contains(&word.to_string()) {
-            return Err(BadRequest(Some("This word is not in play".to_owned())));
+            return Err(BadRequest("This word is not in play".to_owned()));
         }
 
         let mut guessed_word: String = "".to_string();
@@ -156,9 +156,9 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
             return Ok(content::RawJson(guessed_word))
         }
 
-        Err(BadRequest(Some("No words left".to_owned())))
+        Err(BadRequest("No words left".to_owned()))
     } else {
-        Err(BadRequest(Some("Game not found".to_owned())))
+        Err(BadRequest("Game not found".to_owned()))
     }
 }
 

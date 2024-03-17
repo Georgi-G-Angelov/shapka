@@ -17,7 +17,7 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
     let mut rng = rand::thread_rng();
 
     if word_limit < MIN_WORDS_PER_PLAYER || word_limit > MAX_WORDS_PER_PLAYER {
-        return Err(BadRequest(Some("Word limit per player is either too high or too low.".to_owned())));
+        return Err(BadRequest("Word limit per player is either too high or too low.".to_owned()));
     }
 
     // Init id
@@ -39,7 +39,7 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
         let mut players = game.players.lock().unwrap();
 
         if players.contains(&name.to_string()) {
-            Err(BadRequest(Some("Name already exists".to_owned())))
+            Err(BadRequest("Name already exists".to_owned()))
         } else {
             players.push(name.to_string());
 
@@ -55,7 +55,7 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
             Ok(content::RawJson(game_id.to_string()))
         }
     } else {
-        Err(BadRequest(Some("Game not found".to_owned())))
+        Err(BadRequest("Game not found".to_owned()))
     }
 }
 
@@ -66,7 +66,7 @@ pub async fn leave_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Ga
         let mut players = game.players.lock().unwrap();
 
         if !players.contains(&name.to_string()) {
-            Err(BadRequest(Some("Player not in game".to_owned())))
+            Err(BadRequest("Player not in game".to_owned()))
         } else {
             // remove player, probably exists much easier way
             let mut player_index: usize = 0;
@@ -85,6 +85,6 @@ pub async fn leave_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Ga
             Ok(content::RawJson(game_id.to_string()))
         }
     } else {
-        Err(BadRequest(Some("Game not found".to_owned())))
+        Err(BadRequest("Game not found".to_owned()))
     }
 }
