@@ -1,9 +1,11 @@
+use crate::auth::utils::generate_token;
 use crate::models::game::init_game;
 use crate::models::game::Game;
 use crate::constants::*;
 
 use chashmap;
 use chashmap::CHashMap;
+use json::object;
 use rand::Rng;
 
 use rocket::response::status::BadRequest;
@@ -45,6 +47,11 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
             event.push_str(name);
 
             let _res = game.game_events.send(event.to_string());
+
+            let response = object! {
+                gameId: game_id.to_string(),
+                token: generate_token(game_id, name.to_string(), game.auth_secret.to_string())
+            };
             Ok(content::RawJson(game_id.to_string()))
         }
     } else {

@@ -1,5 +1,6 @@
 #[macro_use] extern crate rocket;
 
+mod auth;
 mod models;
 use models::game::*;
 mod controllers;
