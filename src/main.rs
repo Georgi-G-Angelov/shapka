@@ -1,19 +1,14 @@
 #[macro_use] extern crate rocket;
 
-mod game;
-use game::*;
-mod game_init_controller;
-use game_init_controller::*;
-mod home_pages_controller;
-use home_pages_controller::*;
-mod players_controller;
-use players_controller::*;
-mod words_controller;
-use words_controller::*;
-mod game_events_controller;
-use game_events_controller::*;
-mod turns_controller;
-use turns_controller::*;
+mod models;
+use models::game::*;
+mod controllers;
+use controllers::game_events_controller::*;
+use controllers::game_init_controller::*;
+use controllers::pages_controller::*;
+use controllers::players_controller::*;
+use controllers::turns_controller::*;
+use controllers::words_controller::*;
 mod constants;
 
 use rocket::{Rocket, Build};

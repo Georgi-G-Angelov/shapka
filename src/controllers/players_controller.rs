@@ -5,7 +5,7 @@ use rocket::response::content;
 use chashmap::CHashMap;
 use string_builder::Builder;
 
-use crate::game::Game;
+use crate::models::game::Game;
 
 #[get("/fetch_players/<game_id>")]
 pub async fn fetch_players(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {

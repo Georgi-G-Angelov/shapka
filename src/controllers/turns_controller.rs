@@ -10,7 +10,7 @@ use rand::seq::SliceRandom;
 use chashmap::CHashMap;
 
 use crate::GameState;
-use crate::{constants::*, game::{Game, init_teams}};
+use crate::{constants::*, models::game::{Game, init_teams}};
 
 #[get("/start_game/<game_id>")]
 pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {

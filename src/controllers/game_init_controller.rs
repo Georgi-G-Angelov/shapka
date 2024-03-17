@@ -1,5 +1,5 @@
-use crate::Game;
-use crate::game::init_game;
+use crate::models::game::init_game;
+use crate::models::game::Game;
 use crate::constants::*;
 
 use chashmap;

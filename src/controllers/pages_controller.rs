@@ -2,7 +2,7 @@ use std::path::Path;
 use chashmap::CHashMap;
 use rocket::{fs::NamedFile, State};
 
-use crate::game::Game;
+use crate::models::game::Game;
 
 #[get("/")]
 pub async fn home() -> Option<NamedFile> {

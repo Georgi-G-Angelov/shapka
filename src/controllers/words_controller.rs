@@ -4,7 +4,7 @@ use rocket::response::content;
 
 use chashmap::CHashMap;
 
-use crate::game::Game;
+use crate::models::game::Game;
 
 #[get("/add_word/<game_id>/<name>/<word>")]
 pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {

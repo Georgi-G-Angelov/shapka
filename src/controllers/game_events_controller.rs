@@ -5,7 +5,7 @@ use rocket::tokio::select;
 
 use chashmap::CHashMap;
 
-use crate::game::Game;
+use crate::models::game::Game;
 
 /// Returns an infinite stream of server-sent events.
 #[get("/gameevents/<game_id>")]

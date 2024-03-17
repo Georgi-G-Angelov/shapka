@@ -11,3 +11,4 @@ Features:
 - custom time limit
 - maybe max players?
 - num rounds for sure
+- jwt auth
