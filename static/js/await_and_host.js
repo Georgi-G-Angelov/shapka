@@ -110,9 +110,11 @@ function add_word() {
 
     let responseOk;
     let responseStatus;
+    console.log(authNoCacheHeaders.get(AUTHORIZATION_HEADER));
+    console.log(localStorage.getItem(AUTH_TOKEN_KEY));
     fetch(getHostUrl() + "/add_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
             method: "GET",
-            headers: noCacheHeaders
+            headers: authNoCacheHeaders
         })
         .then(function(response) {
             responseOk = response.ok;

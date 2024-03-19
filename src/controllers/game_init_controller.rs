@@ -26,10 +26,16 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
         id = rng.gen_range(0..MAX_GAME_ID);
     }
 
-    let game = init_game(id, player_name, word_limit);
+    let game: Game = init_game(id, player_name, word_limit);
+    let auth_secret: String = game.auth_secret.to_string();
     games.insert(id, game);
 
-    Ok(content::RawJson(format!("{}",id)))
+    let response = object! {
+        gameId: id,
+        authToken: generate_token(id, player_name.to_string(), auth_secret)
+    };
+
+    Ok(content::RawJson(response.to_string()))
 }
 
 #[get("/join_game/<game_id>/<name>")]
@@ -49,10 +55,11 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
             let _res = game.game_events.send(event.to_string());
 
             let response = object! {
-                gameId: game_id.to_string(),
-                token: generate_token(game_id, name.to_string(), game.auth_secret.to_string())
+                gameId: game_id,
+                authToken: generate_token(game_id, name.to_string(), game.auth_secret.to_string())
             };
-            Ok(content::RawJson(game_id.to_string()))
+        
+            Ok(content::RawJson(response.to_string()))
         }
     } else {
         Err(BadRequest("Game not found".to_owned()))

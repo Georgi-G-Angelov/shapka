@@ -20,7 +20,12 @@ function create_game() {
     .then(response => response.text())
     .then(data => {
         if (responseOk) {
-            let gameId = data;
+            console.log(data);
+            data = JSON.parse(data);
+            let gameId = data.gameId;
+            let authToken = data.authToken;
+            localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+            // TODO: store auth token
             window.location.href = getHostUrl() + "/host/" + gameId + '/' + name;
         } else {
             let errorMessage = data;
@@ -53,6 +58,14 @@ function join_game() {
         return response;
     })
     .then(response => response.text())
+    .then(data => {
+        // TODO: store auth token
+        console.log(data);
+        data = JSON.parse(data);
+        // let gameId = data.gameId;
+        let authToken = data.authToken;
+        localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+    })
     .then(errorMessage => {
         if (responseOk) {
             window.location.href = getHostUrl() + "/await/" + gameId + '/' + name;

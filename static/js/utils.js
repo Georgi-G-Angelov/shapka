@@ -17,9 +17,15 @@ const MESSAGE_DURATION_ON_SCREEN = 2000; // milliseconds
 const AWAIT_ENDPOINT = "await";
 const HOST_ENDPOINT = "host";
 
+const AUTH_TOKEN_KEY = "authToken";
+const AUTHORIZATION_HEADER = "Authorization";
+
 var noCacheHeaders = new Headers();
 noCacheHeaders.append('pragma', 'no-cache');
 noCacheHeaders.append('cache-control', 'no-cache');
+
+var authNoCacheHeaders = new Headers(noCacheHeaders);
+authNoCacheHeaders.append(AUTHORIZATION_HEADER, localStorage.getItem(AUTH_TOKEN_KEY));
 
 // Globals
 let messageElementTimeout = undefined;

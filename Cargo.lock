@@ -1058,6 +1058,7 @@ dependencies = [
  "chashmap",
  "guid-create",
  "json",
+ "lazy_static",
  "num-derive",
  "num-traits",
  "rand 0.8.5",

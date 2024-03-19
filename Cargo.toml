@@ -4,6 +4,7 @@ version = "0.0.0"
 edition = "2021"
 
 [dependencies]
+lazy_static = "1.4"
 rocket = { version = "0.5.0", features = ["json"] }
 rand = "0.8"
 chashmap = "2.2.2"
