@@ -15,6 +15,9 @@ serde_json = { version = "1.0.111" }
 string-builder = "0.2.0"
 guid-create = "0.3.1"
 json = "0.12.4"
+jwt = "0.16.0"
+hmac = "0.12.1"
+sha2 = "0.10.8"
 
 [dev-dependencies]
 rand = "0.8"

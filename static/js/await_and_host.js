@@ -1,4 +1,6 @@
 function fill_all() {
+    authorize();
+
     fill_game_id();
     fill_players();
 
@@ -7,6 +9,20 @@ function fill_all() {
     console.log(getPlayerName());
     console.log(getHostUrl());
     console.log(getGameId());
+}
+
+function authorize() {
+    fetch(getHostUrl() + "/authorize/" + getGameId() + "/" + getPlayerName(), {
+        method: "GET",
+        headers: authNoCacheHeaders
+    })
+    .then(function(response) {
+        if (response.status == 401) {
+            window.location.href = getHostUrl() + "/" + "unauthorized";
+        } else if (response.status == 403 || response.status == 500) {
+            window.location.href = getHostUrl() + "/" + "forbidden";
+        }
+    })
 }
 
 function fill_game_id() {
@@ -110,7 +126,6 @@ function add_word() {
 
     let responseOk;
     let responseStatus;
-    console.log(authNoCacheHeaders.get(AUTHORIZATION_HEADER));
     console.log(localStorage.getItem(AUTH_TOKEN_KEY));
     fetch(getHostUrl() + "/add_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
             method: "GET",

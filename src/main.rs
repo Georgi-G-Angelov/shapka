@@ -3,8 +3,7 @@
 mod auth;
 use auth::authenticator::*;
 mod models;
-use auth::utils::forbidden;
-use auth::utils::unauthorized;
+use auth::utils::*;
 use models::game::*;
 mod controllers;
 use controllers::game_events_controller::*;
@@ -30,7 +29,7 @@ fn rocket() -> Rocket<Build> {
         .mount("/", routes![home, create_game, create,
                             join_game, join, host, await_game, in_game, fetch_players,
                             game_events, add_word, start_game, fetch_game_state, update_timer_state,
-                            fetch_word_to_guess, guess_word, next_turn, next_round, results, leave_game, forbidden, unauthorized])
+                            fetch_word_to_guess, guess_word, next_turn, next_round, results, leave_game, forbidden, unauthorized, authorize])
         .mount("/", FileServer::from(relative!("static")))
         .attach(authenticator)
 }

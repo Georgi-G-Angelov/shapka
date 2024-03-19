@@ -18,7 +18,9 @@ impl Authenticator {
         let _unauthorized = Origin::parse(UNAUTHORIZED_URI).unwrap();
 
         let mut endpoints_to_authenticate = HashSet::new();
-        endpoints_to_authenticate.insert("add_word".to_owned());
+        endpoints_to_authenticate.insert("add_word".to_string());
+        // endpoints_to_authenticate.insert("host".to_string());
+        endpoints_to_authenticate.insert("authorize".to_string());
         Self {
             endpoints_to_authenticate
         }
@@ -66,7 +68,6 @@ impl Fairing for Authenticator {
             // If token is invalid, route to 403
             let game_auth_secret: String = games.get(&game_id).unwrap().auth_secret.to_owned();
             let token: String = headers.get(AUTHORIZATION.as_str()).next().unwrap().to_string();
-            println!("Token supplied: {}", token);
             if !authorize_token(token, game_id, player_name.to_owned(), game_auth_secret) {
                 request.set_uri(Origin::parse(FORBIDDEN_URI).unwrap());
             }
