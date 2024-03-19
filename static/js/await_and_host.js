@@ -32,7 +32,7 @@ function fill_game_id() {
 function fill_players() { 
     fetch(getHostUrl() + "/fetch_players/" + getGameId(), {
             method: "GET",
-            headers: noCacheHeaders
+            headers: authNoCacheHeaders
         })
         .then(response => response.text())
         .then(data => {
@@ -60,7 +60,7 @@ function startGame() {
     let responseStatus;
     fetch(getHostUrl() + "/start_game/" + getGameId(), {
         method: "GET",
-        headers: noCacheHeaders
+        headers: authNoCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -85,7 +85,7 @@ function leaveGame() {
     let responseStatus;
     fetch(getHostUrl() + "/leave_game/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
-        headers: noCacheHeaders
+        headers: authNoCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;

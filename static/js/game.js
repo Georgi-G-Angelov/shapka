@@ -47,8 +47,11 @@ var timerDeltaSinceLastServerUpdate; // we need to update the server every aroun
 var isConnectedToEvents = false;
 
 async function fetchGameState() {
+    authorize();
+
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
         method: "GET",
+        headers: authNoCacheHeaders
     })
         .then(response => response.text())
         .then(data => {
@@ -214,6 +217,7 @@ async function updateTimerState(millis) {
 
     fetch(getHostUrl() + "/update_timer_state/" + getGameId() + "/" + millis + "/" + gameState.is_turn_active + "/" + gameState.is_round_active + "/" + gameState.round, {
         method: "GET",
+        headers: authNoCacheHeaders
     })
     .then(response => response.text())
     .then(data => {
@@ -231,7 +235,7 @@ async function fetchWord() {
 
     await fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
-        headers: noCacheHeaders
+        headers: authNoCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -265,7 +269,7 @@ function guessWord(word) {
 
     fetch(getHostUrl() + "/guess_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
         method: "GET",
-        headers: noCacheHeaders
+        headers: authNoCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -339,7 +343,7 @@ function showNextTurnButton() {
 async function nextTurn() {
     fetch(getHostUrl() + "/next_turn/" + getGameId(), {
         method: "GET",
-        headers: noCacheHeaders
+        headers: authNoCacheHeaders
     })
     .then(function(response) {
         responseOk = response.ok;
@@ -355,7 +359,7 @@ async function nextTurn() {
 async function nextRound() {
     fetch(getHostUrl() + "/next_round/" + getGameId(), {
         method: "GET",
-        headers: noCacheHeaders
+        headers: authNoCacheHeaders
     })
     // .then(function(response) {       // Might need this later to check if next round returned successfully, also potentially refresh page if it did return correctly but the next turn didn't start for the current player
     //     responseOk = response.ok;

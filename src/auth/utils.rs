@@ -21,7 +21,7 @@ pub fn generate_token(game_id: i32, player_name: String, game_auth_secret: Strin
     return token;
 }
 
-pub fn authorize_token(token: String, game_id: i32, player_name: String, game_auth_secret: String) -> bool {
+pub fn authorize_token(token: String, game_id: i32, maybe_player_name: Option<&str>, game_auth_secret: String, authorize_player_name: bool) -> bool {
     let key: Hmac<Sha256> = Hmac::new_from_slice(game_auth_secret.as_bytes())
         .expect(format!("Could not create key for secret {}", game_auth_secret).as_str());
 
@@ -32,7 +32,14 @@ pub fn authorize_token(token: String, game_id: i32, player_name: String, game_au
     }
 
     let claims: BTreeMap<String, String> = maybe_claims.unwrap();
-    return claims[GAME_ID_KEY] == game_id.to_string() && claims[PLAYER_NAME_KEY] == player_name;
+
+    if maybe_player_name.is_some() && authorize_player_name {
+        return claims[GAME_ID_KEY] == game_id.to_string() && claims[PLAYER_NAME_KEY] == maybe_player_name.unwrap();
+    } else if !authorize_player_name {
+        return claims[GAME_ID_KEY] == game_id.to_string();
+    }
+
+    return false;
 }
 
 #[get("/forbidden")]

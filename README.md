@@ -12,3 +12,4 @@ Features:
 - jwt auth
 - frond end improvements
 - allow host to kick players
+- leave game is broken if player has added words
