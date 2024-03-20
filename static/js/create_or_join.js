@@ -25,6 +25,7 @@ function create_game() {
             let gameId = data.gameId;
             let authToken = data.authToken;
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+            document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
             // TODO: store auth token
             window.location.href = getHostUrl() + "/host/" + gameId + '/' + name;
         } else {
@@ -65,6 +66,7 @@ function join_game() {
         // let gameId = data.gameId;
         let authToken = data.authToken;
         localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+        document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
     })
     .then(errorMessage => {
         if (responseOk) {
