@@ -116,6 +116,8 @@ function integerToTwoDigits(integer) {
 function subscribe(uri) {
     var retryTime = 1;
     console.log(uri);
+    uri = uri.replace("https://", "http://");
+
     function connect(uri) {
         const events = new EventSource(uri);
 
