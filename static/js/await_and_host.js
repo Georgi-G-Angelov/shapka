@@ -41,9 +41,9 @@ function fill_players() {
 
             // Make sure the host uses the host page and the other players use the await page
             if (getEndpoint() == AWAIT_ENDPOINT && getPlayerName() == data.host) {
-                window.location.href = getHostUrl() + "/" + HOST_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
+                window.location.replace = getHostUrl() + "/" + HOST_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             } else if (getEndpoint() == HOST_ENDPOINT && getPlayerName() != data.host) {
-                window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
+                window.location.replace = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             }
             
             data.players.forEach(player => {
