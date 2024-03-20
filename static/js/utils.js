@@ -115,7 +115,7 @@ function integerToTwoDigits(integer) {
 // Subscribe to the event source at `uri` with exponential backoff reconnect.
 function subscribe(uri) {
     var retryTime = 1;
-  
+    console.log(uri);
     function connect(uri) {
         const events = new EventSource(uri);
 
