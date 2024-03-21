@@ -14,6 +14,8 @@ use controllers::turns_controller::*;
 use controllers::words_controller::*;
 mod constants;
 
+use rocket::fairing::AdHoc;
+use rocket::http::Header;
 use rocket::{Rocket, Build};
 use rocket::fs::{relative, FileServer};
 
@@ -32,4 +34,8 @@ fn rocket() -> Rocket<Build> {
                             fetch_word_to_guess, guess_word, next_turn, next_round, results, leave_game, forbidden, unauthorized, authorize])
         .mount("/", FileServer::from(relative!("static")))
         .attach(authenticator)
+        .attach(AdHoc::on_response("No buffering", |_, res| Box::pin(async move {
+            let header = Header::new("X-Accel-Buffering", "no");
+            res.set_header(header);
+        })))
 }
