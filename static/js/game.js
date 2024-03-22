@@ -47,8 +47,6 @@ var timerDeltaSinceLastServerUpdate; // we need to update the server every aroun
 var isConnectedToEvents = false;
 
 async function fetchGameState() {
-    authorize();
-
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
         method: "GET",
         headers: authNoCacheHeaders
