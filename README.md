@@ -1,5 +1,6 @@
 # shapka
 to run in separate background shell:
+fuser -k 8000/tcp
 screen -d -m cargo run
 
 to set up ssl:
@@ -26,4 +27,4 @@ Features:
 - allow host to kick players
 - leave game is broken if player has added words
 - auth not ideal, going back a page still does let's you enter another person's view. Buttons still don't work though, but start game will work
-
+- errors on joining or creating currently broken on frontend

@@ -1,6 +1,4 @@
 function fill_all() {
-    authorize();
-
     fill_game_id();
     fill_players();
 
@@ -9,20 +7,6 @@ function fill_all() {
     console.log(getPlayerName());
     console.log(getHostUrl());
     console.log(getGameId());
-}
-
-function authorize() {
-    fetch(getHostUrl() + "/authorize/" + getGameId() + "/" + getPlayerName(), {
-        method: "GET",
-        headers: authNoCacheHeaders
-    })
-    .then(function(response) {
-        if (response.status == 401) {
-            window.location.href = getHostUrl() + "/" + "unauthorized";
-        } else if (response.status == 403 || response.status == 500) {
-            window.location.href = getHostUrl() + "/" + "forbidden";
-        }
-    })
 }
 
 function fill_game_id() {
@@ -41,9 +25,9 @@ function fill_players() {
 
             // Make sure the host uses the host page and the other players use the await page
             if (getEndpoint() == AWAIT_ENDPOINT && getPlayerName() == data.host) {
-                window.location.replace = getHostUrl() + "/" + HOST_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
+                window.location.href = getHostUrl() + "/" + HOST_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             } else if (getEndpoint() == HOST_ENDPOINT && getPlayerName() != data.host) {
-                window.location.replace = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
+                window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             }
             
             data.players.forEach(player => {

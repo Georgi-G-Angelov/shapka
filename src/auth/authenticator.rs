@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use chashmap::CHashMap;
 use rocket::{fairing::{Fairing, Info, Kind}, http::{hyper::header::AUTHORIZATION, uri::Origin}, serde::json::from_str, Data, Request};
 
-use crate::Game;
+use crate::{Game, AUTHORIZATION_HEADER_NAME};
 
 use super::utils::{authorize_token, FORBIDDEN_URI, UNAUTHORIZED_URI};
 
@@ -24,7 +24,10 @@ impl Authenticator {
             "authorize",
             "leave_game",
             "fetch_word",
-            "guess_word"
+            "guess_word",
+            "host",
+            "await",
+            "game"
         ];
         let auth_endpoints_with_player_name: HashSet<String> =
             HashSet::from_iter(
@@ -83,25 +86,30 @@ impl Fairing for Authenticator {
             let game_id = from_str::<i32>(game_id_str).unwrap(); // if game_id in request uri is not an integer, the request should crash anyway
             let maybe_player_name: Option<&str> = request.uri().path().segments().get(2);
 
-            // If game id is not present or player is not present in game, don't do anything // Need to think about this
+            // If game id is not present or player is not present in game, don't do anything // Need to think about this, maybe add not found page
             // Error will be handled by controller
             if !games.contains_key(&game_id) {
             // if !games.contains_key(&game_id) || !games.get(&game_id).unwrap().players.lock().unwrap().contains(&player_name.to_owned()) {
                 return;
             }
 
-            // Check authentication token
+            // Check authorization token
             let headers = request.headers();
+            let maybe_token_in_headers: Option<&str> = headers.get(AUTHORIZATION.as_str()).next();
+            let maybe_token_in_cookies: Option<&rocket::http::Cookie<'_>> = request.cookies().get(AUTHORIZATION_HEADER_NAME);
 
-            // If there is no token, route to 401
-            if !headers.contains(AUTHORIZATION) {
+            let token: String;
+            if maybe_token_in_headers.is_some() {
+                token = maybe_token_in_headers.unwrap().to_string();
+            } else if maybe_token_in_cookies.is_some() {
+                token = maybe_token_in_cookies.unwrap().value().to_string();
+            } else { // If there is no token, route to 401
                 request.set_uri(Origin::parse(UNAUTHORIZED_URI).unwrap());
                 return;
             }
 
             // If token is invalid, route to 403
             let game_auth_secret: String = games.get(&game_id).unwrap().auth_secret.to_owned();
-            let token: String = headers.get(AUTHORIZATION.as_str()).next().unwrap().to_string();
             if !authorize_token(token, game_id, maybe_player_name, game_auth_secret, should_authorize_player_name) {
                 request.set_uri(Origin::parse(FORBIDDEN_URI).unwrap());
             }

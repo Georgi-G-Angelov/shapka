@@ -1,10 +1,10 @@
 use rocket::response::status;
-use rocket::response::content;
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
 use sha2::Sha256;
 use std::collections::BTreeMap;
 
+pub const AUTHORIZATION_HEADER_NAME: &str = "Authorization";
 pub const FORBIDDEN_URI: &str = "/forbidden";
 pub const UNAUTHORIZED_URI: &str = "/unauthorized";
 const GAME_ID_KEY: &str = "gameId";
@@ -50,9 +50,4 @@ pub async fn forbidden() -> status::Forbidden<&'static str>{
 #[get("/unauthorized")]
 pub async fn unauthorized() -> status::Unauthorized<&'static str>{
     status::Unauthorized("Unauthorized request. Please provide autherization token")
-}
-
-#[get("/authorize/<game_id>/<name>")]
-pub async fn authorize(game_id: i32, name: &str) -> content::RawJson<String> {
-    content::RawJson(format!("Authorized for game {} and player {}", game_id, name))
 }

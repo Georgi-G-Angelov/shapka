@@ -31,11 +31,11 @@ fn rocket() -> Rocket<Build> {
         .mount("/", routes![home, create_game, create,
                             join_game, join, host, await_game, in_game, fetch_players,
                             game_events, add_word, start_game, fetch_game_state, update_timer_state,
-                            fetch_word_to_guess, guess_word, next_turn, next_round, results, leave_game, forbidden, unauthorized, authorize])
+                            fetch_word_to_guess, guess_word, next_turn, next_round, results, leave_game, forbidden, unauthorized])
         .mount("/", FileServer::from(relative!("static")))
         .attach(authenticator)
         .attach(AdHoc::on_response("No buffering", |_, res| Box::pin(async move {
-            let header = Header::new("X-Accel-Buffering", "no");
+            let header = Header::new("X-Accel-Buffering", "no"); // We need to return this header from server to make sure SSE works with SSL through nginx
             res.set_header(header);
         })))
 }
