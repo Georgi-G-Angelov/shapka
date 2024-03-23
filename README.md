@@ -22,9 +22,8 @@ Features:
 - custom time limit
 - maybe max players?
 - num rounds for sure
-- jwt auth
 - frond end improvements
 - allow host to kick players
 - leave game is broken if player has added words
-- auth not ideal, going back a page still does let's you enter another person's view. Buttons still don't work though, but start game will work
 - errors on joining or creating currently broken on frontend
+- generally fix players missing SSEs - important for start of game, and switching turns, and ending game
