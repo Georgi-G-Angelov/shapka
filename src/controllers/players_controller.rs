@@ -7,6 +7,8 @@ use json::object;
 
 use crate::models::game::Game;
 
+// After creating or joining a game, the players will use this to check all players in the game
+// Returns a json with the list of players, and the name of the host, or a plain text error message
 #[get("/fetch_players/<game_id>")]
 pub fn fetch_players(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
     if games.contains_key(&game_id) {

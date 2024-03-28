@@ -25,4 +25,4 @@ Features:
 - frond end improvements
 - allow host to kick players
 - leave game is broken if player has added words
-- generally fix players missing SSEs - important for start of game, and switching turns, and ending game
+- generally fix players missing SSEs - fixed for start of game, not for switching turns, and ending game

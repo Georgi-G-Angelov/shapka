@@ -9,6 +9,7 @@ use guid_create::GUID;
 
 use crate::constants::{NUM_ROUNDS, TIMER_START_VALUE};
 
+// Basic struct for a game, mostly used before a game has started
 pub struct Game {
     pub id: i32,
     pub game_events: Sender<String>,
@@ -21,6 +22,7 @@ pub struct Game {
     pub auth_secret: String
 }
 
+// State of a game with all details needed to run the turns
 #[derive(Serialize)]
 pub struct GameState {
     pub timer: i32, // number from 0 to TIMER_START_VALUE
@@ -41,6 +43,7 @@ pub struct GameState {
     pub has_game_started: bool
 }
 
+// Initialize game with the owner (host) name and a word limit per player
 pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Game {
     let (tx, _) = channel::<String>(1024);
     let game = Game {
@@ -62,6 +65,7 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
     return game;
 }
 
+// Initialize the game state
 pub fn init_game_state() -> GameState {
     let mut words_guessed_per_team_per_round: HashMap<i32, HashMap<i32, Vec<String>>> = HashMap::new();
     for i in 1..NUM_ROUNDS+1 {
@@ -88,16 +92,19 @@ pub fn init_game_state() -> GameState {
     }
 }
 
+// Initialize the teams given a list of players
 pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
 
-    // start game
+    // start game - since this is called when the game starts, we also mark it as started here
     game_state.lock().unwrap().has_game_started = true;
 
+    // shuffle players
     players
         .lock()
         .unwrap()
         .shuffle(&mut thread_rng());
 
+    // each team has a first and second player
     let mut first_players: Vec<String> = Vec::new();
     let mut second_players: Vec<String> = Vec::new();
 

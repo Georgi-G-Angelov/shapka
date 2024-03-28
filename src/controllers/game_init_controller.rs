@@ -12,6 +12,8 @@ use rocket::response::status::BadRequest;
 use rocket::State;
 use rocket::response::content;
 
+// Creates a game given a player name and a word limit (per player)
+// Returns a json with the game id and the generated auth token for this player
 #[get("/create_game/<player_name>/<word_limit>")]
 pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>>{
     let mut rng = rand::thread_rng();
@@ -40,6 +42,9 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
     Ok(content::RawJson(response.to_string()))
 }
 
+// When a player wants to join the game, they must supply a valid game id and their name
+// Returns a json with the game id and the generated auth token for this player
+// or plain text error if game id is not found or player name in this game already exists
 #[get("/join_game/<game_id>/<name>")]
 pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
     if games.contains_key(&game_id) {
@@ -51,9 +56,9 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
         } else {
             players.push(name.to_string());
 
+            // Tell all other people in the game that a new player has joined
             let mut event: String = NEW_PLAYER_EVENT_PREFIX.to_owned();
             event.push_str(name);
-
             let _res = game.game_events.send(event.to_string());
 
             let response = object! {
@@ -68,6 +73,8 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
     }
 }
 
+// A player who is not the host can leave the game
+// Currently broken - if player has added words and then leaves the game, his words will stay
 #[get("/leave_game/<game_id>/<name>")]
 pub async fn leave_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
     if games.contains_key(&game_id) {
@@ -87,6 +94,7 @@ pub async fn leave_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Ga
             }
             players.remove(player_index);
 
+            // Tell all other people in the game that a player has left
             let mut event: String = PLAYER_LEFT_EVENT_PREFIX.to_owned();
             event.push_str(name);
 

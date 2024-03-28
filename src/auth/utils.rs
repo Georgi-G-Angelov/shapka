@@ -10,6 +10,9 @@ pub const UNAUTHORIZED_URI: &str = "/unauthorized";
 const GAME_ID_KEY: &str = "gameId";
 const PLAYER_NAME_KEY: &str = "playerName";
 
+
+// Generates a token using the id of the game, the name of the player, and a random secret generated per game
+// Guarantees (whp) to be unique for every player
 pub fn generate_token(game_id: i32, player_name: String, game_auth_secret: String) -> String {
     let mut claims = BTreeMap::new();
     claims.insert(GAME_ID_KEY, game_id.to_string());
@@ -21,6 +24,9 @@ pub fn generate_token(game_id: i32, player_name: String, game_auth_secret: Strin
     return token;
 }
 
+// Checks if the token provided is valid for the game id, player name and the game secret
+// If the player name is not provided, we don't care who the player is
+// This is the case for some endpoints which return non-player-specific information
 pub fn authorize_token(token: String, game_id: i32, maybe_player_name: Option<&str>, game_auth_secret: String, authorize_player_name: bool) -> bool {
     let key: Hmac<Sha256> = Hmac::new_from_slice(game_auth_secret.as_bytes())
         .expect(format!("Could not create key for secret {}", game_auth_secret).as_str());
@@ -41,6 +47,9 @@ pub fn authorize_token(token: String, game_id: i32, maybe_player_name: Option<&s
 
     return false;
 }
+
+// Two additional endpoints to route to if an unauthorized or forbidden request is made
+// Return plain error messages
 
 #[get("/forbidden")]
 pub async fn forbidden() -> status::Forbidden<&'static str>{
