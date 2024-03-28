@@ -16,8 +16,10 @@ use rocket::response::content;
 pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>>{
     let mut rng = rand::thread_rng();
 
-    if word_limit < MIN_WORDS_PER_PLAYER || word_limit > MAX_WORDS_PER_PLAYER {
-        return Err(BadRequest("Word limit per player is either too high or too low.".to_owned()));
+    if word_limit < MIN_WORDS_PER_PLAYER {
+        return Err(BadRequest("Word limit per player is either too low.".to_owned()));
+    } else if word_limit > MAX_WORDS_PER_PLAYER {
+        return Err(BadRequest("Word limit per player is either too high.".to_owned()));
     }
 
     // Init id

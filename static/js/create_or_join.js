@@ -60,20 +60,20 @@ function join_game() {
     })
     .then(response => response.text())
     .then(data => {
-        // TODO: store auth token
+
         console.log(data);
-        data = JSON.parse(data);
-        // let gameId = data.gameId;
-        let authToken = data.authToken;
-        localStorage.setItem(AUTH_TOKEN_KEY, authToken);
-        document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
-    })
-    .then(errorMessage => {
+
         if (responseOk) {
+            data = JSON.parse(data);
+            // let gameId = data.gameId;
+            let authToken = data.authToken;
+            localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+            document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
+
             window.location.href = getHostUrl() + "/await/" + gameId + '/' + name;
         } else {
-            console.log(`Request ended with status ${responseStatus} and error "${errorMessage}"`);
-            showError(errorMessage);
+            console.log(`Request ended with status ${responseStatus} and error "${data}"`);
+            showError(data);
         }
-    });
+    })
 }
