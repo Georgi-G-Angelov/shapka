@@ -42,7 +42,8 @@ impl Authenticator {
             "fetch_game_state",
             "update_timer_state",
             "next_turn",
-            "next_round"
+            "next_round",
+            "has_game_started"
         ];
         let auth_endpoints_without_player_name: HashSet<String> =
             HashSet::from_iter(

@@ -37,7 +37,8 @@ pub struct GameState {
     pub round: i32, // from 1 to 3
     pub is_turn_active: bool,
     pub is_round_active: bool,
-    pub is_game_finished: bool
+    pub is_game_finished: bool,
+    pub has_game_started: bool
 }
 
 pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Game {
@@ -82,11 +83,16 @@ pub fn init_game_state() -> GameState {
         round: 1,
         is_turn_active: false,
         is_round_active: true,
-        is_game_finished: false
+        is_game_finished: false,
+        has_game_started: false
     }
 }
 
 pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<String>>) {
+
+    // start game
+    game_state.lock().unwrap().has_game_started = true;
+
     players
         .lock()
         .unwrap()

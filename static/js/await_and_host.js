@@ -1,3 +1,30 @@
+function fillAllAwait() {
+    fill_all();
+
+    pollForHasGameStarted();
+}
+
+function fillAllHost() {
+    fill_all();
+
+    pollForHasGameStarted();
+}
+
+function pollForHasGameStarted() {
+    setInterval(function() {
+        fetch(getHostUrl() + "/has_game_started/" + getGameId(), {
+            method: "GET",
+            headers: authNoCacheHeaders
+        })
+        .then(response => response.text())
+        .then(data => {
+            if (data == "true") {
+                window.location.href = getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName();
+            }
+        });
+    }, 5000) // every 5 seconds check if game has started
+}
+
 function fill_all() {
     fill_game_id();
     fill_players();

@@ -46,6 +46,18 @@ pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Res
     }
 }
 
+#[get("/has_game_started/<game_id>")]
+pub async fn has_game_started(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+    if games.contains_key(&game_id) {
+        let game = games.get(&game_id).unwrap();
+        let has_game_started = &game.game_state.lock().unwrap().has_game_started;
+
+        Ok(content::RawJson(has_game_started.to_string()))
+    } else {
+        Err(BadRequest("Game not found".to_owned()))
+    }
+}
+
 #[get("/fetch_game_state/<game_id>")]
 pub async fn fetch_game_state(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
     if games.contains_key(&game_id) {

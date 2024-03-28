@@ -25,5 +25,4 @@ Features:
 - frond end improvements
 - allow host to kick players
 - leave game is broken if player has added words
-- errors on joining or creating currently broken on frontend
 - generally fix players missing SSEs - important for start of game, and switching turns, and ending game
