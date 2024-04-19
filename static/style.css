@@ -179,6 +179,7 @@ hr {
     border: none;
     cursor: pointer;
     width: 530px;
+    text-align: left;
 }
 
 /* Dropdown button on hover & focus */
@@ -392,6 +393,21 @@ hr {
     left: 40px;
     font-weight: bold;
     font-size: 12px;
+}
+
+.teamsMenuButton {
+    width: 35px;
+    height: 5px;
+    background-color: black;
+    margin: 6px 0;
+}
+
+.teamsMenuAllButtons {
+    display: inline-block;
+}
+
+#teamsText {
+    display: inline-block;
 }
 
 @media all and (max-width: 1000px) {

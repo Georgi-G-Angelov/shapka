@@ -23,6 +23,8 @@ Features:
 - maybe max players?
 - num rounds for sure
 - frond end improvements
+    kick players
+    teams menu is not very intuitive
 - allow host to kick players
 - leave game is broken if player has added words
 - generally fix players missing SSEs - fixed for start of game, not for switching turns, and ending game
