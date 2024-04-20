@@ -289,6 +289,34 @@ function guessWord(word) {
     });
 }
 
+function undoLastGuess(word) {
+    let responseOk;
+    let responseStatus;
+
+    fetch(getHostUrl() + "/undo_guess_word/" + getGameId() + "/" + getPlayerName(), {
+        method: "GET",
+        headers: authNoCacheHeaders
+    })
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        if (responseOk) {
+            removeWordInPlay(data);
+            if (!anyWordsInPlay()) {
+                fetchWord();
+            }
+        } else {
+            console.log(data);
+            console.log(responseStatus);
+        }
+    });
+}
+
 function addWordInPlay(word) {
     // Get list of words
     var ul = document.getElementById("wordsInPlay");
