@@ -163,7 +163,7 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
     }
 }
 
-#[get("/guess_word/<game_id>/<name>")]
+#[get("/undo_guess_word/<game_id>/<name>")]
 pub async fn undo_last_guess(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
     let game = match games.get(&game_id) {
         Some(game) => game,
@@ -183,7 +183,7 @@ pub async fn undo_last_guess(game_id: i32, name: &str, games: &State<CHashMap<i3
     };
 
     let words_per_team: &HashMap<i32, Vec<String>> = game_state.words_guessed_per_team_per_round.get(&round).ok_or_else(|| BadRequest("Round not found".to_owned()))?;
-    let mut guessed_words_by_player: &Vec<String> = words_per_team.get(&team_index).ok_or_else(|| BadRequest("Team index not found in round".to_owned()))?;
+    let mut guessed_words_by_player: Vec<String> = words_per_team.get(&team_index).ok_or_else(|| BadRequest("Team index not found in round".to_owned())).unwrap().to_vec();
 
     if guessed_words_by_player.is_empty() {
         return Err(BadRequest("No words guessed this round".to_owned()));
@@ -191,6 +191,9 @@ pub async fn undo_last_guess(game_id: i32, name: &str, games: &State<CHashMap<i3
 
     let last_word: String = guessed_words_by_player.last().cloned().ok_or_else(|| BadRequest("Failed to get last guessed word".to_owned()))?;
     guessed_words_by_player.pop();
+    game_state.words_guessed.pop();
+
+    game_state.words_in_play.push(last_word.clone());
     
     Err(BadRequest("Game not found".to_owned()))
 }
