@@ -78,9 +78,11 @@ function fill_all_game_mode() {
     if (gameState.turn_player == getPlayerName()) {
         document.getElementById("toggleTimer").style.display = "block";
         document.getElementById("fetchWord").style.display = "block";
+        document.getElementById("undoLastGuess").style.display = "block";
     } else {
         document.getElementById("toggleTimer").style.display = "none";
         document.getElementById("fetchWord").style.display = "none";
+        document.getElementById("undoLastGuess").style.display = "none";
         document.getElementById("nextTurn").style.display = "none";
         document.getElementById("nextRound").style.display = "none";
     }
@@ -406,4 +408,5 @@ function cleanDOM() {
     document.getElementById("fetchWord").style.display = "none";
     document.getElementById("nextTurn").style.display = "none";
     document.getElementById("nextRound").style.display = "none";
+    document.getElementById("undoLastGuess").style.display = "none";
 }
