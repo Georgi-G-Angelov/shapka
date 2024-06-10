@@ -3,6 +3,8 @@ to run in separate background shell:
 fuser -k 8000/tcp
 screen -d -m cargo run
 
+to fix 502 from nginx - restart nginx with "sudo service nginx restart"
+
 to set up ssl:
 https://www.youtube.com/watch?v=uSm3xepvUNM&ab_channel=TonyTeachesTech
 
