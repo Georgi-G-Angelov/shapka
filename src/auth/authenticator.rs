@@ -20,14 +20,14 @@ impl Authenticator {
 
         // Not the cleanest initialization buuut anyway
         let endpoints_with_player_name_vec = vec![
-            // "add_word",
-            // "authorize",
-            // "leave_game",
-            // "fetch_word",
-            // "guess_word",
-            // "host",
-            // "await",
-            // "game"
+            "add_word",
+            "authorize",
+            "leave_game",
+            "fetch_word",
+            "guess_word",
+            "host",
+            "await",
+            "game"
         ];
         let auth_endpoints_with_player_name: HashSet<String> =
             HashSet::from_iter(
