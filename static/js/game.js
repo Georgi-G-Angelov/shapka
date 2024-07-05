@@ -54,6 +54,8 @@ var currentTimerEndSound;
 
 var isConnectedToEvents = false;
 
+var awaitingNextTurn = false;
+
 async function fetchGameState() {
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
         method: "GET",
@@ -410,19 +412,24 @@ function playRandomTimerEnd() {
 async function nextTurn() {
     currentTimerEndSound.pause();
 
-    fetch(getHostUrl() + "/next_turn/" + getGameId(), {
-        method: "GET",
-        headers: authNoCacheHeaders
-    })
-    .then(function(response) {
-        responseOk = response.ok;
-        responseStatus = response.status;
-        return response;
-    })
-    .then(response => response.text())
-    .then(data => {
-        console.log(data);
-    });
+    if (!awaitingNextTurn) {
+        awaitingNextTurn = true;
+
+        fetch(getHostUrl() + "/next_turn/" + getGameId(), {
+            method: "GET",
+            headers: authNoCacheHeaders
+        })
+        .then(function(response) {
+            responseOk = response.ok;
+            responseStatus = response.status;
+            return response;
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            awaitingNextTurn = false;
+        });
+    }
 }
 
 async function nextRound() {
