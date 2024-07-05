@@ -173,6 +173,11 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
             // Update game state words guessed
             game_state.words_guessed.push(guessed_word.clone());
 
+            // Send event that a word was guessed
+            let mut event: String = WORD_GUESSED_EVENT_PREFIX.to_owned();
+            event.push_str(word);
+            let _ = game.game_events.send(event.to_string());
+
             // If there are no more words to guess, round is over
             if game_state.words_to_guess.len() == 0 && game_state.words_in_play.len() == 0 {
                 if game_state.round == NUM_ROUNDS {
