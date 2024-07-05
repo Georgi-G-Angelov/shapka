@@ -4,6 +4,7 @@ const PLAYER_LEFT_PREFIX = "player_left:";
 const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
 const WORD_GUESSED_PREFIX = "word_guessed:";
+const UNDO_GUESS_PREFIX = "undo_guess:";
 const OUT_OF_WORDS_EVENT = "out_of_words";
 const INITIAL_TIMER = 5000;
 const NUM_ROUNDS = 3;
@@ -154,6 +155,9 @@ function subscribe(uri) {
                 }
             } else if (message.startsWith(WORD_GUESSED_PREFIX)) {
                 wordsLeftInRound--;
+                updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
+            } else if (message.startsWith(UNDO_GUESS_PREFIX)) {
+                wordsLeftInRound++;
                 updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
             }
         });

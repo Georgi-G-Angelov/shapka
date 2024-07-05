@@ -9,6 +9,7 @@ pub const NEW_PLAYER_EVENT_PREFIX: &str = "new_player:";
 pub const PLAYER_LEFT_EVENT_PREFIX: &str = "player_left:";
 pub const TIMER_UPDATE_EVENT_PREFIX: &str = "timer_update:";
 pub const WORD_GUESSED_EVENT_PREFIX: &str = "word_guessed:";
+pub const UNDO_GUESS_EVENT_PREFIX: &str = "undo_guess:";
 pub const OUT_OF_WORDS_EVENT: &str = "out_of_words";
 pub const NEXT_TURN_EVENT: &str = "next_turn";
 pub const NEXT_ROUND_EVENT: &str = "next_round";
