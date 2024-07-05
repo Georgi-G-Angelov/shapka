@@ -52,9 +52,11 @@ var timerEndSoundsPaths = [
 var hasTimerEndedOnPageLoad = false;
 var currentTimerEndSound;
 
+// Random globals
 var isConnectedToEvents = false;
-
 var awaitingNextTurn = false;
+var wordsLeftInRound;
+var totalNumWords;
 
 async function fetchGameState() {
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
@@ -128,6 +130,11 @@ function fill_all_game_mode() {
     }
 
     initializeTimerSounds();
+
+    // Update words left in round element
+    wordsLeftInRound = gameState.words_in_play.length + gameState.words_to_guess.length;
+    totalNumWords = wordsLeftInRound + gameState.words_guessed.length;
+    updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
 }
 
 function initializeTimerSounds() {

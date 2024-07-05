@@ -352,6 +352,14 @@ hr {
     transition: top 0.3s linear;
 }
 
+#wordsLeftInRound {
+    text-align: right;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 200px;
+}
+
 #status {
     /* padding: 5px 10px; */
     text-align: center;
