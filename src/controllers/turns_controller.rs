@@ -192,7 +192,7 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
 
 // The turn player will use this to pass turn when the current turn has ended
 #[get("/undo_guess_word/<game_id>/<name>")]
-pub async fn undo_last_guess(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+pub async fn undo_last_guess(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {    
     let game = match games.get(&game_id) {
         Some(game) => game,
         None => return Err(BadRequest("Game not found".to_owned())),
@@ -221,9 +221,8 @@ pub async fn undo_last_guess(game_id: i32, name: &str, games: &State<CHashMap<i3
     guessed_words_by_player.pop();
     game_state.words_guessed.pop();
 
-    game_state.words_in_play.push(last_word.clone());
-    
-    Err(BadRequest("Game not found".to_owned()))
+    game_state.words_to_guess.push(last_word.clone());
+    Err(BadRequest("Kurec".to_owned()))
 }
 
 #[get("/next_turn/<game_id>")]
