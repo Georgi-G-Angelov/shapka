@@ -187,6 +187,7 @@ function showNextRoundButton() {
 function hideTimerAndFetchWordButtons() {
     document.getElementById("toggleTimer").style.display = "none";
     document.getElementById("fetchWord").style.display = "none";
+    document.getElementById("undoLastGuess").style.display = "none";
 }
 
 function showResults() {

@@ -86,9 +86,11 @@ function fill_all_game_mode() {
     if (gameState.turn_player == getPlayerName()) {
         document.getElementById("toggleTimer").style.display = "block";
         document.getElementById("fetchWord").style.display = "block";
+        document.getElementById("undoLastGuess").style.display = "block";
     } else {
         document.getElementById("toggleTimer").style.display = "none";
         document.getElementById("fetchWord").style.display = "none";
+        document.getElementById("undoLastGuess").style.display = "none";
         document.getElementById("nextTurn").style.display = "none";
         document.getElementById("nextRound").style.display = "none";
     }
@@ -317,6 +319,34 @@ function guessWord(word) {
     });
 }
 
+function undoLastGuess(word) {
+    let responseOk;
+    let responseStatus;
+
+    fetch(getHostUrl() + "/undo_guess_word/" + getGameId() + "/" + getPlayerName(), {
+        method: "GET",
+        headers: authNoCacheHeaders
+    })
+    .then(function(response) {
+        responseOk = response.ok;
+        responseStatus = response.status;
+        return response;
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        if (responseOk) {
+            removeWordInPlay(data);
+            if (!anyWordsInPlay()) {
+                fetchWord();
+            }
+        } else {
+            console.log(data);
+            console.log(responseStatus);
+        }
+    });
+}
+
 function addWordInPlay(word) {
     // Get list of words
     var ul = document.getElementById("wordsInPlay");
@@ -419,4 +449,5 @@ function cleanDOM() {
     document.getElementById("fetchWord").style.display = "none";
     document.getElementById("nextTurn").style.display = "none";
     document.getElementById("nextRound").style.display = "none";
+    document.getElementById("undoLastGuess").style.display = "none";
 }

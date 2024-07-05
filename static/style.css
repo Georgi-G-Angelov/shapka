@@ -135,6 +135,10 @@ hr {
     margin-right: 30px;
 }
 
+#fetchWord {
+    margin-right: 30px;
+}
+
 #wordsInPlay {
     padding: 0;
 }
@@ -453,10 +457,17 @@ hr {
     #toggleTimer {
         width: 40%;
         margin-right: 10vw;
+        margin-left: 10vw;
     }
 
     #fetchWord {
         width: 40%;
+        margin-right: 10vw;
+    }
+
+    #undoLastGuess {
+        width: 40%;
+        margin-right: 10vw;
     }
 
     #wordsInPlay>li {
