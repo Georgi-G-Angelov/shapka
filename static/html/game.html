@@ -19,7 +19,19 @@
     <h3 id="turnPlayer"></h3>
 
     <div class="dropdown" id="teams">
-      <button onclick="toggleTeams()" class="dropbtn">Teams</button>
+
+      <div onclick="toggleTeams()" class="dropbtn">
+        <div class="teamsMenuAllButtons">
+          <div class="teamsMenuButton"></div>
+          <div class="teamsMenuButtonWhite"></div>
+          <div class="teamsMenuButton"></div>
+          <div class="teamsMenuButtonWhite"></div>
+          <div class="teamsMenuButton"></div>
+        </div>
+        <div id="teamsText"> Teams</div>
+      </div>
+      <!-- <button onclick="toggleTeams()" class="dropbtn">Teams</button> -->
+
       <div id="teamsList" class="dropdown-content">
       </div>
     </div>

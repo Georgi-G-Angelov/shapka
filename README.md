@@ -3,6 +3,8 @@ to run in separate background shell:
 fuser -k 8000/tcp
 screen -d -m cargo run
 
+to fix 502 from nginx - restart nginx with "sudo service nginx restart"
+
 to set up ssl:
 https://www.youtube.com/watch?v=uSm3xepvUNM&ab_channel=TonyTeachesTech
 
@@ -23,6 +25,8 @@ Features:
 - maybe max players?
 - num rounds for sure
 - frond end improvements
+    kick players
+    teams menu is not very intuitive
 - allow host to kick players
 - leave game is broken if player has added words
 - generally fix players missing SSEs - fixed for start of game, not for switching turns, and ending game
