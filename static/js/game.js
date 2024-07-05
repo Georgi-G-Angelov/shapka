@@ -49,6 +49,8 @@ var timerEndSoundsPaths = [
     "/audio/mbt_nema_kvo.m4a",
     "/audio/mbt_risk.m4a"
 ];
+var hasTimerEndedOnPageLoad = false;
+var currentTimerEndSound;
 
 var isConnectedToEvents = false;
 
@@ -113,6 +115,12 @@ function fill_all_game_mode() {
     if (!isConnectedToEvents) {
         subscribe(getHostUrl() + "/gameevents/" + getGameId());
         isConnectedToEvents = true;
+    }
+
+    if (gameState.timer == 0) {
+        hasTimerEndedOnPageLoad = true;
+    } else {
+        hasTimerEndedOnPageLoad = false;
     }
 
     initializeTimerSounds();
@@ -359,14 +367,19 @@ function showNextTurnButton() {
 }
 
 function playRandomTimerEnd() {
-    let randomlyPickedAlarmSound = timerEndSounds[Math.floor(Math.random() * timerEndSounds.length)];
-    randomlyPickedAlarmSound.play();
-    setTimeout(() => {
-        randomlyPickedAlarmSound.pause();
-    }, 5000) // play timer sound for 5 seconds
+    currentTimerEndSound = timerEndSounds[Math.floor(Math.random() * timerEndSounds.length)];
+
+    if (!hasTimerEndedOnPageLoad) {
+        currentTimerEndSound.play();
+        setTimeout(() => {
+            currentTimerEndSound.pause();
+        }, 10000) // play timer sound for 10 seconds
+    }
 }
 
 async function nextTurn() {
+    currentTimerEndSound.pause();
+
     fetch(getHostUrl() + "/next_turn/" + getGameId(), {
         method: "GET",
         headers: authNoCacheHeaders
