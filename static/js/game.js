@@ -43,6 +43,12 @@ var timer; // the function on an interval which runs the timer
 var timerValueMillis;
 var timerValueSeconds;
 var timerDeltaSinceLastServerUpdate; // we need to update the server every around 500 millis
+var timerEndSounds = [];
+var timerEndSoundsPaths = [
+    "/audio/mbt_gadove.m4a",
+    "/audio/mbt_nema_kvo.m4a",
+    "/audio/mbt_risk.m4a"
+];
 
 var isConnectedToEvents = false;
 
@@ -108,6 +114,19 @@ function fill_all_game_mode() {
         subscribe(getHostUrl() + "/gameevents/" + getGameId());
         isConnectedToEvents = true;
     }
+
+    initializeTimerSounds();
+}
+
+function initializeTimerSounds() {
+
+    for(let i = 0; i < timerEndSoundsPaths.length; i++) {
+        let alarmSoundPath = timerEndSoundsPaths[i];
+        let alarmSound = new Audio(alarmSoundPath);
+        alarmSound.loop = true;
+        timerEndSounds.push(alarmSound);
+        console.log(alarmSoundPath);
+    }
 }
 
 function fillTurnPlayerMessage() {
@@ -165,6 +184,7 @@ async function startTimer() {
             gameState.is_turn_active = false;
             updateTimerState(0);
             showNextTurnButton();
+            playRandomTimerEnd();
         }
 
         // Update server
@@ -336,6 +356,14 @@ function anyWordsInPlay() {
 
 function showNextTurnButton() {
     document.getElementById("nextTurn").style.display = "block";
+}
+
+function playRandomTimerEnd() {
+    let randomlyPickedAlarmSound = timerEndSounds[Math.floor(Math.random() * timerEndSounds.length)];
+    randomlyPickedAlarmSound.play();
+    setTimeout(() => {
+        randomlyPickedAlarmSound.pause();
+    }, 5000) // play timer sound for 5 seconds
 }
 
 async function nextTurn() {
