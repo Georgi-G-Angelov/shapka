@@ -29,7 +29,7 @@ fn rocket() -> Rocket<Build> {
     rocket::build()
         .manage(games)
         .mount("/", routes![home, create_game, create,
-                            join_game, join, host, await_game, in_game, fetch_players,
+                            join_game, join, host, await_game, in_game, fetch_players, fetch_player_words,
                             game_events, add_word, start_game, fetch_game_state, update_timer_state,
                             fetch_word_to_guess, guess_word, undo_last_guess, next_turn, next_round, results, leave_game, forbidden, unauthorized, has_game_started])
         .mount("/", FileServer::from(relative!("static")))

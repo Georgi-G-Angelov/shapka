@@ -17,6 +17,7 @@ pub struct Game {
     pub words: Mutex<Vec<String>>,
     pub words_per_player_limit: usize,
     pub num_words_per_player: Mutex<HashMap<String, usize>>,
+    pub words_per_player: HashMap<String, Vec<String>>,
     pub game_state: Mutex<GameState>,
     pub host_name: String,
     pub auth_secret: String
@@ -53,6 +54,7 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
         words: Mutex::new(vec![]),
         words_per_player_limit,
         num_words_per_player: Mutex::new(HashMap::new()),
+        words_per_player: HashMap::new(),
         game_state: Mutex::new(init_game_state()),
         host_name: owner_name.to_owned(),
         auth_secret: GUID::rand().to_string() // generate random string to use for auth tokens for players
@@ -61,6 +63,8 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
         .lock()
         .expect("game players locked")
         .push(owner_name.to_string());
+
+    game.words_per_player.insert(owner_name.to_string(), Vec::new());
 
     return game;
 }

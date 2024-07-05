@@ -65,6 +65,7 @@ pub async fn join_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Gam
                 gameId: game_id,
                 authToken: generate_token(game_id, name.to_string(), game.auth_secret.to_string())
             };
+            game.words_per_player.insert(name.to_string(), Vec::new());
         
             Ok(content::RawJson(response.to_string()))
         }
