@@ -1,11 +1,15 @@
+use std::collections::HashMap;
+use std::sync::MutexGuard;
+
+use jwt::Store;
 use rocket::response::status::BadRequest;
 use rocket::State;
 use rocket::response::content;
 
 use chashmap::CHashMap;
 
-use crate::models::game::Game;
-use crate::constants::*;
+use crate::models::game::{self, Game};
+use crate::{constants::*, GameState};
 
 // Before the start of the game, the players will use this to add words to the game
 // Returns a plain text message if the word has been added or if the player has reached their limit
@@ -26,8 +30,11 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
             .unwrap()
             .push(word.to_string());
 
-        let words_per_players = game.words_per_player;
-        let words_per_player = words_per_players.get_mut(name).unwrap().push(word.to_string().clone());
+        let mut game_state_lock: MutexGuard<GameState> = game.game_state.lock().unwrap();
+        let game_state = &mut *game_state_lock;
+
+        let player_words = game_state.words_per_player.get_mut(name).unwrap();
+        player_words.push(word.to_string());
 
         let mut event: String = NEW_WORD_EVENT_PREFIX.to_owned();
         event.push_str(&(name.to_owned() + "/" + word));
