@@ -17,7 +17,6 @@ pub struct Game {
     pub words: Mutex<Vec<String>>,
     pub words_per_player_limit: usize,
     pub num_words_per_player: Mutex<HashMap<String, usize>>,
-    pub words_per_player: HashMap<String, Vec<String>>,
     pub game_state: Mutex<GameState>,
     pub host_name: String,
     pub auth_secret: String
@@ -30,6 +29,7 @@ pub struct GameState {
     pub turn_player: String,
     pub turn_player_index: usize,
     pub words_guessed_per_team_per_round: HashMap<i32, HashMap<i32, Vec<String>>>,
+    pub words_per_player: HashMap<String, Vec<String>>,
     pub teams: Vec<Vec<String>>,
     pub teammates: HashMap<String, String>,
     pub team_member_to_team_index: HashMap<String, i32>,
@@ -54,7 +54,6 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
         words: Mutex::new(vec![]),
         words_per_player_limit,
         num_words_per_player: Mutex::new(HashMap::new()),
-        words_per_player: HashMap::new(),
         game_state: Mutex::new(init_game_state()),
         host_name: owner_name.to_owned(),
         auth_secret: GUID::rand().to_string() // generate random string to use for auth tokens for players
@@ -64,7 +63,7 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
         .expect("game players locked")
         .push(owner_name.to_string());
 
-    game.words_per_player.insert(owner_name.to_string(), Vec::new());
+    game.game_state.lock().unwrap().words_per_player.insert(owner_name.to_string(), Vec::new());
 
     return game;
 }
@@ -76,11 +75,14 @@ pub fn init_game_state() -> GameState {
         words_guessed_per_team_per_round.insert(i, HashMap::new());
     }
 
+    let words_per_player: HashMap<String, Vec<String>> = HashMap::new();
+
     return GameState {
         timer: TIMER_START_VALUE,
         turn_player: "".to_string(),
         turn_player_index: 0,
         words_guessed_per_team_per_round,
+        words_per_player,
         teams: Vec::new(),
         teammates: HashMap::new(),
         team_member_to_team_index: HashMap::new(),

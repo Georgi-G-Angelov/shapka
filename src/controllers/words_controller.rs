@@ -5,7 +5,7 @@ use rocket::response::content;
 use chashmap::CHashMap;
 
 use crate::models::game::Game;
-use crate::constants::*;
+use crate::{constants::*};
 
 // Before the start of the game, the players will use this to add words to the game
 // Returns a plain text message if the word has been added or if the player has reached their limit
@@ -26,8 +26,10 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
             .unwrap()
             .push(word.to_string());
 
-        let words_per_players = game.words_per_player;
-        let words_per_player = words_per_players.get_mut(name).unwrap().push(word.to_string().clone());
+        let words_per_player = &mut game.game_state.lock().unwrap().words_per_player;
+
+        let player_words = words_per_player.get_mut(name).unwrap();
+        player_words.push(word.to_string());
 
         let mut event: String = NEW_WORD_EVENT_PREFIX.to_owned();
         event.push_str(&(name.to_owned() + "/" + word));
