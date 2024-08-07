@@ -25,3 +25,21 @@ pub fn fetch_players(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result
         Err(NotFound("Game not found".to_owned()))
     }
 }
+
+#[get("/fetch_player_words/<game_id>/<name>")]
+pub fn fetch_player_words(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
+    if games.contains_key(&game_id) {
+        let game = games.get(&game_id).unwrap();
+        let words_per_player = &game.game_state.lock().unwrap().words_per_player;
+        let words = words_per_player.get(name).unwrap();
+
+        let response = object! {
+            words: words.to_vec(),
+            host: game.host_name.to_owned()
+        };
+
+        Ok(content::RawJson(response.dump()))
+    } else {
+        Err(NotFound("Game not found".to_owned()))
+    }
+}

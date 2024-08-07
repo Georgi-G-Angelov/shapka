@@ -1,5 +1,6 @@
 // Constants
 const NEW_PLAYER_PREFIX = "new_player:";
+const NEW_WORD_PREFIX = "new_word:";
 const PLAYER_LEFT_PREFIX = "player_left:";
 const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
@@ -159,6 +160,18 @@ function subscribe(uri) {
             } else if (message.startsWith(UNDO_GUESS_PREFIX)) {
                 wordsLeftInRound++;
                 updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
+            } else if (message.startsWith(NEW_WORD_PREFIX)) {
+                var player_word = message.substring(NEW_WORD_PREFIX.length);
+                var player = player_word.split("/")[0];
+                var word = player_word.split("/")[1];
+
+                if (player == getPlayerName()) {
+                    var ul = document.getElementById("words");
+                    var li = document.createElement("li");
+                    li.classList.add('word_element');
+                    li.appendChild(document.createTextNode(word));
+                    ul.appendChild(li);
+                }
             }
         });
 

@@ -29,6 +29,7 @@ pub struct GameState {
     pub turn_player: String,
     pub turn_player_index: usize,
     pub words_guessed_per_team_per_round: HashMap<i32, HashMap<i32, Vec<String>>>,
+    pub words_per_player: HashMap<String, Vec<String>>,
     pub teams: Vec<Vec<String>>,
     pub teammates: HashMap<String, String>,
     pub team_member_to_team_index: HashMap<String, i32>,
@@ -62,6 +63,8 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
         .expect("game players locked")
         .push(owner_name.to_string());
 
+    game.game_state.lock().unwrap().words_per_player.insert(owner_name.to_string(), Vec::new());
+
     return game;
 }
 
@@ -72,11 +75,18 @@ pub fn init_game_state() -> GameState {
         words_guessed_per_team_per_round.insert(i, HashMap::new());
     }
 
+<<<<<<< HEAD
+    let mut words_per_player: HashMap<String, Vec<String>> = HashMap::new();
+=======
+    let words_per_player: HashMap<String, Vec<String>> = HashMap::new();
+>>>>>>> 15f58738d291490c5b6054bfe59b3e6f8d35deea
+
     return GameState {
         timer: TIMER_START_VALUE,
         turn_player: "".to_string(),
         turn_player_index: 0,
         words_guessed_per_team_per_round,
+        words_per_player,
         teams: Vec::new(),
         teammates: HashMap::new(),
         team_member_to_team_index: HashMap::new(),

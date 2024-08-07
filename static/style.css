@@ -118,6 +118,29 @@ button:active {
     font-weight: bold;
 }
 
+#words {
+    align-items: center;
+    align-content: center;
+    text-align: center;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+}
+
+#words>li {
+    color: black;
+    display: inline-block;
+    margin: 2%;
+    background-color: white;
+    padding: 3%;
+    font-weight: bold;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+}
+
 hr {
     margin-top: 30px;
     border-color: azure;
@@ -459,6 +482,14 @@ hr {
     }
 
     #players>li {
+        font-size: 150%;
+    }
+
+    #words {
+        width: 100%;
+    }
+
+    #words>li {
         font-size: 150%;
     }
 
