@@ -75,11 +75,7 @@ pub fn init_game_state() -> GameState {
         words_guessed_per_team_per_round.insert(i, HashMap::new());
     }
 
-<<<<<<< HEAD
-    let mut words_per_player: HashMap<String, Vec<String>> = HashMap::new();
-=======
     let words_per_player: HashMap<String, Vec<String>> = HashMap::new();
->>>>>>> 15f58738d291490c5b6054bfe59b3e6f8d35deea
 
     return GameState {
         timer: TIMER_START_VALUE,

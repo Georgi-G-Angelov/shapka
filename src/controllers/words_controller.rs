@@ -1,20 +1,11 @@
-use std::collections::HashMap;
-use std::sync::MutexGuard;
-
-use jwt::Store;
 use rocket::response::status::BadRequest;
 use rocket::State;
 use rocket::response::content;
 
 use chashmap::CHashMap;
 
-<<<<<<< HEAD
-use crate::models::game::{self, Game};
-use crate::{constants::*, GameState};
-=======
 use crate::models::game::Game;
 use crate::{constants::*};
->>>>>>> 15f58738d291490c5b6054bfe59b3e6f8d35deea
 
 // Before the start of the game, the players will use this to add words to the game
 // Returns a plain text message if the word has been added or if the player has reached their limit
