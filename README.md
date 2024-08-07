@@ -18,7 +18,8 @@ go to /etc/nginx/sites-available, edit default and run sudo service nginx restar
 
 Features:
 - make it run as prod build
-- undo guess word
+- disable words input when limit is reached
+- add an option to remove already added words
 - delete games
 - slider for words limit (maybe also random button)
 - custom time limit
