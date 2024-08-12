@@ -1,0 +1,23 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  deploy:
+
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: checkout directory
+      run: cd shapka
+    - name: kill old
+      run: fuser -k 8000/tcp
+    - name: checkout directory
+      run: screen -d -m cargo run
+

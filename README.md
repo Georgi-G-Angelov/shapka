@@ -8,6 +8,10 @@ to fix 502 from nginx - restart nginx with "sudo service nginx restart"
 to set up ssl:
 https://www.youtube.com/watch?v=uSm3xepvUNM&ab_channel=TonyTeachesTech
 
+to start github runner in case it's dead:
+cd actions-runner
+screen -d -m ./run.sh
+
 TODO:
 - fix eventsteam not working over SSL
 https://stackoverflow.com/questions/46371939/sse-over-https-not-working
