@@ -45,9 +45,9 @@ var timerValueSeconds;
 var timerDeltaSinceLastServerUpdate; // we need to update the server every around 500 millis
 var timerEndSounds = [];
 var timerEndSoundsPaths = [
-    "/audio/mbt_gadove.m4a",
-    "/audio/mbt_nema_kvo.m4a",
-    "/audio/mbt_risk.m4a"
+    "/audio/mbt_gadove.ogg",
+    "/audio/mbt_nema_kvo.ogg",
+    "/audio/mbt_risk.ogg"
 ];
 var hasTimerEndedOnPageLoad = false;
 var currentTimerEndSound;
