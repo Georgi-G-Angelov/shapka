@@ -16,6 +16,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: checkout directory
       run: cd ~/shapka
+    - name: build
+      run: cargo build
     - name: kill old
       run: fuser -k 8000/tcp
     - name: run
