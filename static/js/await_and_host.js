@@ -179,6 +179,11 @@ function add_word() {
             if (responseOk) {
                 showMessage(data);
                 document.getElementById("word").value = "";
+                numWords = document.getElementById("words").getElementsByTagName("li").length;
+                if (numWords >= 4) {
+                    document.getElementById("word").disabled = true;
+                    document.getElementById("word").value = "You can't add any more words"
+                }
             } else {
                 showError(data);
             }
