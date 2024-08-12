@@ -2,6 +2,8 @@ use rocket::response::status::BadRequest;
 use rocket::State;
 use rocket::response::content;
 
+use json::object;
+
 use chashmap::CHashMap;
 
 use crate::models::game::Game;
@@ -39,8 +41,13 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
         let curr_words: usize = *num_words_per_player.get(name).unwrap();
         num_words_per_player.insert(name.to_string(), curr_words + 1);
 
-        Ok(content::RawJson("Word added: ".to_owned() + word))
-    } else {
+        let limit: usize = game.words_per_player_limit;
+        let response = object! {
+            wordAdded: word,
+            wordLimit: limit
+        };
+        Ok(content::RawJson(response.to_string()))
+    } else { 
         Err(BadRequest("You can't add more words".to_owned()))
     }
 }

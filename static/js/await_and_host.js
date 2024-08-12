@@ -177,8 +177,14 @@ function add_word() {
         .then(response => response.text())
         .then(data => {
             if (responseOk) {
-                showMessage(data);
+                data = JSON.parse(data)
                 document.getElementById("word").value = "";
+                numWords = document.getElementById("words").getElementsByTagName("li").length;
+                limit = Number(data.wordLimit);
+                if (numWords >= limit) {
+                    document.getElementById("word").disabled = true;
+                    document.getElementById("word").value = "No more words"
+                }
             } else {
                 showError(data);
             }
