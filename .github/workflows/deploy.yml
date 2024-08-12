@@ -22,6 +22,8 @@ jobs:
       continue-on-error: true
       run: fuser -k 8000/tcp
     - name: run
-      run: screen -d -m cargo run
+      run: |
+        screen -d -m cargo run
+        sleep 30
 
 
