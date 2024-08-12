@@ -18,6 +18,6 @@ jobs:
       run: cd ~/shapka
     - name: kill old
       run: fuser -k 8000/tcp
-    - name: checkout directory
-      run: screen -d -m cargo run
+    - name: run
+      run: cargo run
 
