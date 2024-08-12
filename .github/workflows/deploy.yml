@@ -23,6 +23,7 @@ jobs:
       run: fuser -k 8000/tcp
     - name: run
       run: |
+        RUNNER_TRACKING_ID=""
         screen -d -m cargo run
         sleep 30
 
