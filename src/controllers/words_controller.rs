@@ -7,7 +7,7 @@ use json::object;
 use chashmap::CHashMap;
 
 use crate::models::game::Game;
-use crate::{constants::*};
+use crate::constants::*;
 
 // Before the start of the game, the players will use this to add words to the game
 // Returns a plain text message if the word has been added or if the player has reached their limit
