@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: checkout directory
-      run: cd shapka
+      run: cd ~/shapka
     - name: kill old
       run: fuser -k 8000/tcp
     - name: checkout directory
