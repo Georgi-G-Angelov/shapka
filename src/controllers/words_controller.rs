@@ -46,7 +46,7 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
             wordAdded: word,
             wordLimit: limit
         };
-        Ok(content::RawJson(response.to_string()))
+        Ok(content::RawJson(response.to_string())) 
     } else { 
         Err(BadRequest("You can't add more words".to_owned()))
     }
