@@ -17,6 +17,9 @@ jobs:
     - name: checkout directory
       run: cd ~/shapka
 
+    - name: pull latest
+      run: git pull
+
     - name: build
       run: cargo build
 
