@@ -1,10 +1,10 @@
 use std::sync::MutexGuard;
 
-// use rocket::response::status::{BadRequest, NotFound};
-// use rocket::response::content;
-// use rocket::State;
-// use serde_json;
-// use rand::thread_rng;
+use rocket::response::status::{BadRequest, NotFound};
+use rocket::response::content;
+use rocket::State;
+use serde_json;
+use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 use chashmap::CHashMap;
