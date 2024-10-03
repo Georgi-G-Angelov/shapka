@@ -12,8 +12,11 @@ use crate::constants::*;
 // Before the start of the game, the players will use this to add words to the game
 // Returns a plain text message if the word has been added or if the player has reached their limit
 #[get("/add_word/<game_id>/<name>/<word>")]
-pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
-    let game = games.get(&game_id).unwrap();
+pub fn add_word<'a>(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
+    let game = match games.get(&game_id) {
+        Some(game) => game,
+        None => return Err(BadRequest("Game not found")),
+    };
 
     // Init number of words added per player if necessary
     let mut num_words_per_player = game.num_words_per_player.lock().unwrap();
@@ -48,6 +51,6 @@ pub fn add_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32
         };
         Ok(content::RawJson(response.to_string()))
     } else { 
-        Err(BadRequest("You can't add more words".to_owned()))
+        Err(BadRequest("You can't add more words"))
     }
 }
