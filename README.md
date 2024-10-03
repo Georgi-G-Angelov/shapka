@@ -35,3 +35,7 @@ Features:
 - allow host to kick players
 - leave game is broken if player has added words
 - generally fix players missing SSEs - fixed for start of game, not for switching turns, and ending game
+
+
+BUGS:
+- on last round, if you guess X words and then undo X words, game automatically ends - reason being that after the last undo, the fetch returns 400
