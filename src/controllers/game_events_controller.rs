@@ -10,13 +10,12 @@ use crate::models::game::Game;
 /// Returns an infinite stream of server-sent events.
 #[get("/gameevents/<game_id>")]
 pub async fn game_events(game_id: i32, games: &State<CHashMap<i32, Game>>, mut end: Shutdown) -> Option<EventStream![]> {
-    if !games.contains_key(&game_id) {
-        return Option::None;
-    }
+    let game = match games.get(&game_id) {
+        Some(game) => game,
+        None => return Option::None,
+    };
 
-    let game = games.get(&game_id);
-
-    let mut game_events_receiver = game.unwrap().game_events.subscribe();
+    let mut game_events_receiver = game.game_events.subscribe();
     Some(EventStream! {
         loop {
             let msg = select! {
