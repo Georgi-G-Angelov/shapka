@@ -42,8 +42,7 @@ pub async fn start_game(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Res
         game_state.lock().unwrap().words_to_guess.append(&mut game.words.lock().unwrap());
 
         // Tell everyone the game has started
-        let event: String = "start_game".to_owned();
-        let _res = game.game_events.send(event.to_string());
+        let _res = game.game_events.send(START_GAME_EVENT.to_owned());
 
         Ok(content::RawJson(game_id.to_string()))
     } else {
@@ -70,9 +69,7 @@ pub async fn has_game_started(game_id: i32, games: &State<CHashMap<i32, Game>>) 
 pub async fn fetch_game_state(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
-        let game_state = &game.game_state;
-
-        let game_state_json: String = serde_json::to_string(game_state).unwrap();
+        let game_state_json: String = serde_json::to_string(&game.game_state).unwrap();
 
         Ok(content::RawJson(game_state_json))
     } else {
@@ -95,7 +92,7 @@ pub async fn update_timer_state(game_id: i32, millis: i32, turn_active: bool, ro
 
         let mut event: String = TIMER_UPDATE_EVENT_PREFIX.to_owned();
         event.push_str(millis.to_string().as_str());
-        let _res = game.game_events.send(event.to_string());
+        _ = game.game_events.send(event);
 
         Ok(content::RawJson(millis.to_string()))
     } else {
@@ -106,49 +103,46 @@ pub async fn update_timer_state(game_id: i32, millis: i32, turn_active: bool, ro
 // The turn player will use this to get a new word to explain to his teammate
 // Returns the word in plain text or an error message
 #[get("/fetch_word/<game_id>/<name>")]
-pub async fn fetch_word_to_guess(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+pub async fn fetch_word_to_guess<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
-        let game_state = &game.game_state;
+        let game_state = &mut game.game_state.lock().unwrap();
 
-        if !game_state.lock().unwrap().turn_player.eq(name) {
-            return Err(BadRequest("You are not the turn player".to_owned()));
+        if !game_state.turn_player.eq(name) {
+            return Err(BadRequest("You are not the turn player"));
         }
 
-        if game_state.lock().unwrap().words_in_play.len() >= MAX_WORDS_IN_PLAY {
-            return Err(BadRequest("You already have enough words in play".to_owned()));
+        if game_state.words_in_play.len() >= MAX_WORDS_IN_PLAY {
+            return Err(BadRequest("You already have enough words in play"));
         }
 
         // Get the last word from the words to guess list and move it to the words in play
-        let maybe_word = game_state.lock().unwrap().words_to_guess.pop();
-        if maybe_word.is_some() {
-            let word = maybe_word.unwrap();
-            let word_copy = word.clone();
-
-            game_state.lock().unwrap().words_in_play.push(word);
-            return Ok(content::RawJson(word_copy));
-        }
-
-        Err(BadRequest("No words left".to_owned()))
+        match game_state.words_to_guess.pop() {
+            Some(word) => {
+                game_state.words_in_play.push(word.clone());
+                return Ok(content::RawJson(word));
+            },
+            None => return Err(BadRequest("No words left")),
+        };
     } else {
-        Err(BadRequest("Game not found".to_owned()))
+        Err(BadRequest("Game not found"))
     }
 }
 
 // When a word has been guessed, the turn player will use this to mark it as guessed
 // Returns as plain text either the word which has been guessed or an error message
 #[get("/guess_word/<game_id>/<name>/<word>")]
-pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+pub async fn guess_word<'a>(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
         let game_state: &mut MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
 
         if !game_state.turn_player.eq(name) {
-            return Err(BadRequest("You are not the turn player".to_owned()));
+            return Err(BadRequest("You are not the turn player"));
         }
 
         if !game_state.words_in_play.contains(&word.to_string()) {
-            return Err(BadRequest("This word is not in play".to_owned()));
+            return Err(BadRequest("This word is not in play"));
         }
 
         // Remove the word from words in play
@@ -189,56 +183,53 @@ pub async fn guess_word(game_id: i32, name: &str, word: &str, games: &State<CHas
             return Ok(content::RawJson(guessed_word))
         }
 
-        Err(BadRequest("No words left".to_owned()))
+        Err(BadRequest("No words left"))
     } else {
-        Err(BadRequest("Game not found".to_owned()))
+        Err(BadRequest("Game not found"))
     }
 }
 
 // The turn player will use this to pass turn when the current turn has ended
 #[get("/undo_guess_word/<game_id>/<name>")]
-pub async fn undo_last_guess(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {    
+pub async fn undo_last_guess<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {    
     let game = match games.get(&game_id) {
         Some(game) => game,
-        None => return Err(BadRequest("Game not found".to_owned())),
+        None => return Err(BadRequest("Game not found")),
     };
 
-    let mut game_state = game.game_state.lock().map_err(|_| BadRequest("Failed to lock game state".to_owned()))?;
+    let mut game_state = game.game_state.lock().unwrap();
 
     if !game_state.turn_player.eq(name) {
-        return Err(BadRequest("You are not the turn player".to_owned()));
+        return Err(BadRequest("You are not the turn player"));
     }
 
     let round: i32 = game_state.round;
     let team_index: i32 = match game_state.team_member_to_team_index.get(name) {
         Some(index) => *index,
-        None => return Err(BadRequest("Team index not found".to_owned())),
+        None => return Err(BadRequest("Team index not found")),
     };
 
-    let words_per_team: &mut HashMap<i32, Vec<String>> = game_state.words_guessed_per_team_per_round.get_mut(&round).ok_or_else(|| BadRequest("Round not found".to_owned()))?;
-    let guessed_words_by_player: &mut Vec<String> = words_per_team.get_mut(&team_index).ok_or_else(|| BadRequest("Team index not found in round".to_owned())).unwrap();
+    let words_per_team: &mut HashMap<i32, Vec<String>> = game_state.words_guessed_per_team_per_round.get_mut(&round).ok_or_else(|| BadRequest("Round not found"))?;
+    let guessed_words_by_player: &mut Vec<String> = words_per_team.get_mut(&team_index).ok_or_else(|| BadRequest("Team index not found in round")).unwrap();
 
     if guessed_words_by_player.is_empty() {
-        return Err(BadRequest("No words guessed this round".to_owned()));
+        return Err(BadRequest("No words guessed this round"));
     }
 
-    let last_word: String = guessed_words_by_player.last().cloned().ok_or_else(|| BadRequest("Failed to get last guessed word".to_owned()))?;
-
-    guessed_words_by_player.pop();
+    let last_word = guessed_words_by_player.pop().ok_or_else(|| BadRequest("Failed to get last guessed word"))?;
     game_state.words_guessed.pop();
-
     game_state.words_to_guess.push(last_word.clone());
 
     // Send event that a guess was undone
     let mut event: String = UNDO_GUESS_EVENT_PREFIX.to_owned();
     event.push_str(last_word.as_str());
-    let _ = game.game_events.send(event.to_string());
+    _ = game.game_events.send(event);
 
-    Ok(content::RawJson(last_word.to_string()))
+    Ok(content::RawJson(last_word))
 }
 
 #[get("/next_turn/<game_id>")]
-pub async fn next_turn(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
+pub async fn next_turn<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<&'a str>> {
     if games.contains_key(&game_id) {
         let game: chashmap::ReadGuard<'_, i32, Game> = games.get(&game_id).unwrap();
         let game_state: &mut std::sync::MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
@@ -258,14 +249,14 @@ pub async fn next_turn(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Resu
 
         Ok(content::RawJson(game_id.to_string()))
     } else {
-        Err(NotFound("Game not found".to_owned()))
+        Err(NotFound("Game not found"))
     }
 }
 
 // The turn player switches to the next round
 // It is still their turn, unless they have less than a second left
 #[get("/next_round/<game_id>")]
-pub async fn next_round(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<String>> {
+pub async fn next_round<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<&'a str>> {
     if games.contains_key(&game_id) {
         let game = games.get(&game_id).unwrap();
         let game_state: &mut std::sync::MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
@@ -291,7 +282,7 @@ pub async fn next_round(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Res
 
         Ok(content::RawJson(game_id.to_string()))
     } else {
-        Err(NotFound("Game not found".to_owned()))
+        Err(NotFound("Game not found"))
     }
 }
 
