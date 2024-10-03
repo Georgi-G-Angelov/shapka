@@ -206,7 +206,7 @@ pub async fn undo_last_guess<'a>(game_id: i32, name: &str, games: &State<CHashMa
     };
 
     let words_per_team: &mut HashMap<i32, Vec<String>> = game_state.words_guessed_per_team_per_round.get_mut(&round).ok_or_else(|| BadRequest("Round not found"))?;
-    let guessed_words_by_player: &mut Vec<String> = words_per_team.get_mut(&team_index).ok_or_else(|| BadRequest("Team index not found in round")).unwrap();
+    let guessed_words_by_player: &mut Vec<String> = words_per_team.get_mut(&team_index).ok_or_else(|| BadRequest("Team index not found in round"))?;
 
     if guessed_words_by_player.is_empty() {
         return Err(BadRequest("No words guessed this round"));
