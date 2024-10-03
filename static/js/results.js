@@ -1,5 +1,5 @@
 function fillResults() {
-    fill_game_id();
+    fillGameId();
 
     let teamsList = document.getElementById("results");
 

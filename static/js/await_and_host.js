@@ -1,11 +1,11 @@
 function fillAllAwait() {
-    fill_all();
+    fillAll();
 
     pollForHasGameStarted();
 }
 
 function fillAllHost() {
-    fill_all();
+    fillAll();
 
     pollForHasGameStarted();
 }
@@ -25,10 +25,10 @@ function pollForHasGameStarted() {
     }, 5000) // every 5 seconds check if game has started
 }
 
-function fill_all() {
-    fill_game_id();
-    fill_players();
-    fill_words();
+function fillAll() {
+    fillGameId();
+    fillPlayers();
+    fillWords();
 
     subscribe(getHostUrl() + "/gameevents/" + getGameId());
 
@@ -37,11 +37,11 @@ function fill_all() {
     console.log(getGameId());
 }
 
-function fill_game_id() {
+function fillGameId() {
     document.getElementById("gameId").textContent = `Game ${getGameId()}`;
 }
 
-function fill_players() { 
+function fillPlayers() { 
     fetch(getHostUrl() + "/fetch_players/" + getGameId(), {
             method: "GET",
             headers: authNoCacheHeaders
@@ -67,7 +67,7 @@ function fill_players() {
         });
 }
 
-function fill_words() { 
+function fillWords() { 
     fetch(getHostUrl() + "/fetch_player_words/" + getGameId() + '/' + getPlayerName(), {
             method: "GET",
             headers: authNoCacheHeaders
@@ -145,7 +145,7 @@ function leaveGame() {
     });
 }
 
-function add_word() {
+function addWord() {
     var word = document.getElementById("word").value.trim();
     if (word == "") {
         return;

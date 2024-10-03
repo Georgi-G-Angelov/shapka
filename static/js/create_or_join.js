@@ -1,8 +1,8 @@
-function create_redirect() {
+function createRedirect() {
     window.location.href = getHostUrl() + "/create";
 }
 
-function create_game() {
+function createGame() {
     let name = document.getElementById("name").value;
     let wordLimit = document.getElementById("word-limit").value;
 
@@ -39,11 +39,11 @@ function create_game() {
     });
 }
 
-function join_redirect() {
+function joinRedirect() {
     window.location.href = getHostUrl() + "/join";
 }
 
-function join_game() {
+function joinGame() {
     let name = document.getElementById("name").value;
     let gameId = document.getElementById("game_id").value;
 
