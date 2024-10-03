@@ -76,13 +76,13 @@ async function fetchGameState() {
                 }
                 fillResults();
             } else {
-                fill_all_game_mode();
+                fillAllGameMode();
             }
         });
 }
 
-function fill_all_game_mode() {
-    fill_game_id();
+function fillAllGameMode() {
+    fillGameId();
     fillTurnPlayerMessage();
     fillTeams();
 
