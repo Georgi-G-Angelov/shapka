@@ -212,9 +212,20 @@ pub async fn undo_last_guess<'a>(game_id: i32, name: &str, games: &State<CHashMa
         return Err(BadRequest("No words guessed this round"));
     }
 
+    // If a guess is undone, we add the word back in play
+
+    // Get the word - must be the same word from the guessed_words_by_player and the words_guessed
     let last_word = guessed_words_by_player.pop().ok_or_else(|| BadRequest("Failed to get last guessed word"))?;
     game_state.words_guessed.pop();
-    game_state.words_to_guess.push(last_word.clone());
+
+    // If we have too many words in play, get rid of the last one and put it back in words_to_guess
+    if game_state.words_in_play.len() >= MAX_WORDS_IN_PLAY {
+        let last_fetched_word = game_state.words_in_play.pop().unwrap();
+        game_state.words_to_guess.push(last_fetched_word);
+    }
+
+    // Add the undone word into the words in play
+    game_state.words_in_play.push(last_word.clone());
 
     // Send event that a guess was undone
     let mut event: String = UNDO_GUESS_EVENT_PREFIX.to_owned();
