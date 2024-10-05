@@ -345,10 +345,9 @@ function undoLastGuess(word) {
     .then(data => {
         console.log(data);
         if (responseOk) {
-            removeWordInPlay(data);
-            if (!anyWordsInPlay()) {
-                fetchWord();
-            }
+            // If a guess is undone, we add the word back in play
+            removeLastWordInPlayIfFull();
+            addWordInPlay(data);
         } else {
             console.log(data);
             console.log(responseStatus);
@@ -394,6 +393,16 @@ function removeWordInPlay(word) {
             ul.removeChild(listEntries[i]);
             break;
         }
+    }
+}
+
+function removeLastWordInPlayIfFull() {
+    // Get list of words
+    let ul = document.getElementById("wordsInPlay");
+
+    let listEntries = ul.getElementsByTagName("li");
+    if (listEntries.length > 0 && listEntries.length >= MAX_WORDS_IN_PLAY) {
+        ul.removeChild(listEntries[listEntries.length-1]);
     }
 }
 
