@@ -36,7 +36,8 @@ pub fn fetch_player_words<'a>(game_id: i32, name: &str, games: &State<CHashMap<i
 
     let response = object! {
         words: words.to_vec(),
-        host: game.host_name.to_owned()
+        host: game.host_name.to_owned(),
+        limit: game.words_per_player_limit
     };
 
     Ok(content::RawJson(response.dump()))
