@@ -162,17 +162,17 @@ function subscribe(uri) {
                 wordsLeftInRound++;
                 updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
             } else if (message.startsWith(NEW_WORD_PREFIX)) {
-                var player_word = message.substring(NEW_WORD_PREFIX.length);
-                var player = player_word.split("/")[0];
-                var word = player_word.split("/")[1];
+                // var player_word = message.substring(NEW_WORD_PREFIX.length);
+                // var player = player_word.split("/")[0];
+                // var word = player_word.split("/")[1];
 
-                if (player == getPlayerName()) {
-                    var ul = document.getElementById("words");
-                    var li = document.createElement("li");
-                    li.classList.add('word_element');
-                    li.appendChild(document.createTextNode(word));
-                    ul.appendChild(li);
-                }
+                // if (player == getPlayerName()) {
+                //     var ul = document.getElementById("words");
+                //     var li = document.createElement("li");
+                //     li.classList.add('word_element');
+                //     li.appendChild(document.createTextNode(word));
+                //     ul.appendChild(li);
+                // }
             }
         });
 

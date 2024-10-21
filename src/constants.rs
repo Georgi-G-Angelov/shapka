@@ -7,6 +7,7 @@ pub const NUM_ROUNDS: i32 = 3;
 
 pub const NEW_PLAYER_EVENT_PREFIX: &str = "new_player:";
 pub const NEW_WORD_EVENT_PREFIX: &str = "new_word:";
+pub const WORD_REMOVED_EVENT_PREFIX: &str = "word_removed:";
 pub const PLAYER_LEFT_EVENT_PREFIX: &str = "player_left:";
 pub const TIMER_UPDATE_EVENT_PREFIX: &str = "timer_update:";
 pub const WORD_GUESSED_EVENT_PREFIX: &str = "word_guessed:";
