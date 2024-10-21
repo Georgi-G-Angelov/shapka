@@ -90,6 +90,13 @@ function fillWords() {
                 li.appendChild(document.createTextNode(player));
                 ul.appendChild(li);
             });
+
+            // If the player has already entered enough words, disable the input
+            let limit = Number(data.limit);
+            if (data.words.length >= limit) {
+                document.getElementById("word").disabled = true;
+                document.getElementById("word").value = "No more words"
+            }
         });
 }
 
