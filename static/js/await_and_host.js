@@ -196,27 +196,29 @@ function addWord() {
                 var ul = document.getElementById("words");
                 var li = document.createElement("li");
                 li.classList.add('word_element');
-                li.appendChild(document.createTextNode(word));
+
+                let p = document.createElement("p");
+                let text = document.createTextNode(word);
+                p.appendChild(text);
+
+                li.appendChild(p);
 
                 const myButton = document.createElement('button');
-                myButton.textContent = 'Click me';
-                myButton.addEventListener('click', deleteWord);
-                // Append myButton to a parent element (e.g., a div or body)
+                myButton.textContent = 'X';
                 li.appendChild(myButton);
 
                 ul.appendChild(li);
+
+                myButton.addEventListener("click", function() { deleteWord(word) });
+
             } else {
                 showError(data);
             }
-            console.log("data is: " + data);
+            console.log("word added: " + JSON.stringify(data));
         });
 }
 
-function deleteWord() {
-    var word = document.getElementById("word").value.trim();
-
-    word = "az";
-
+function deleteWord(word) {
     if (word == "") {
         return;
     }
@@ -237,10 +239,15 @@ function deleteWord() {
         .then(data => {
             if (responseOk) {
                 data = JSON.parse(data);
+                console.log("Delete: " + JSON.stringify(data));
 
                 let wordElements = document.getElementById("words").getElementsByTagName("li");
                 for (let i = 0; i < wordElements.length; i++) {
-                    if (wordElements[i].innerHTML == data.wordRemoved) {
+
+                    console.log("innerhtml " + wordElements[i].innerHTML)
+
+                    let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
+                    if (currentElementWord != undefined && currentElementWord.innerHTML == data.wordRemoved) {
                         document.getElementById("words").removeChild(wordElements[i]);
                         break;
                     }
