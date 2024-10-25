@@ -84,18 +84,15 @@ function fillWords() {
                 window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             }
             
-            data.words.forEach(player => {
-                var ul = document.getElementById("words");
-                var li = document.createElement("li");
-                li.appendChild(document.createTextNode(player));
-                ul.appendChild(li);
+            data.words.forEach(word => {
+                addWordElementToUI(word)
             });
 
             // If the player has already entered enough words, disable the input
             let limit = Number(data.limit);
             if (data.words.length >= limit) {
                 document.getElementById("word").disabled = true;
-                document.getElementById("word").value = "No more words"
+                document.getElementById("word").value = "No more words";
             }
         });
 }
@@ -186,31 +183,15 @@ function addWord() {
             if (responseOk) {
                 data = JSON.parse(data)
                 document.getElementById("word").value = "";
+
+                addWordElementToUI(word);
+
                 numWords = document.getElementById("words").getElementsByTagName("li").length;
                 limit = Number(data.wordLimit);
                 if (numWords >= limit) {
                     document.getElementById("word").disabled = true;
-                    document.getElementById("word").value = "No more words"
+                    document.getElementById("word").value = "No more words";
                 }
-
-                var ul = document.getElementById("words");
-                var li = document.createElement("li");
-                li.classList.add('word_element');
-
-                let p = document.createElement("p");
-                let text = document.createTextNode(word);
-                p.appendChild(text);
-
-                li.appendChild(p);
-
-                const myButton = document.createElement('button');
-                myButton.textContent = 'X';
-                li.appendChild(myButton);
-
-                ul.appendChild(li);
-
-                myButton.addEventListener("click", function() { deleteWord(word) });
-
             } else {
                 showError(data);
             }
@@ -240,21 +221,46 @@ function deleteWord(word) {
             if (responseOk) {
                 data = JSON.parse(data);
                 console.log("Delete: " + JSON.stringify(data));
-
-                let wordElements = document.getElementById("words").getElementsByTagName("li");
-                for (let i = 0; i < wordElements.length; i++) {
-
-                    console.log("innerhtml " + wordElements[i].innerHTML)
-
-                    let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
-                    if (currentElementWord != undefined && currentElementWord.innerHTML == data.wordRemoved) {
-                        document.getElementById("words").removeChild(wordElements[i]);
-                        break;
-                    }
-                }
-                document.getElementById("word").disabled = false;
+                deleteWordElementFromUI(data.wordRemoved);
             } else {
                 showError(data);
             }
         });
+}
+
+function addWordElementToUI(word) {
+    var ul = document.getElementById("words");
+    var li = document.createElement("li");
+    li.classList.add('wordElement');
+
+    let p = document.createElement("p");
+    let text = document.createTextNode(word);
+    p.appendChild(text);
+
+    li.appendChild(p);
+
+    const myButton = document.createElement('button');
+    myButton.textContent = 'X';
+    li.appendChild(myButton);
+
+    ul.appendChild(li);
+
+    myButton.addEventListener("click", function() { deleteWord(word) });
+}
+
+function deleteWordElementFromUI(word) {
+    let wordElements = document.getElementById("words").getElementsByTagName("li");
+    for (let i = 0; i < wordElements.length; i++) {
+
+        console.log("innerhtml " + wordElements[i].innerHTML)
+
+        let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
+        if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
+            document.getElementById("words").removeChild(wordElements[i]);
+            break;
+        }
+    }
+    document.getElementById("word").disabled = false;
+    document.getElementById("word").value = null;
+
 }
