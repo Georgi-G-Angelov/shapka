@@ -21,6 +21,7 @@ impl Authenticator {
         // Not the cleanest initialization buuut anyway
         let endpoints_with_player_name_vec = vec![
             "add_word",
+            "delete_word",
             "authorize",
             "leave_game",
             "fetch_word",
