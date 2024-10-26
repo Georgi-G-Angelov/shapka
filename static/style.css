@@ -139,8 +139,8 @@ button:active {
     font-size: 20px;
     font-weight: bold;
     box-sizing: border-box;
-    border: 0
-
+    border: 0;
+    height: 35px;
 }
 
 .wordElement>button {
