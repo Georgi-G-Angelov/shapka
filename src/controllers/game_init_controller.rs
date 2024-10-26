@@ -1,4 +1,5 @@
 use crate::auth::utils::generate_token;
+use crate::extentions::vec_utils::RemoveElem;
 use crate::models::game::init_game;
 use crate::models::game::Game;
 use crate::constants::*;
@@ -88,15 +89,21 @@ pub async fn leave_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32
     if !players.contains(&name.to_string()) {
         Err(BadRequest("Player not in game"))
     } else {
-        // remove player, probably exists much easier way
-        let mut player_index: usize = 0;
-        for i in 0..players.len() {
-            if players.get(i).unwrap() == name {
-                player_index = i;
-                break;
-            }
-        }
-        players.remove(player_index);
+        // Remove the player
+        players.remove_element(name.to_string());
+
+        // If player has added words, get rid of them
+        let words_per_player = &mut game.game_state.lock().unwrap().words_per_player;
+        match words_per_player.get(name) {
+            Some(words) => {
+                let mut game_words = game.words.lock().unwrap();
+                for word in words {
+                    game_words.remove_element(word.to_string());
+                }
+                words_per_player.remove(name);
+            },
+            None => ()
+        };
 
         // Tell all other people in the game that a player has left
         let mut event: String = PLAYER_LEFT_EVENT_PREFIX.to_owned();
