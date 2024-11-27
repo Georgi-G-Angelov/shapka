@@ -367,12 +367,6 @@ function addWordInPlay(word) {
     newWordParagraph.appendChild(document.createTextNode(word));
     li.appendChild(newWordParagraph);
 
-    // Add button which marks word as guessed
-    // var guessButton = document.createElement("button");
-    // guessButton.textContent = "Guess word";
-    // guessButton.onclick = function() { guessWord(word); };
-    // li.appendChild(guessButton);
-
     // Add green tick image
     let tick = new Image();
     tick.src = "/tick-min.png";
