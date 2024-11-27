@@ -76,7 +76,6 @@ pub async fn join_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32,
 }
 
 // A player who is not the host can leave the game
-// Currently broken - if player has added words and then leaves the game, his words will stay
 #[get("/leave_game/<game_id>/<name>")]
 pub async fn leave_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
     let game = match games.get(&game_id) {

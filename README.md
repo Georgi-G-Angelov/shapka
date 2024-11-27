@@ -22,7 +22,6 @@ go to /etc/nginx/sites-available, edit default and run sudo service nginx restar
 
 Features:
 - make it run as prod build
-- add an option to remove already added words
 - delete games
 - slider for words limit (maybe also random button)
 - custom time limit
@@ -32,9 +31,10 @@ Features:
     kick players
     teams menu is not very intuitive
 - allow host to kick players
-- leave game is broken if player has added words
 - generally fix players missing SSEs - fixed for start of game, not for switching turns, and ending game
 
 
 BUGS:
-- on last round, if you guess X words and then undo X words, game automatically ends - reason being that after the last undo, the fetch returns 400
+- events are often missed - largest impact is people don't know when to start their turn - maybe refresh game state periodically?
+- people lock their phones - while in game on a successful connection to the eventstream we need to refresh gamestate
+- people randomly close the game - we need to store an active game id, player name and token on the client side and check on the home page if the player has an active game

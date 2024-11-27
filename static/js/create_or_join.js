@@ -26,7 +26,7 @@ function createGame() {
             let authToken = data.authToken;
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
             document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
-            // TODO: store auth token
+
             window.location.href = getHostUrl() + "/host/" + gameId + '/' + name;
         } else {
             let errorMessage = data;
@@ -65,7 +65,7 @@ function joinGame() {
 
         if (responseOk) {
             data = JSON.parse(data);
-            // let gameId = data.gameId;
+
             let authToken = data.authToken;
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
             document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
