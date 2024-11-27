@@ -22,9 +22,14 @@ function createGame() {
         if (responseOk) {
             console.log(data);
             data = JSON.parse(data);
+            let playerName = data.name;
             let gameId = data.gameId;
             let authToken = data.authToken;
+
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+            localStorage.setItem(GAME_ID_KEY, gameId);
+            localStorage.setItem(PLAYER_NAME_KEY, playerName);
+
             document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
 
             window.location.href = getHostUrl() + "/host/" + gameId + '/' + name;
@@ -65,9 +70,14 @@ function joinGame() {
 
         if (responseOk) {
             data = JSON.parse(data);
-
+            let playerName = data.name;
+            let gameId = data.gameId;
             let authToken = data.authToken;
+
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+            localStorage.setItem(GAME_ID_KEY, gameId);
+            localStorage.setItem(PLAYER_NAME_KEY, playerName);
+            
             document.cookie = AUTHORIZATION_HEADER + "=" + authToken;
 
             window.location.href = getHostUrl() + "/await/" + gameId + '/' + name;

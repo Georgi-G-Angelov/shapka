@@ -37,4 +37,4 @@ Features:
 BUGS:
 - events are often missed - largest impact is people don't know when to start their turn - maybe refresh game state periodically?
 - people lock their phones - while in game on a successful connection to the eventstream we need to refresh gamestate
-- people randomly close the game - we need to store an active game id, player name and token on the client side and check on the home page if the player has an active game
+- people randomly close the game - we need to store an active game id, player name and token on the client side and check on the home page if the player has an active game - FIXED

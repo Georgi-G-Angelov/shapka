@@ -36,6 +36,7 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
     games.insert(id, game);
 
     let response = object! {
+        name: player_name,
         gameId: id,
         authToken: generate_token(id, player_name.to_string(), auth_secret)
     };
@@ -66,6 +67,7 @@ pub async fn join_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32,
         let _res = game.game_events.send(event.to_string());
 
         let response = object! {
+            name: name,
             gameId: game_id,
             authToken: generate_token(game_id, name.to_string(), game.auth_secret.to_string())
         };

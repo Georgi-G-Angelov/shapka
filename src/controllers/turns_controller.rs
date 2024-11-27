@@ -49,19 +49,6 @@ pub async fn start_game<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) ->
     Ok(content::RawJson(game_id.to_string()))
 }
 
-// Used for the front end to check if game has started every X seconds, in case anyone misses the "game_start" event
-// Returns plain text true or false, or error message
-#[get("/has_game_started/<game_id>")]
-pub async fn has_game_started<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
-    let game = match games.get(&game_id) {
-        Some(game) => game,
-        None => return Err(BadRequest("Game not found")),
-    };
-    let has_game_started = &game.game_state.lock().unwrap().has_game_started;
-
-    Ok(content::RawJson(has_game_started.to_string()))
-}
-
 // Returns the entire state of the game as json, or plain text error message
 #[get("/fetch_game_state/<game_id>")]
 pub async fn fetch_game_state<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<&'a str>> {

@@ -21,8 +21,11 @@ const MESSAGE_DURATION_ON_SCREEN = 2000; // milliseconds
 const AWAIT_ENDPOINT = "await";
 const HOST_ENDPOINT = "host";
 
+// Used to populate local browser storage / cookies
 const AUTH_TOKEN_KEY = "authTokenShapka";
 const AUTHORIZATION_HEADER = "Authorization";
+const PLAYER_NAME_KEY = "shapkaPlayerName";
+const GAME_ID_KEY = "shapkaGameId";
 
 var noCacheHeaders = new Headers();
 noCacheHeaders.append('pragma', 'no-cache');

@@ -28,7 +28,8 @@ impl Authenticator {
             "guess_word",
             "host",
             "await",
-            "game"
+            "game",
+            "is_game_active"
         ];
         let auth_endpoints_with_player_name: HashSet<String> =
             HashSet::from_iter(

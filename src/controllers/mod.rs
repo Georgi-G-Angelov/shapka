@@ -4,3 +4,4 @@ pub mod pages_controller;
 pub mod players_controller;
 pub mod turns_controller;
 pub mod words_controller;
+pub mod periodic_checks_controller;
