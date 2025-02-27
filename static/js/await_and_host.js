@@ -59,10 +59,6 @@ function fillPlayers() {
             }
             
             data.players.forEach(player => {
-                // var ul = document.getElementById("players");
-                // var li = document.createElement("li");
-                // li.appendChild(document.createTextNode(player));
-                // ul.appendChild(li);
                 addPlayerToUI(player);
             });
         });

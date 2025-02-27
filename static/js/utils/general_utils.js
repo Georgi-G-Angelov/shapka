@@ -16,10 +16,6 @@ function subscribe(uri) {
                 var newPlayer = message.substring(NEW_PLAYER_PREFIX.length);
 
                 addPlayerToUI(newPlayer);
-                // var ul = document.getElementById("players");
-                // var li = document.createElement("li");
-                // li.appendChild(document.createTextNode(newPlayer));
-                // ul.appendChild(li);
             } else if (message.startsWith(START_GAME_MESSAGE)) {
                 window.location.href = getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName();
             } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
@@ -36,7 +32,7 @@ function subscribe(uri) {
                 deletePlayerElementFromUI(player);
             } else if (message.startsWith(PLAYER_KICKED_PREFIX)) {
                 let player = message.substring(PLAYER_KICKED_PREFIX.length);
-                
+
                 if (getPlayerName() == player) {
                     home();
                 }
