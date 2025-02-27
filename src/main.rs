@@ -34,7 +34,7 @@ fn rocket() -> Rocket<Build> {
                             join_game, join, host, await_game, in_game, fetch_players, fetch_player_words,
                             game_events, add_word, delete_word, start_game, fetch_game_state, update_timer_state,
                             fetch_word_to_guess, guess_word, undo_last_guess, next_turn, next_round, results, leave_game, forbidden, unauthorized,
-                            has_game_started, is_in_game])
+                            has_game_started, is_in_game, kick_player])
         .mount("/", FileServer::from(relative!("static")))
         .attach(authenticator)
         .attach(AdHoc::on_response("No buffering", |_, res| Box::pin(async move {

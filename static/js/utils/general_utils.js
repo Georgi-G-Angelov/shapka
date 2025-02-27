@@ -15,10 +15,11 @@ function subscribe(uri) {
             if (message.startsWith(NEW_PLAYER_PREFIX)) {
                 var newPlayer = message.substring(NEW_PLAYER_PREFIX.length);
 
-                var ul = document.getElementById("players");
-                var li = document.createElement("li");
-                li.appendChild(document.createTextNode(newPlayer));
-                ul.appendChild(li);
+                addPlayerToUI(newPlayer);
+                // var ul = document.getElementById("players");
+                // var li = document.createElement("li");
+                // li.appendChild(document.createTextNode(newPlayer));
+                // ul.appendChild(li);
             } else if (message.startsWith(START_GAME_MESSAGE)) {
                 window.location.href = getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName();
             } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
@@ -32,14 +33,15 @@ function subscribe(uri) {
                 fetchGameState();
             } else if (message.startsWith(PLAYER_LEFT_PREFIX)) {
                 let player = message.substring(PLAYER_LEFT_PREFIX.length);
-
-                let allListElements = document.getElementsByTagName("li");
-                for (i = 0; i < allListElements.length; i++) {
-                    if (allListElements[i].textContent == player && allListElements[i].parentNode.id == "players") {
-                        allListElements[i].parentNode.removeChild(allListElements[i]);
-                        break;
-                    }
+                deletePlayerElementFromUI(player);
+            } else if (message.startsWith(PLAYER_KICKED_PREFIX)) {
+                let player = message.substring(PLAYER_KICKED_PREFIX.length);
+                
+                if (getPlayerName() == player) {
+                    home();
                 }
+
+                deletePlayerElementFromUI(player);
             } else if (message.startsWith(WORD_GUESSED_PREFIX)) {
                 wordsLeftInRound--;
                 updateWordsLeftInRound(wordsLeftInRound, totalNumWords);

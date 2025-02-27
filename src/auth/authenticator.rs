@@ -29,7 +29,8 @@ impl Authenticator {
             "host",
             "await",
             "game",
-            "is_game_active"
+            "is_game_active",
+            "kick_player"
         ];
         let auth_endpoints_with_player_name: HashSet<String> =
             HashSet::from_iter(

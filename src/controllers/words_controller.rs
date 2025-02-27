@@ -20,6 +20,12 @@ pub fn add_word<'a>(game_id: i32, name: &str, word: &str, games: &State<CHashMap
         None => return Err(BadRequest("Game not found")),
     };
 
+    let players = game.players.lock().unwrap();
+
+    if !players.contains(&name.to_string()) {
+        return Err(BadRequest("Player not in game"));
+    }
+
     // Init number of words added per player if necessary
     let mut num_words_per_player = game.num_words_per_player.lock().unwrap();
     if !num_words_per_player.contains_key(name) {

@@ -130,3 +130,43 @@ function goToGame(gameId, playerName, isGameActive, isHost) {
         }
     }
 }
+
+function addPlayerToUI(player) {
+
+    var ul = document.getElementById("players");
+    var li = document.createElement("li");
+    li.classList.add('playerElement');
+
+    let p = document.createElement("p");
+    let text = document.createTextNode(player);
+    p.appendChild(text);
+
+    li.appendChild(p);
+
+    if (getEndpoint() == "host" && getPlayerName() != player) {
+        const myButton = document.createElement('button');
+        myButton.textContent = 'X';
+        li.appendChild(myButton);
+        
+        myButton.addEventListener("click", function() { kickPlayer(player) });
+    }
+
+    ul.appendChild(li);
+}
+
+function deletePlayerElementFromUI(player) {
+    let playerElements = document.getElementById("players").getElementsByTagName("li");
+    for (let i = 0; i < playerElements.length; i++) {
+
+        console.log("innerhtml " + playerElements[i].innerHTML)
+
+        let currentElementWord = playerElements[i].getElementsByTagName("p")[0];
+        if (currentElementWord != undefined && currentElementWord.innerHTML == player) {
+            document.getElementById("players").removeChild(playerElements[i]);
+            break;
+        }
+    }
+    document.getElementById("word").disabled = false;
+    document.getElementById("word").value = null;
+
+}
