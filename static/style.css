@@ -110,7 +110,9 @@ button:active {
     display: inline-block;
     margin: 2%;
     background-color: black;
-    padding: 3%;
+    padding-right: 4px;
+    padding-left: 4px;
+    /* padding-right: 0; */
     font-weight: bold;
     border-radius: 10px;
     text-align: center;
@@ -163,6 +165,33 @@ button:active {
     margin-left: 5px;
     margin-right: 5px;
     box-sizing: border-box;
+}
+
+.playerElement>button {
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+    display: inline-block;
+    margin: 0;
+    margin-right: -4px;
+    width: 30px;
+    background-color: white;
+    color: red;
+    height: 100%;
+    box-sizing: border-box;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.playerElement>p {
+    display: inline-block;
+    margin: 0;
+    margin-left: 5px;
+    margin-right: 5px;
+    box-sizing: border-box;
+}
+
+.playerElement {
+    padding: 0;
 }
 
 hr {

@@ -114,3 +114,45 @@ pub async fn leave_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32
         Ok(content::RawJson(game_id.to_string()))
     }
 }
+
+// A player who is not the host can leave the game
+#[get("/kick_player/<game_id>/<name>/<player_to_kick>")]
+pub async fn kick_player<'a>(game_id: i32, name: &str, player_to_kick: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
+    let game = match games.get(&game_id) {
+        Some(game) => game,
+        None => return Err(BadRequest("Game not found")),
+    };
+
+    let mut players = game.players.lock().unwrap();
+
+    if game.host_name != name.to_string() {
+        return Err(BadRequest("Only the host can kick people"))
+    }
+
+    if !players.contains(&player_to_kick.to_string()) {
+        return Err(BadRequest("Player not in game"))
+    } else {
+        // Remove the player
+        players.remove_element(player_to_kick.to_string());
+
+        // If player has added words, get rid of them
+        let words_per_player = &mut game.game_state.lock().unwrap().words_per_player;
+        match words_per_player.get(player_to_kick) {
+            Some(words) => {
+                let mut game_words = game.words.lock().unwrap();
+                for word in words {
+                    game_words.remove_element(word.to_string());
+                }
+                words_per_player.remove(player_to_kick);
+            },
+            None => ()
+        };
+
+        // Tell all other people in the game that a player has left
+        let mut event: String = PLAYER_KICKED_EVENT_PREFIX.to_owned();
+        event.push_str(player_to_kick);
+
+        let _res = game.game_events.send(event);
+        Ok(content::RawJson(game_id.to_string()))
+    }
+}

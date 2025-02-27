@@ -2,6 +2,7 @@
 const NEW_PLAYER_PREFIX = "new_player:";
 const NEW_WORD_PREFIX = "new_word:";
 const PLAYER_LEFT_PREFIX = "player_left:";
+const PLAYER_KICKED_PREFIX = "player_kicked:";
 const START_GAME_MESSAGE = "start_game";
 const TIMER_UPDATE_PREFIX = "timer_update:";
 const WORD_GUESSED_PREFIX = "word_guessed:";

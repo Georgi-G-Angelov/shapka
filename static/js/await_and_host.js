@@ -59,10 +59,7 @@ function fillPlayers() {
             }
             
             data.players.forEach(player => {
-                var ul = document.getElementById("players");
-                var li = document.createElement("li");
-                li.appendChild(document.createTextNode(player));
-                ul.appendChild(li);
+                addPlayerToUI(player);
             });
         });
 }
@@ -222,6 +219,35 @@ function deleteWord(word) {
                 data = JSON.parse(data);
                 console.log("Delete: " + JSON.stringify(data));
                 deleteWordElementFromUI(data.wordRemoved);
+            } else {
+                showError(data);
+            }
+        });
+}
+
+function kickPlayer(player) {
+    if (player == "") {
+        return;
+    }
+
+    let responseOk;
+    let responseStatus;
+    console.log(localStorage.getItem(AUTH_TOKEN_KEY));
+    fetch(getHostUrl() + "/kick_player/" + getGameId() + "/" + getPlayerName() + "/" + player, {
+            method: "GET",
+            headers: authNoCacheHeaders
+        })
+        .then(function(response) {
+            responseOk = response.ok;
+            responseStatus = response.status;
+            return response;
+        })
+        .then(response => response.text())
+        .then(data => {
+            if (responseOk) {
+                data = JSON.parse(data);
+                console.log("Kicked: " + JSON.stringify(data));
+                deletePlayerElementFromUI(player);
             } else {
                 showError(data);
             }
