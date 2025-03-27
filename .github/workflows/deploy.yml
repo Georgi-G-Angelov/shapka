@@ -20,7 +20,10 @@ jobs:
     - name: pull latest
       run: git pull
 
-    - name: build
+    - name: build frontend
+      run: tsc
+
+    - name: build backend
       run: cargo build
 
     - name: kill old

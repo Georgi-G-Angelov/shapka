@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outFile": "./static/js/main.js",
+    "target": "ES6",
+    "module": "none",
+    "strict": true
+  },
+  "include": [
+    "./static/ts/**/*.ts"
+  ]
+}
