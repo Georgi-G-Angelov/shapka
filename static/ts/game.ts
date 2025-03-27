@@ -1,3 +1,9 @@
+import { fillGameId } from "./await_and_host";
+import { fillResults } from "./results";
+import { subscribe } from "./utils/general_utils";
+import { showResults, showNextRoundButton, hideTimerAndFetchWordButtons, updateWordsLeftInRound, showError } from "./utils/ui_utils";
+import { getHostUrl, getGameId, getEndpoint, getPlayerName } from "./utils/url_utils";
+
 /*
 Example value for game state:
 {
@@ -35,30 +41,30 @@ Example value for game state:
     "is_game_finished": false
 }
 */
-var gameState;
+export var gameState: any;
 
 // Timer variables
-var isTimerOn = false; // time on/off flag lol
-var timer; // the function on an interval which runs the timer
-var timerValueMillis;
-var timerValueSeconds;
-var timerDeltaSinceLastServerUpdate; // we need to update the server every around 500 millis
-var timerEndSounds: HTMLAudioElement[] = [];
-var timerEndSoundsPaths = [
+export var isTimerOn = false; // time on/off flag lol
+export var timer: number; // the function on an interval which runs the timer
+export var timerValueMillis: number;
+export var timerValueSeconds: number;
+export var timerDeltaSinceLastServerUpdate: number; // we need to update the server every around 500 millis
+export var timerEndSounds: HTMLAudioElement[] = [];
+export var timerEndSoundsPaths = [
     "/audio/mbt_gadove.ogg",
     "/audio/mbt_nema_kvo.ogg",
     "/audio/mbt_risk.ogg"
 ];
 var hasTimerEndedOnPageLoad = false;
-var currentTimerEndSound;
+export var currentTimerEndSound: HTMLAudioElement;
 
 // Random globals
-var isConnectedToEvents = false;
-var awaitingNextTurn = false;
-var wordsLeftInRound;
-var totalNumWords;
+export var isConnectedToEvents = false;
+export var awaitingNextTurn = false;
+export var wordsLeftInRound: number;
+export var totalNumWords: number;
 
-async function fetchGameState() {
+export async function fetchGameState() {
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
         method: "GET",
         headers: authNoCacheHeaders
@@ -162,7 +168,7 @@ function fillTurnPlayerMessage() {
 }
 
 function fillTeams() {
-    gameState.teams.forEach(team => {
+    gameState.teams.forEach((team: string[]) => {
         var teams = document.getElementById("teamsList")!;
         var p = document.createElement("p");
         p.appendChild(document.createTextNode(team[0] + " and " + team[1]));
@@ -172,7 +178,7 @@ function fillTeams() {
 
 function fillWordsInPlay() {
     if (getPlayerName() == gameState.turn_player) {
-        gameState.words_in_play.forEach(word => {
+        gameState.words_in_play.forEach((word: string) => {
             addWordInPlay(word);
         });
     }
@@ -244,7 +250,7 @@ function setTimerButtonText() {
     }
 }
 
-async function updateTimerState(millis) {
+async function updateTimerState(millis: number) {
     // Synchronization is hard
     if (millis < 0) {
         millis = 0;
@@ -267,8 +273,8 @@ async function fetchWord() {
         return;
     }
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
 
     await fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
@@ -296,13 +302,13 @@ async function fetchWord() {
     });
 }
 
-function guessWord(word) {
+function guessWord(word: string) {
     if (!isTimerOn) {
         return;
     }
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
 
     fetch(getHostUrl() + "/guess_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
         method: "GET",
@@ -328,9 +334,9 @@ function guessWord(word) {
     });
 }
 
-function undoLastGuess(word) {
-    let responseOk;
-    let responseStatus;
+function undoLastGuess(word: string) {
+    let responseOk: boolean;
+    let responseStatus: number;
 
     fetch(getHostUrl() + "/undo_guess_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
@@ -355,7 +361,7 @@ function undoLastGuess(word) {
     });
 }
 
-function addWordInPlay(word) {
+function addWordInPlay(word: string) {
     // Get list of words
     var ul = document.getElementById("wordsInPlay")!;
 
@@ -376,7 +382,7 @@ function addWordInPlay(word) {
     ul.appendChild(li);
 }
 
-function removeWordInPlay(word) {
+function removeWordInPlay(word: string) {
     // Get list of words
     let ul = document.getElementById("wordsInPlay")!;
 
@@ -458,7 +464,7 @@ async function nextRound() {
     });
 }
 
-function cleanDOM() {
+export function cleanDOM() {
     document.getElementById("teamsList")!.innerHTML = '';
     document.getElementById("wordsInPlay")!.innerHTML = '';
 
@@ -467,4 +473,14 @@ function cleanDOM() {
     document.getElementById("nextTurn")!.style.display = "none";
     document.getElementById("nextRound")!.style.display = "none";
     document.getElementById("undoLastGuess")!.style.display = "none";
+}
+
+export function incrementWordsLeftInRound() {
+    wordsLeftInRound++;
+    updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
+}
+
+export function decrementWordsLeftInRound() {
+    wordsLeftInRound--;
+    updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
 }

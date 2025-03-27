@@ -1,4 +1,7 @@
-function fillResults() {
+import { fillGameId } from "./await_and_host";
+import { gameState } from "./game";
+
+export function fillResults() {
     fillGameId();
 
     // Score calculation
@@ -15,12 +18,12 @@ function fillResults() {
 
     // Get top 3 teams // doesnt work
     let winnerClasses = ["gold", "silver", "bronze"] // Gold, silver, bronze
-    let winners = {};
+    let winners: { [key:number]: string }  = {};
     let teamScoresCopy = teamScores.slice();
     // teamScores.sort().reverse();
     // teamScores = teamScores.sort();
 
-    function compareDecimals(a, b) {
+    function compareDecimals(a: number, b: number) {
         if (a === b) 
              return 0;
     

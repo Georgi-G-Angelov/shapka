@@ -1,3 +1,7 @@
+import { subscribe } from "./utils/general_utils";
+import { addPlayerToUI, showError, deletePlayerElementFromUI } from "./utils/ui_utils";
+import { getHostUrl, getGameId, getPlayerName, getEndpoint } from "./utils/url_utils";
+
 function fillAllAwait() {
     fillAll();
 
@@ -37,7 +41,7 @@ function fillAll() {
     console.log(getGameId());
 }
 
-function fillGameId() {
+export function fillGameId() {
     document.getElementById("gameId")!.textContent = `Game ${getGameId()}`;
 }
 
@@ -58,7 +62,7 @@ function fillPlayers() {
                 window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             }
             
-            parsedData.players.forEach(player => {
+            parsedData.players.forEach((player: string) => {
                 addPlayerToUI(player);
             });
         });
@@ -81,7 +85,7 @@ function fillWords() {
                 window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             }
             
-            parsedData.words.forEach(word => {
+            parsedData.words.forEach((word: string) => {
                 addWordElementToUI(word)
             });
 
@@ -96,8 +100,8 @@ function fillWords() {
 }
 
 function startGame() {
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
     fetch(getHostUrl() + "/start_game/" + getGameId(), {
         method: "GET",
         headers: authNoCacheHeaders
@@ -121,8 +125,8 @@ function startGame() {
 }
 
 function leaveGame() {
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
     fetch(getHostUrl() + "/leave_game/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
         headers: authNoCacheHeaders
@@ -164,8 +168,8 @@ function addWord() {
         return;
     }
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
     console.log(localStorage.getItem(AUTH_TOKEN_KEY));
     fetch(getHostUrl() + "/add_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
             method: "GET",
@@ -198,13 +202,13 @@ function addWord() {
         });
 }
 
-function deleteWord(word) {
+function deleteWord(word: string) {
     if (word == "") {
         return;
     }
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
     console.log(localStorage.getItem(AUTH_TOKEN_KEY));
     fetch(getHostUrl() + "/delete_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
             method: "GET",
@@ -227,13 +231,13 @@ function deleteWord(word) {
         });
 }
 
-function kickPlayer(player) {
+export function kickPlayer(player: string) {
     if (player == "") {
         return;
     }
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
     console.log(localStorage.getItem(AUTH_TOKEN_KEY));
     fetch(getHostUrl() + "/kick_player/" + getGameId() + "/" + getPlayerName() + "/" + player, {
             method: "GET",
@@ -256,7 +260,7 @@ function kickPlayer(player) {
         });
 }
 
-function addWordElementToUI(word) {
+function addWordElementToUI(word: string) {
     var ul = document.getElementById("words")!;
     var li = document.createElement("li");
     li.classList.add('wordElement');
@@ -276,7 +280,7 @@ function addWordElementToUI(word) {
     myButton.addEventListener("click", function() { deleteWord(word) });
 }
 
-function deleteWordElementFromUI(word) {
+function deleteWordElementFromUI(word: string) {
     let wordElements = document.getElementById("words")!.getElementsByTagName("li");
     for (let i = 0; i < wordElements.length; i++) {
 

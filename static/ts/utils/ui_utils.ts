@@ -1,7 +1,11 @@
 // UI utils
 // -----------------------------------------------------------------------------------------------------------------------------
 
-function showNextRoundButton() {
+import { kickPlayer } from "../await_and_host";
+import { gameState } from "../game";
+import { getEndpoint, getGameId, getHostUrl, getPlayerName } from "./url_utils";
+
+export function showNextRoundButton() {
     if (gameState.round < 3) {
         if (getPlayerName() == gameState.turn_player) {
             document.getElementById("nextRound")!.style.display = "block";
@@ -11,33 +15,33 @@ function showNextRoundButton() {
     }
 }
 
-function hideTimerAndFetchWordButtons() {
+export function hideTimerAndFetchWordButtons() {
     document.getElementById("toggleTimer")!.style.display = "none";
     document.getElementById("fetchWord")!.style.display = "none";
     document.getElementById("undoLastGuess")!.style.display = "none";
 }
 
-function showResults() {
+export function showResults() {
     window.location.href = getHostUrl() + "/results/" + getGameId() + '/' + getPlayerName();
 }
 
-function home() {
+export function home() {
     window.location.href = getHostUrl();
 }
 
-function toggleTeams() {
+export function toggleTeams() {
     document.getElementById("teamsList")!.classList.toggle("show");
 }
 
-function showError(errorMessage) {
+export function showError(errorMessage: string) {
     showMessageElement(errorMessage, RED);
 }
 
-function showMessage(message) {
+export function showMessage(message: string) {
     showMessageElement(message, GREEN);
 }
 
-function showMessageElement(message, borderColor) {
+export function showMessageElement(message: string, borderColor: string) {
     let messageElement = document.getElementById("message")!;
     messageElement.textContent = message;
     messageElement.style.top = "30px";
@@ -47,13 +51,13 @@ function showMessageElement(message, borderColor) {
     messageElementTimeout = setTimeout(hideMessageElement, MESSAGE_DURATION_ON_SCREEN);
 }
 
-function hideMessageElement() {
+export function hideMessageElement() {
     let messageElement = document.getElementById("message")!;
     // messageElement.textContent = "";
     messageElement.style.top = "-50px";
 }
 
-function setConnectedStatus(status) {
+export function setConnectedStatus(status: boolean) {
     // STATE.connected = status;
     let statusDiv = document.getElementById("status")!;
     statusDiv.className = (status) ? "connected" : "reconnecting";
@@ -61,12 +65,12 @@ function setConnectedStatus(status) {
     statusMessageDiv.textContent = (status) ? "connected" : "reconnecting";
 }
 
-function updateWordsLeftInRound(wordsLeftInRound, totalNumWords) {
+export function updateWordsLeftInRound(wordsLeftInRound: number, totalNumWords: number) {
     document.getElementById("wordsLeftInRound")!.innerHTML = "Words left: " + wordsLeftInRound + "/" + totalNumWords;
 }
 
 // On the home page, check local storage, and if the player has an active (in game or in await stage) game, allow them to go there
-function checkActiveGameExists() {
+export function checkActiveGameExists() {
     let playerName = localStorage.getItem(PLAYER_NAME_KEY);
     let gameId = localStorage.getItem(GAME_ID_KEY);
 
@@ -74,7 +78,7 @@ function checkActiveGameExists() {
         return;
     }
 
-    let responseOk;
+    let responseOk: boolean;
     fetch(getHostUrl() + "/is_in_game/" + gameId + '/' + playerName, {
         method: "GET",
         headers: authNoCacheHeaders
@@ -118,7 +122,7 @@ function checkActiveGameExists() {
     });
 }
 
-function goToGame(gameId, playerName, isGameActive, isHost) {
+export function goToGame(gameId: string, playerName: string, isGameActive: string, isHost: string) {
     window.location.href = getHostUrl() + "/game/" + gameId + '/' + playerName;
 
     if (isGameActive == "true") {
@@ -132,7 +136,7 @@ function goToGame(gameId, playerName, isGameActive, isHost) {
     }
 }
 
-function addPlayerToUI(player) {
+export function addPlayerToUI(player: string) {
 
     var ul = document.getElementById("players")!;
     var li = document.createElement("li");
@@ -155,7 +159,7 @@ function addPlayerToUI(player) {
     ul.appendChild(li);
 }
 
-function deletePlayerElementFromUI(player) {
+export function deletePlayerElementFromUI(player: string) {
     let playerElements = document.getElementById("players")!.getElementsByTagName("li");
     for (let i = 0; i < playerElements.length; i++) {
 
