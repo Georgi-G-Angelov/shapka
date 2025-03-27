@@ -43,7 +43,7 @@ var timer; // the function on an interval which runs the timer
 var timerValueMillis;
 var timerValueSeconds;
 var timerDeltaSinceLastServerUpdate; // we need to update the server every around 500 millis
-var timerEndSounds = [];
+var timerEndSounds: HTMLAudioElement[] = [];
 var timerEndSoundsPaths = [
     "/audio/mbt_gadove.ogg",
     "/audio/mbt_nema_kvo.ogg",
@@ -88,15 +88,15 @@ function fillAllGameMode() {
 
     // Show timer button and fetch word button
     if (gameState.turn_player == getPlayerName()) {
-        document.getElementById("toggleTimer").style.display = "block";
-        document.getElementById("fetchWord").style.display = "block";
-        document.getElementById("undoLastGuess").style.display = "block";
+        document.getElementById("toggleTimer")!.style.display = "block";
+        document.getElementById("fetchWord")!.style.display = "block";
+        document.getElementById("undoLastGuess")!.style.display = "block";
     } else {
-        document.getElementById("toggleTimer").style.display = "none";
-        document.getElementById("fetchWord").style.display = "none";
-        document.getElementById("undoLastGuess").style.display = "none";
-        document.getElementById("nextTurn").style.display = "none";
-        document.getElementById("nextRound").style.display = "none";
+        document.getElementById("toggleTimer")!.style.display = "none";
+        document.getElementById("fetchWord")!.style.display = "none";
+        document.getElementById("undoLastGuess")!.style.display = "none";
+        document.getElementById("nextTurn")!.style.display = "none";
+        document.getElementById("nextRound")!.style.display = "none";
     }
     setTimerButtonText();
 
@@ -105,7 +105,7 @@ function fillAllGameMode() {
     // Set initial timer values
     timerValueSeconds = gameState.timer / 1000;
     timerValueMillis = gameState.timer;
-    document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
+    document.getElementById("timer")!.textContent = millisecondsToString(timerValueMillis);
     timerDeltaSinceLastServerUpdate = 0;
 
     //
@@ -155,15 +155,15 @@ function fillTurnPlayerMessage() {
     console.log("turn player is " + gameState.turn_player);
 
     if (currentPlayer == gameState.turn_player) {
-        document.getElementById("turnPlayer").textContent = currentPlayer + ", it's your turn!";
+        document.getElementById("turnPlayer")!.textContent = currentPlayer + ", it's your turn!";
     } else {
-        document.getElementById("turnPlayer").textContent = "It is " + getPossesiveNoun(gameState.turn_player) + " turn!";
+        document.getElementById("turnPlayer")!.textContent = "It is " + getPossesiveNoun(gameState.turn_player) + " turn!";
     }
 }
 
 function fillTeams() {
     gameState.teams.forEach(team => {
-        var teams = document.getElementById("teamsList");
+        var teams = document.getElementById("teamsList")!;
         var p = document.createElement("p");
         p.appendChild(document.createTextNode(team[0] + " and " + team[1]));
         teams.appendChild(p);
@@ -194,12 +194,12 @@ async function startTimer() {
         var delta = newCurrentTime - currentTime;
         timerValueMillis -= delta;
         currentTime = newCurrentTime;
-        document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
+        document.getElementById("timer")!.textContent = millisecondsToString(timerValueMillis);
 
         if (timerValueMillis < 0) {
             isTimerOn = false;
             clearInterval(timer);
-            document.getElementById("timer").textContent = millisecondsToString(0);
+            document.getElementById("timer")!.textContent = millisecondsToString(0);
             gameState.is_turn_active = false;
             updateTimerState(0);
             showNextTurnButton();
@@ -238,9 +238,9 @@ function toggleTimer() {
 
 function setTimerButtonText() {
     if (isTimerOn) {
-        document.getElementById("toggleTimer").textContent = "Stop timer";
+        document.getElementById("toggleTimer")!.textContent = "Stop timer";
     } else {
-        document.getElementById("toggleTimer").textContent = "Start timer";
+        document.getElementById("toggleTimer")!.textContent = "Start timer";
     }
 }
 
@@ -357,7 +357,7 @@ function undoLastGuess(word) {
 
 function addWordInPlay(word) {
     // Get list of words
-    var ul = document.getElementById("wordsInPlay");
+    var ul = document.getElementById("wordsInPlay")!;
 
     // Create new list entry
     var li = document.createElement("li");
@@ -378,7 +378,7 @@ function addWordInPlay(word) {
 
 function removeWordInPlay(word) {
     // Get list of words
-    let ul = document.getElementById("wordsInPlay");
+    let ul = document.getElementById("wordsInPlay")!;
 
     let listEntries = ul.getElementsByTagName("li");
     for (let i = 0; i < listEntries.length; i++) {
@@ -392,7 +392,7 @@ function removeWordInPlay(word) {
 
 function removeLastWordInPlayIfFull() {
     // Get list of words
-    let ul = document.getElementById("wordsInPlay");
+    let ul = document.getElementById("wordsInPlay")!;
 
     let listEntries = ul.getElementsByTagName("li");
     if (listEntries.length > 0 && listEntries.length >= MAX_WORDS_IN_PLAY) {
@@ -401,11 +401,11 @@ function removeLastWordInPlayIfFull() {
 }
 
 function anyWordsInPlay() {
-    return document.getElementById("wordsInPlay").getElementsByTagName("li").length > 0;
+    return document.getElementById("wordsInPlay")!.getElementsByTagName("li").length > 0;
 }
 
 function showNextTurnButton() {
-    document.getElementById("nextTurn").style.display = "block";
+    document.getElementById("nextTurn")!.style.display = "block";
 }
 
 function playRandomTimerEnd() {
@@ -430,8 +430,8 @@ async function nextTurn() {
             headers: authNoCacheHeaders
         })
         .then(function(response) {
-            responseOk = response.ok;
-            responseStatus = response.status;
+            let responseOk = response.ok;
+            let responseStatus = response.status;
             return response;
         })
         .then(response => response.text())
@@ -459,12 +459,12 @@ async function nextRound() {
 }
 
 function cleanDOM() {
-    document.getElementById("teamsList").innerHTML = '';
-    document.getElementById("wordsInPlay").innerHTML = '';
+    document.getElementById("teamsList")!.innerHTML = '';
+    document.getElementById("wordsInPlay")!.innerHTML = '';
 
-    document.getElementById("toggleTimer").style.display = "none";
-    document.getElementById("fetchWord").style.display = "none";
-    document.getElementById("nextTurn").style.display = "none";
-    document.getElementById("nextRound").style.display = "none";
-    document.getElementById("undoLastGuess").style.display = "none";
+    document.getElementById("toggleTimer")!.style.display = "none";
+    document.getElementById("fetchWord")!.style.display = "none";
+    document.getElementById("nextTurn")!.style.display = "none";
+    document.getElementById("nextRound")!.style.display = "none";
+    document.getElementById("undoLastGuess")!.style.display = "none";
 }

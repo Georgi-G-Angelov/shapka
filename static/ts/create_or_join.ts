@@ -3,8 +3,8 @@ function createRedirect() {
 }
 
 function createGame() {
-    let name = document.getElementById("name").value;
-    let wordLimit = document.getElementById("word-limit").value;
+    let name = (document.getElementById("name") as HTMLInputElement)!.value;
+    let wordLimit = (document.getElementById("word-limit") as HTMLInputElement)!.value;
 
     let responseOk;
     let responseStatus;
@@ -21,10 +21,10 @@ function createGame() {
     .then(data => {
         if (responseOk) {
             console.log(data);
-            data = JSON.parse(data);
-            let playerName = data.name;
-            let gameId = data.gameId;
-            let authToken = data.authToken;
+            let parsedData = JSON.parse(data);
+            let playerName = parsedData.name;
+            let gameId = parsedData.gameId;
+            let authToken = parsedData.authToken;
 
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
             localStorage.setItem(GAME_ID_KEY, gameId);
@@ -49,8 +49,8 @@ function joinRedirect() {
 }
 
 function joinGame() {
-    let name = document.getElementById("name").value;
-    let gameId = document.getElementById("game_id").value;
+    let name = (document.getElementById("name") as HTMLInputElement)!.value;
+    let gameId = (document.getElementById("game_id") as HTMLInputElement)!.value;
 
     let responseOk;
     let responseStatus;
@@ -69,10 +69,10 @@ function joinGame() {
         console.log(data);
 
         if (responseOk) {
-            data = JSON.parse(data);
-            let playerName = data.name;
-            let gameId = data.gameId;
-            let authToken = data.authToken;
+            let parsedData = JSON.parse(data);
+            let playerName = parsedData.name;
+            let gameId = parsedData.gameId;
+            let authToken = parsedData.authToken;
 
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
             localStorage.setItem(GAME_ID_KEY, gameId);

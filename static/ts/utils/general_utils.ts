@@ -20,7 +20,7 @@ function subscribe(uri) {
                 window.location.href = getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName();
             } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
                 let millis = message.substring(TIMER_UPDATE_PREFIX.length);
-                document.getElementById("timer").textContent = millisecondsToString(millis);
+                document.getElementById("timer")!.textContent = millisecondsToString(millis);
             } else if (message == OUT_OF_WORDS_EVENT) { // could potentially never need this
                 gameState.is_round_active = false;
                 showNextRoundButton();

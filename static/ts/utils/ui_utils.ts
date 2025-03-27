@@ -4,17 +4,17 @@
 function showNextRoundButton() {
     if (gameState.round < 3) {
         if (getPlayerName() == gameState.turn_player) {
-            document.getElementById("nextRound").style.display = "block";
+            document.getElementById("nextRound")!.style.display = "block";
         }
     } else {
-        document.getElementById("showResults").style.display = "block";
+        document.getElementById("showResults")!.style.display = "block";
     }
 }
 
 function hideTimerAndFetchWordButtons() {
-    document.getElementById("toggleTimer").style.display = "none";
-    document.getElementById("fetchWord").style.display = "none";
-    document.getElementById("undoLastGuess").style.display = "none";
+    document.getElementById("toggleTimer")!.style.display = "none";
+    document.getElementById("fetchWord")!.style.display = "none";
+    document.getElementById("undoLastGuess")!.style.display = "none";
 }
 
 function showResults() {
@@ -26,7 +26,7 @@ function home() {
 }
 
 function toggleTeams() {
-    document.getElementById("teamsList").classList.toggle("show");
+    document.getElementById("teamsList")!.classList.toggle("show");
 }
 
 function showError(errorMessage) {
@@ -38,7 +38,7 @@ function showMessage(message) {
 }
 
 function showMessageElement(message, borderColor) {
-    let messageElement = document.getElementById("message");
+    let messageElement = document.getElementById("message")!;
     messageElement.textContent = message;
     messageElement.style.top = "30px";
     messageElement.style.borderColor = borderColor;
@@ -48,21 +48,21 @@ function showMessageElement(message, borderColor) {
 }
 
 function hideMessageElement() {
-    let messageElement = document.getElementById("message");
+    let messageElement = document.getElementById("message")!;
     // messageElement.textContent = "";
     messageElement.style.top = "-50px";
 }
 
 function setConnectedStatus(status) {
     // STATE.connected = status;
-    let statusDiv = document.getElementById("status");
+    let statusDiv = document.getElementById("status")!;
     statusDiv.className = (status) ? "connected" : "reconnecting";
-    let statusMessageDiv = document.getElementById("statusMessage");
+    let statusMessageDiv = document.getElementById("statusMessage")!;
     statusMessageDiv.textContent = (status) ? "connected" : "reconnecting";
 }
 
 function updateWordsLeftInRound(wordsLeftInRound, totalNumWords) {
-    document.getElementById("wordsLeftInRound").innerHTML = "Words left: " + wordsLeftInRound + "/" + totalNumWords;
+    document.getElementById("wordsLeftInRound")!.innerHTML = "Words left: " + wordsLeftInRound + "/" + totalNumWords;
 }
 
 // On the home page, check local storage, and if the player has an active (in game or in await stage) game, allow them to go there
@@ -87,12 +87,13 @@ function checkActiveGameExists() {
     .then(data => {
         if (responseOk) {
             data = JSON.parse(data);
-            let isGameActive = data.isGameActive;
-            let isHost = data.isHost;
+            let parsedData = JSON.parse(data);
+            let isGameActive = parsedData.isGameActive;
+            let isHost = parsedData.isHost;
             console.log(isGameActive);
             console.log(isHost);
 
-            let activeGameBox = document.getElementById("activeGameBox");
+            let activeGameBox = document.getElementById("activeGameBox")!;
 
             // Add a paragraph to say we have an active game
             let h1 = document.createElement("h1");
@@ -133,7 +134,7 @@ function goToGame(gameId, playerName, isGameActive, isHost) {
 
 function addPlayerToUI(player) {
 
-    var ul = document.getElementById("players");
+    var ul = document.getElementById("players")!;
     var li = document.createElement("li");
     li.classList.add('playerElement');
 
@@ -155,18 +156,19 @@ function addPlayerToUI(player) {
 }
 
 function deletePlayerElementFromUI(player) {
-    let playerElements = document.getElementById("players").getElementsByTagName("li");
+    let playerElements = document.getElementById("players")!.getElementsByTagName("li");
     for (let i = 0; i < playerElements.length; i++) {
 
         console.log("innerhtml " + playerElements[i].innerHTML)
 
         let currentElementWord = playerElements[i].getElementsByTagName("p")[0];
         if (currentElementWord != undefined && currentElementWord.innerHTML == player) {
-            document.getElementById("players").removeChild(playerElements[i]);
+            document.getElementById("players")!.removeChild(playerElements[i]);
             break;
         }
     }
-    document.getElementById("word").disabled = false;
-    document.getElementById("word").value = null;
 
+    let wordInput = document.getElementById("word") as HTMLInputElement;
+    wordInput.disabled = false;
+    wordInput.value = "";
 }

@@ -2,7 +2,7 @@
 // -----------------------------------------------------------------------------------------------------------------------------
 
 function containsWhitespaceOrPunctuation(word) {
-    for(i = 0; i < word.length; i++) {
+    for(let i = 0; i < word.length; i++) {
         let char = word.charAt(i);
         if (isWhiteSpace(char) || isPunct(char)) {
             return true;
@@ -20,7 +20,7 @@ function isPunct(char) {
 }
 
 function containsDigits(word) {
-    for(i = 0; i < word.length; i++) {
+    for(let i = 0; i < word.length; i++) {
         let char = word.charAt(i);
         if (char >= '0' && char <= '9') {
             return true;
@@ -38,8 +38,8 @@ function getPossesiveNoun(name) {
 }
 
 function millisecondsToString(millis) {
-    minutes = Math.floor(millis / 1000 / 60);
-    seconds = Math.floor(millis / 1000) - minutes * 60;
+    let minutes = Math.floor(millis / 1000 / 60);
+    let seconds = Math.floor(millis / 1000) - minutes * 60;
     millis = millis - seconds * 1000 - minutes * 60 * 1000;
     return integerToTwoDigits(minutes) + ":" + integerToTwoDigits(seconds) + ":" + integerToTwoDigits(millis)
 }

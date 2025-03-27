@@ -38,7 +38,7 @@ function fillAll() {
 }
 
 function fillGameId() {
-    document.getElementById("gameId").textContent = `Game ${getGameId()}`;
+    document.getElementById("gameId")!.textContent = `Game ${getGameId()}`;
 }
 
 function fillPlayers() { 
@@ -49,16 +49,16 @@ function fillPlayers() {
         .then(response => response.text())
         .then(data => {
             console.log("data is: " + data);
-            data = JSON.parse(data);
+            let parsedData = JSON.parse(data);
 
             // Make sure the host uses the host page and the other players use the await page
-            if (getEndpoint() == AWAIT_ENDPOINT && getPlayerName() == data.host) {
+            if (getEndpoint() == AWAIT_ENDPOINT && getPlayerName() == parsedData.host) {
                 window.location.href = getHostUrl() + "/" + HOST_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
-            } else if (getEndpoint() == HOST_ENDPOINT && getPlayerName() != data.host) {
+            } else if (getEndpoint() == HOST_ENDPOINT && getPlayerName() != parsedData.host) {
                 window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             }
             
-            data.players.forEach(player => {
+            parsedData.players.forEach(player => {
                 addPlayerToUI(player);
             });
         });
@@ -72,24 +72,25 @@ function fillWords() {
         .then(response => response.text())
         .then(data => {
             console.log("data is: " + data);
-            data = JSON.parse(data);
+            let parsedData = JSON.parse(data);
 
             // Make sure the host uses the host page and the other players use the await page
-            if (getEndpoint() == AWAIT_ENDPOINT && getPlayerName() == data.host) {
+            if (getEndpoint() == AWAIT_ENDPOINT && getPlayerName() == parsedData.host) {
                 window.location.href = getHostUrl() + "/" + HOST_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
-            } else if (getEndpoint() == HOST_ENDPOINT && getPlayerName() != data.host) {
+            } else if (getEndpoint() == HOST_ENDPOINT && getPlayerName() != parsedData.host) {
                 window.location.href = getHostUrl() + "/" + AWAIT_ENDPOINT +"/" + getGameId() + '/' + getPlayerName();
             }
             
-            data.words.forEach(word => {
+            parsedData.words.forEach(word => {
                 addWordElementToUI(word)
             });
 
             // If the player has already entered enough words, disable the input
-            let limit = Number(data.limit);
-            if (data.words.length >= limit) {
-                document.getElementById("word").disabled = true;
-                document.getElementById("word").value = "No more words";
+            let limit = Number(parsedData.limit);
+            if (parsedData.words.length >= limit) {
+                let wordInput = document.getElementById("word") as HTMLInputElement;
+                wordInput.disabled = true;
+                wordInput.value = "No more words";
             }
         });
 }
@@ -147,13 +148,13 @@ function leaveGame() {
 }
 
 function addWord() {
-    var word = document.getElementById("word").value.trim();
+    var word = (document.getElementById("word") as HTMLInputElement)!.value.trim();
     if (word == "") {
         return;
     }
 
     if (containsWhitespaceOrPunctuation(word)) {
-        document.getElementById("message").textContent = word + " contains whitespace or punctuation";
+        document.getElementById("message")!.textContent = word + " contains whitespace or punctuation";
         showError(word + " contains whitespace or punctuation");
         return;
     }
@@ -178,16 +179,17 @@ function addWord() {
         .then(response => response.text())
         .then(data => {
             if (responseOk) {
-                data = JSON.parse(data)
-                document.getElementById("word").value = "";
+                let parsedData = JSON.parse(data)
+                let wordInput = document.getElementById("word") as HTMLInputElement;
+                wordInput.value = "";
 
                 addWordElementToUI(word);
 
-                numWords = document.getElementById("words").getElementsByTagName("li").length;
-                limit = Number(data.wordLimit);
+                let numWords = document.getElementById("words")!.getElementsByTagName("li").length;
+                let limit = Number(parsedData.wordLimit);
                 if (numWords >= limit) {
-                    document.getElementById("word").disabled = true;
-                    document.getElementById("word").value = "No more words";
+                    wordInput.disabled = true;
+                    wordInput.value = "No more words";
                 }
             } else {
                 showError(data);
@@ -216,9 +218,9 @@ function deleteWord(word) {
         .then(response => response.text())
         .then(data => {
             if (responseOk) {
-                data = JSON.parse(data);
-                console.log("Delete: " + JSON.stringify(data));
-                deleteWordElementFromUI(data.wordRemoved);
+                let parsedData = JSON.parse(data);
+                console.log("Delete: " + JSON.stringify(parsedData));
+                deleteWordElementFromUI(parsedData.wordRemoved);
             } else {
                 showError(data);
             }
@@ -255,7 +257,7 @@ function kickPlayer(player) {
 }
 
 function addWordElementToUI(word) {
-    var ul = document.getElementById("words");
+    var ul = document.getElementById("words")!;
     var li = document.createElement("li");
     li.classList.add('wordElement');
 
@@ -275,18 +277,18 @@ function addWordElementToUI(word) {
 }
 
 function deleteWordElementFromUI(word) {
-    let wordElements = document.getElementById("words").getElementsByTagName("li");
+    let wordElements = document.getElementById("words")!.getElementsByTagName("li");
     for (let i = 0; i < wordElements.length; i++) {
 
         console.log("innerhtml " + wordElements[i].innerHTML)
 
         let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
         if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
-            document.getElementById("words").removeChild(wordElements[i]);
+            document.getElementById("words")!.removeChild(wordElements[i]);
             break;
         }
     }
-    document.getElementById("word").disabled = false;
-    document.getElementById("word").value = null;
-
+    let wordInput = document.getElementById("word") as HTMLInputElement;
+    wordInput.disabled = false;
+    wordInput.value = "";
 }
