@@ -71,7 +71,7 @@ export function updateWordsLeftInRound(wordsLeftInRound: number, totalNumWords: 
 
 // On the home page, check local storage, and if the player has an active (in game or in await stage) game, allow them to go there
 export function checkActiveGameExists() {
-    let playerName = localStorage.getItem(PLAYER_NAME_KEY);
+    let playerName = localStorage.getItem(PLAYER_NAME_KEY) ?? "";
     let gameId = localStorage.getItem(GAME_ID_KEY) ?? "";
 
     if (gameId == undefined || gameId == "" || playerName == undefined || playerName == "") {
