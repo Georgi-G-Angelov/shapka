@@ -1,13 +1,16 @@
+import { showError } from "./utils/ui_utils";
+import { getHostUrl } from "./utils/url_utils";
+
 function createRedirect() {
     window.location.href = getHostUrl() + "/create";
 }
 
 function createGame() {
-    let name = document.getElementById("name").value;
-    let wordLimit = document.getElementById("word-limit").value;
+    let name = (document.getElementById("name") as HTMLInputElement)!.value;
+    let wordLimit = (document.getElementById("word-limit") as HTMLInputElement)!.value;
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
     fetch(getHostUrl() + "/create_game/" + name + "/" + wordLimit, {
         method: "GET",
         headers: noCacheHeaders
@@ -21,10 +24,10 @@ function createGame() {
     .then(data => {
         if (responseOk) {
             console.log(data);
-            data = JSON.parse(data);
-            let playerName = data.name;
-            let gameId = data.gameId;
-            let authToken = data.authToken;
+            let parsedData = JSON.parse(data);
+            let playerName = parsedData.name;
+            let gameId = parsedData.gameId;
+            let authToken = parsedData.authToken;
 
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
             localStorage.setItem(GAME_ID_KEY, gameId);
@@ -49,11 +52,11 @@ function joinRedirect() {
 }
 
 function joinGame() {
-    let name = document.getElementById("name").value;
-    let gameId = document.getElementById("game_id").value;
+    let name = (document.getElementById("name") as HTMLInputElement)!.value;
+    let gameId = (document.getElementById("game_id") as HTMLInputElement)!.value;
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
     fetch(getHostUrl() + "/join_game/" + gameId + "/" + name, {
         method: "GET",
         headers: noCacheHeaders
@@ -69,10 +72,10 @@ function joinGame() {
         console.log(data);
 
         if (responseOk) {
-            data = JSON.parse(data);
-            let playerName = data.name;
-            let gameId = data.gameId;
-            let authToken = data.authToken;
+            let parsedData = JSON.parse(data);
+            let playerName = parsedData.name;
+            let gameId = parsedData.gameId;
+            let authToken = parsedData.authToken;
 
             localStorage.setItem(AUTH_TOKEN_KEY, authToken);
             localStorage.setItem(GAME_ID_KEY, gameId);

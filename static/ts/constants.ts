@@ -33,7 +33,7 @@ noCacheHeaders.append('pragma', 'no-cache');
 noCacheHeaders.append('cache-control', 'no-cache');
 
 var authNoCacheHeaders = new Headers(noCacheHeaders);
-authNoCacheHeaders.append(AUTHORIZATION_HEADER, localStorage.getItem(AUTH_TOKEN_KEY));
+authNoCacheHeaders.append(AUTHORIZATION_HEADER, localStorage.getItem(AUTH_TOKEN_KEY)!);
 
 // Globals
-let messageElementTimeout = undefined;
+let messageElementTimeout: number | undefined = undefined;
