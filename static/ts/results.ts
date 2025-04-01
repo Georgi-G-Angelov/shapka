@@ -1,10 +1,11 @@
-function fillResults() {
+import { fillGameId } from "./await_and_host";
+import { gameState } from "./game";
+
+export function fillResults() {
     fillGameId();
 
-    let teamsList = document.getElementById("results");
-
     // Score calculation
-    let teamScores = []
+    let teamScores: number[] = [];
     for (let i = 0; i < gameState.teams.length; i++) {
         let totalWords = 0;
         for (let j = 1; j <= NUM_ROUNDS; j++) {
@@ -17,12 +18,12 @@ function fillResults() {
 
     // Get top 3 teams // doesnt work
     let winnerClasses = ["gold", "silver", "bronze"] // Gold, silver, bronze
-    let winners = {};
+    let winners: { [key:number]: string }  = {};
     let teamScoresCopy = teamScores.slice();
     // teamScores.sort().reverse();
     // teamScores = teamScores.sort();
 
-    function compareDecimals(a, b) {
+    function compareDecimals(a: number, b: number) {
         if (a === b) 
              return 0;
     
@@ -50,14 +51,14 @@ function fillResults() {
 
     // Get teams in order of scores
     teamScores = teamScoresCopy;
-    teamScoresWithIndex = [];
+    let teamScoresWithIndex: [number, number][] = [];
     for(let i = 0; i < teamScores.length; i++) {
         teamScoresWithIndex.push([teamScores[i], i]);
     }
     teamScoresWithIndex = teamScoresWithIndex.sort(function(left, right) {
         return left[0] < right[0] ? -1 : 1;
     }).reverse();
-    let teamsScoresIndices = [];
+    let teamsScoresIndices: number[] = [];
     teamScores = [];
     for (let i in teamScoresWithIndex) {
         teamScores.push(teamScoresWithIndex[i][0]);
@@ -68,6 +69,7 @@ function fillResults() {
 
     // build DOM
     // for (let i = 0; i < gameState.teams.length; i++) {
+    let teamsList = document.getElementById("results")!;
     for (let j = 0; j < teamsScoresIndices.length; j++) {
         let i = teamsScoresIndices[j];
         let team = gameState.teams[i];
@@ -100,7 +102,7 @@ function fillResults() {
         }
 
         let totalWordsHeader = document.createElement("h3");
-        totalWordsHeader.appendChild(document.createTextNode(totalWords));
+        totalWordsHeader.appendChild(document.createTextNode(totalWords.toString()));
         totalWordsHeader.classList.add("score");
 
         // teamHeader.appendChild(totalWordsHeader);

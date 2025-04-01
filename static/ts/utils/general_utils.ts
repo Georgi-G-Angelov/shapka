@@ -1,11 +1,15 @@
+import { cleanDOM, decrementWordsLeftInRound, fetchGameState, gameState, incrementWordsLeftInRound, totalNumWords, wordsLeftInRound } from "../game";
+import { addPlayerToUI, deletePlayerElementFromUI, home, setConnectedStatus, showNextRoundButton, updateWordsLeftInRound } from "./ui_utils";
+import { getHostUrl, getGameId, getPlayerName } from "./url_utils";
+
 // General utils
 // -----------------------------------------------------------------------------------------------------------------------------
 
 // Subscribe to the event source at `uri` with exponential backoff reconnect.
-function subscribe(uri) {
+export function subscribe(uri: string) {
     var retryTime = 1;
 
-    function connect(uri) {
+    function connect(uri: string) {
         const events = new EventSource(uri);
 
         // Special handling for any type of event received
@@ -20,7 +24,7 @@ function subscribe(uri) {
                 window.location.href = getHostUrl() + "/game/" + getGameId() + '/' + getPlayerName();
             } else if (message.startsWith(TIMER_UPDATE_PREFIX)) {
                 let millis = message.substring(TIMER_UPDATE_PREFIX.length);
-                document.getElementById("timer").textContent = millisecondsToString(millis);
+                document.getElementById("timer")!.textContent = millisecondsToString(millis);
             } else if (message == OUT_OF_WORDS_EVENT) { // could potentially never need this
                 gameState.is_round_active = false;
                 showNextRoundButton();
@@ -39,11 +43,9 @@ function subscribe(uri) {
 
                 deletePlayerElementFromUI(player);
             } else if (message.startsWith(WORD_GUESSED_PREFIX)) {
-                wordsLeftInRound--;
-                updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
+                decrementWordsLeftInRound();
             } else if (message.startsWith(UNDO_GUESS_PREFIX)) {
-                wordsLeftInRound++;
-                updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
+                incrementWordsLeftInRound();
             }
         });
 

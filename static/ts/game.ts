@@ -1,3 +1,9 @@
+import { fillGameId } from "./await_and_host";
+import { fillResults } from "./results";
+import { subscribe } from "./utils/general_utils";
+import { showResults, showNextRoundButton, hideTimerAndFetchWordButtons, updateWordsLeftInRound, showError } from "./utils/ui_utils";
+import { getHostUrl, getGameId, getEndpoint, getPlayerName } from "./utils/url_utils";
+
 /*
 Example value for game state:
 {
@@ -35,30 +41,30 @@ Example value for game state:
     "is_game_finished": false
 }
 */
-var gameState;
+export var gameState: any;
 
 // Timer variables
-var isTimerOn = false; // time on/off flag lol
-var timer; // the function on an interval which runs the timer
-var timerValueMillis;
-var timerValueSeconds;
-var timerDeltaSinceLastServerUpdate; // we need to update the server every around 500 millis
-var timerEndSounds = [];
-var timerEndSoundsPaths = [
+export var isTimerOn = false; // time on/off flag lol
+export var timer: number; // the function on an interval which runs the timer
+export var timerValueMillis: number;
+export var timerValueSeconds: number;
+export var timerDeltaSinceLastServerUpdate: number; // we need to update the server every around 500 millis
+export var timerEndSounds: HTMLAudioElement[] = [];
+export var timerEndSoundsPaths = [
     "/audio/mbt_gadove.ogg",
     "/audio/mbt_nema_kvo.ogg",
     "/audio/mbt_risk.ogg"
 ];
 var hasTimerEndedOnPageLoad = false;
-var currentTimerEndSound;
+export var currentTimerEndSound: HTMLAudioElement;
 
 // Random globals
-var isConnectedToEvents = false;
-var awaitingNextTurn = false;
-var wordsLeftInRound;
-var totalNumWords;
+export var isConnectedToEvents = false;
+export var awaitingNextTurn = false;
+export var wordsLeftInRound: number;
+export var totalNumWords: number;
 
-async function fetchGameState() {
+export async function fetchGameState() {
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
         method: "GET",
         headers: authNoCacheHeaders
@@ -88,15 +94,15 @@ function fillAllGameMode() {
 
     // Show timer button and fetch word button
     if (gameState.turn_player == getPlayerName()) {
-        document.getElementById("toggleTimer").style.display = "block";
-        document.getElementById("fetchWord").style.display = "block";
-        document.getElementById("undoLastGuess").style.display = "block";
+        document.getElementById("toggleTimer")!.style.display = "block";
+        document.getElementById("fetchWord")!.style.display = "block";
+        document.getElementById("undoLastGuess")!.style.display = "block";
     } else {
-        document.getElementById("toggleTimer").style.display = "none";
-        document.getElementById("fetchWord").style.display = "none";
-        document.getElementById("undoLastGuess").style.display = "none";
-        document.getElementById("nextTurn").style.display = "none";
-        document.getElementById("nextRound").style.display = "none";
+        document.getElementById("toggleTimer")!.style.display = "none";
+        document.getElementById("fetchWord")!.style.display = "none";
+        document.getElementById("undoLastGuess")!.style.display = "none";
+        document.getElementById("nextTurn")!.style.display = "none";
+        document.getElementById("nextRound")!.style.display = "none";
     }
     setTimerButtonText();
 
@@ -105,7 +111,7 @@ function fillAllGameMode() {
     // Set initial timer values
     timerValueSeconds = gameState.timer / 1000;
     timerValueMillis = gameState.timer;
-    document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
+    document.getElementById("timer")!.textContent = millisecondsToString(timerValueMillis);
     timerDeltaSinceLastServerUpdate = 0;
 
     //
@@ -155,15 +161,15 @@ function fillTurnPlayerMessage() {
     console.log("turn player is " + gameState.turn_player);
 
     if (currentPlayer == gameState.turn_player) {
-        document.getElementById("turnPlayer").textContent = currentPlayer + ", it's your turn!";
+        document.getElementById("turnPlayer")!.textContent = currentPlayer + ", it's your turn!";
     } else {
-        document.getElementById("turnPlayer").textContent = "It is " + getPossesiveNoun(gameState.turn_player) + " turn!";
+        document.getElementById("turnPlayer")!.textContent = "It is " + getPossesiveNoun(gameState.turn_player) + " turn!";
     }
 }
 
 function fillTeams() {
-    gameState.teams.forEach(team => {
-        var teams = document.getElementById("teamsList");
+    gameState.teams.forEach((team: string[]) => {
+        var teams = document.getElementById("teamsList")!;
         var p = document.createElement("p");
         p.appendChild(document.createTextNode(team[0] + " and " + team[1]));
         teams.appendChild(p);
@@ -172,7 +178,7 @@ function fillTeams() {
 
 function fillWordsInPlay() {
     if (getPlayerName() == gameState.turn_player) {
-        gameState.words_in_play.forEach(word => {
+        gameState.words_in_play.forEach((word: string) => {
             addWordInPlay(word);
         });
     }
@@ -194,12 +200,12 @@ async function startTimer() {
         var delta = newCurrentTime - currentTime;
         timerValueMillis -= delta;
         currentTime = newCurrentTime;
-        document.getElementById("timer").textContent = millisecondsToString(timerValueMillis);
+        document.getElementById("timer")!.textContent = millisecondsToString(timerValueMillis);
 
         if (timerValueMillis < 0) {
             isTimerOn = false;
             clearInterval(timer);
-            document.getElementById("timer").textContent = millisecondsToString(0);
+            document.getElementById("timer")!.textContent = millisecondsToString(0);
             gameState.is_turn_active = false;
             updateTimerState(0);
             showNextTurnButton();
@@ -238,13 +244,13 @@ function toggleTimer() {
 
 function setTimerButtonText() {
     if (isTimerOn) {
-        document.getElementById("toggleTimer").textContent = "Stop timer";
+        document.getElementById("toggleTimer")!.textContent = "Stop timer";
     } else {
-        document.getElementById("toggleTimer").textContent = "Start timer";
+        document.getElementById("toggleTimer")!.textContent = "Start timer";
     }
 }
 
-async function updateTimerState(millis) {
+async function updateTimerState(millis: number) {
     // Synchronization is hard
     if (millis < 0) {
         millis = 0;
@@ -267,8 +273,8 @@ async function fetchWord() {
         return;
     }
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
 
     await fetch(getHostUrl() + "/fetch_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
@@ -296,13 +302,13 @@ async function fetchWord() {
     });
 }
 
-function guessWord(word) {
+function guessWord(word: string) {
     if (!isTimerOn) {
         return;
     }
 
-    let responseOk;
-    let responseStatus;
+    let responseOk: boolean;
+    let responseStatus: number;
 
     fetch(getHostUrl() + "/guess_word/" + getGameId() + "/" + getPlayerName() + "/" + word, {
         method: "GET",
@@ -328,9 +334,9 @@ function guessWord(word) {
     });
 }
 
-function undoLastGuess(word) {
-    let responseOk;
-    let responseStatus;
+function undoLastGuess(word: string) {
+    let responseOk: boolean;
+    let responseStatus: number;
 
     fetch(getHostUrl() + "/undo_guess_word/" + getGameId() + "/" + getPlayerName(), {
         method: "GET",
@@ -355,9 +361,9 @@ function undoLastGuess(word) {
     });
 }
 
-function addWordInPlay(word) {
+function addWordInPlay(word: string) {
     // Get list of words
-    var ul = document.getElementById("wordsInPlay");
+    var ul = document.getElementById("wordsInPlay")!;
 
     // Create new list entry
     var li = document.createElement("li");
@@ -376,9 +382,9 @@ function addWordInPlay(word) {
     ul.appendChild(li);
 }
 
-function removeWordInPlay(word) {
+function removeWordInPlay(word: string) {
     // Get list of words
-    let ul = document.getElementById("wordsInPlay");
+    let ul = document.getElementById("wordsInPlay")!;
 
     let listEntries = ul.getElementsByTagName("li");
     for (let i = 0; i < listEntries.length; i++) {
@@ -392,7 +398,7 @@ function removeWordInPlay(word) {
 
 function removeLastWordInPlayIfFull() {
     // Get list of words
-    let ul = document.getElementById("wordsInPlay");
+    let ul = document.getElementById("wordsInPlay")!;
 
     let listEntries = ul.getElementsByTagName("li");
     if (listEntries.length > 0 && listEntries.length >= MAX_WORDS_IN_PLAY) {
@@ -401,11 +407,11 @@ function removeLastWordInPlayIfFull() {
 }
 
 function anyWordsInPlay() {
-    return document.getElementById("wordsInPlay").getElementsByTagName("li").length > 0;
+    return document.getElementById("wordsInPlay")!.getElementsByTagName("li").length > 0;
 }
 
 function showNextTurnButton() {
-    document.getElementById("nextTurn").style.display = "block";
+    document.getElementById("nextTurn")!.style.display = "block";
 }
 
 function playRandomTimerEnd() {
@@ -430,8 +436,8 @@ async function nextTurn() {
             headers: authNoCacheHeaders
         })
         .then(function(response) {
-            responseOk = response.ok;
-            responseStatus = response.status;
+            let responseOk = response.ok;
+            let responseStatus = response.status;
             return response;
         })
         .then(response => response.text())
@@ -458,13 +464,23 @@ async function nextRound() {
     });
 }
 
-function cleanDOM() {
-    document.getElementById("teamsList").innerHTML = '';
-    document.getElementById("wordsInPlay").innerHTML = '';
+export function cleanDOM() {
+    document.getElementById("teamsList")!.innerHTML = '';
+    document.getElementById("wordsInPlay")!.innerHTML = '';
 
-    document.getElementById("toggleTimer").style.display = "none";
-    document.getElementById("fetchWord").style.display = "none";
-    document.getElementById("nextTurn").style.display = "none";
-    document.getElementById("nextRound").style.display = "none";
-    document.getElementById("undoLastGuess").style.display = "none";
+    document.getElementById("toggleTimer")!.style.display = "none";
+    document.getElementById("fetchWord")!.style.display = "none";
+    document.getElementById("nextTurn")!.style.display = "none";
+    document.getElementById("nextRound")!.style.display = "none";
+    document.getElementById("undoLastGuess")!.style.display = "none";
+}
+
+export function incrementWordsLeftInRound() {
+    wordsLeftInRound++;
+    updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
+}
+
+export function decrementWordsLeftInRound() {
+    wordsLeftInRound--;
+    updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
 }
