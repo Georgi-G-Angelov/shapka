@@ -1,7 +1,4 @@
-import { fillGameId } from "./await_and_host";
-import { gameState } from "./game";
-
-export function fillResults() {
+function fillResults() {
     fillGameId();
 
     // Score calculation

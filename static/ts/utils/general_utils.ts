@@ -1,12 +1,8 @@
-import { cleanDOM, decrementWordsLeftInRound, fetchGameState, gameState, incrementWordsLeftInRound, totalNumWords, wordsLeftInRound } from "../game";
-import { addPlayerToUI, deletePlayerElementFromUI, home, setConnectedStatus, showNextRoundButton, updateWordsLeftInRound } from "./ui_utils";
-import { getHostUrl, getGameId, getPlayerName } from "./url_utils";
-
 // General utils
 // -----------------------------------------------------------------------------------------------------------------------------
 
 // Subscribe to the event source at `uri` with exponential backoff reconnect.
-export function subscribe(uri: string) {
+function subscribe(uri: string) {
     var retryTime = 1;
 
     function connect(uri: string) {

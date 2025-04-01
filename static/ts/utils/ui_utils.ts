@@ -1,11 +1,33 @@
 // UI utils
 // -----------------------------------------------------------------------------------------------------------------------------
 
-import { kickPlayer } from "../await_and_host";
-import { gameState } from "../game";
-import { getEndpoint, getGameId, getHostUrl, getPlayerName } from "./url_utils";
+document.addEventListener('DOMContentLoaded', function() {
+    const darkModeToggle = document.getElementById('dark-mode-toggle')!;
+    const currentTheme = localStorage.getItem('theme');
 
-export function showNextRoundButton() {
+    if (currentTheme) {
+        document.body.classList.add(currentTheme);
+        if (currentTheme === 'dark-mode') {
+            darkModeToggle.textContent = '☀️'; // Sun icon for light mode
+        } else {
+            darkModeToggle.textContent = '🌙'; // Moon icon for dark mode
+        }
+    }
+
+    darkModeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        let theme = 'light-mode';
+        if (document.body.classList.contains('dark-mode')) {
+            theme = 'dark-mode';
+            darkModeToggle.textContent = '☀️'; // Sun icon for light mode
+        } else {
+            darkModeToggle.textContent = '🌙'; // Moon icon for dark mode
+        }
+        localStorage.setItem('theme', theme);
+    });
+});
+
+function showNextRoundButton() {
     if (gameState.round < 3) {
         if (getPlayerName() == gameState.turn_player) {
             document.getElementById("nextRound")!.style.display = "block";
@@ -15,33 +37,33 @@ export function showNextRoundButton() {
     }
 }
 
-export function hideTimerAndFetchWordButtons() {
+function hideTimerAndFetchWordButtons() {
     document.getElementById("toggleTimer")!.style.display = "none";
     document.getElementById("fetchWord")!.style.display = "none";
     document.getElementById("undoLastGuess")!.style.display = "none";
 }
 
-export function showResults() {
+function showResults() {
     window.location.href = getHostUrl() + "/results/" + getGameId() + '/' + getPlayerName();
 }
 
-export function home() {
+function home() {
     window.location.href = getHostUrl();
 }
 
-export function toggleTeams() {
+function toggleTeams() {
     document.getElementById("teamsList")!.classList.toggle("show");
 }
 
-export function showError(errorMessage: string) {
+function showError(errorMessage: string) {
     showMessageElement(errorMessage, RED);
 }
 
-export function showMessage(message: string) {
+function showMessage(message: string) {
     showMessageElement(message, GREEN);
 }
 
-export function showMessageElement(message: string, borderColor: string) {
+function showMessageElement(message: string, borderColor: string) {
     let messageElement = document.getElementById("message")!;
     messageElement.textContent = message;
     messageElement.style.top = "30px";
@@ -51,13 +73,13 @@ export function showMessageElement(message: string, borderColor: string) {
     messageElementTimeout = setTimeout(hideMessageElement, MESSAGE_DURATION_ON_SCREEN);
 }
 
-export function hideMessageElement() {
+function hideMessageElement() {
     let messageElement = document.getElementById("message")!;
     // messageElement.textContent = "";
     messageElement.style.top = "-50px";
 }
 
-export function setConnectedStatus(status: boolean) {
+function setConnectedStatus(status: boolean) {
     // STATE.connected = status;
     let statusDiv = document.getElementById("status")!;
     statusDiv.className = (status) ? "connected" : "reconnecting";
@@ -65,12 +87,12 @@ export function setConnectedStatus(status: boolean) {
     statusMessageDiv.textContent = (status) ? "connected" : "reconnecting";
 }
 
-export function updateWordsLeftInRound(wordsLeftInRound: number, totalNumWords: number) {
+function updateWordsLeftInRound(wordsLeftInRound: number, totalNumWords: number) {
     document.getElementById("wordsLeftInRound")!.innerHTML = "Words left: " + wordsLeftInRound + "/" + totalNumWords;
 }
 
 // On the home page, check local storage, and if the player has an active (in game or in await stage) game, allow them to go there
-export function checkActiveGameExists() {
+function checkActiveGameExists() {
     let playerName = localStorage.getItem(PLAYER_NAME_KEY) ?? "";
     let gameId = localStorage.getItem(GAME_ID_KEY) ?? "";
 
@@ -122,7 +144,7 @@ export function checkActiveGameExists() {
     });
 }
 
-export function goToGame(gameId: string, playerName: string, isGameActive: string, isHost: string) {
+function goToGame(gameId: string, playerName: string, isGameActive: string, isHost: string) {
     window.location.href = getHostUrl() + "/game/" + gameId + '/' + playerName;
 
     if (isGameActive == "true") {
@@ -136,7 +158,7 @@ export function goToGame(gameId: string, playerName: string, isGameActive: strin
     }
 }
 
-export function addPlayerToUI(player: string) {
+function addPlayerToUI(player: string) {
 
     var ul = document.getElementById("players")!;
     var li = document.createElement("li");
@@ -159,7 +181,7 @@ export function addPlayerToUI(player: string) {
     ul.appendChild(li);
 }
 
-export function deletePlayerElementFromUI(player: string) {
+function deletePlayerElementFromUI(player: string) {
     let playerElements = document.getElementById("players")!.getElementsByTagName("li");
     for (let i = 0; i < playerElements.length; i++) {
 

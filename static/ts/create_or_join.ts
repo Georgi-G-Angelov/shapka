@@ -1,6 +1,3 @@
-import { showError } from "./utils/ui_utils";
-import { getHostUrl } from "./utils/url_utils";
-
 function createRedirect() {
     window.location.href = getHostUrl() + "/create";
 }

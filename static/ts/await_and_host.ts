@@ -1,7 +1,3 @@
-import { subscribe } from "./utils/general_utils";
-import { addPlayerToUI, showError, deletePlayerElementFromUI } from "./utils/ui_utils";
-import { getHostUrl, getGameId, getPlayerName, getEndpoint } from "./utils/url_utils";
-
 function fillAllAwait() {
     fillAll();
 
@@ -41,7 +37,7 @@ function fillAll() {
     console.log(getGameId());
 }
 
-export function fillGameId() {
+function fillGameId() {
     document.getElementById("gameId")!.textContent = `Game ${getGameId()}`;
 }
 
@@ -231,7 +227,7 @@ function deleteWord(word: string) {
         });
 }
 
-export function kickPlayer(player: string) {
+function kickPlayer(player: string) {
     if (player == "") {
         return;
     }
