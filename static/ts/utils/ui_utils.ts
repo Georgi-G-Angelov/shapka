@@ -112,7 +112,6 @@ function checkActiveGameExists() {
     .then(response => response.text())
     .then(data => {
         if (responseOk) {
-            data = JSON.parse(data);
             let parsedData = JSON.parse(data);
             let isGameActive = parsedData.isGameActive;
             let isHost = parsedData.isHost;
