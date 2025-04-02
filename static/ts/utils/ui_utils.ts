@@ -157,29 +157,6 @@ function goToGame(gameId: string, playerName: string, isGameActive: string, isHo
     }
 }
 
-// function addPlayerToUI(player: string) {
-
-//     var ul = document.getElementById("players")!;
-//     var li = document.createElement("li");
-//     li.classList.add('playerElement');
-
-//     let p = document.createElement("p");
-//     let text = document.createTextNode(player);
-//     p.appendChild(text);
-
-//     li.appendChild(p);
-
-//     if (getEndpoint() == "host" && getPlayerName() != player) {
-//         const myButton = document.createElement('button');
-//         myButton.textContent = 'X';
-//         li.appendChild(myButton);
-        
-//         myButton.addEventListener("click", function() { kickPlayer(player) });
-//     }
-
-//     ul.appendChild(li);
-// }
-
 /*  Build the following:
 
     <div class="icon-box">
@@ -219,24 +196,6 @@ function addPlayerToUI(player: string) {
     playerList.appendChild(div);
 }
 
-// function deletePlayerElementFromUI(player: string) {
-//     let playerElements = document.getElementById("players")!.getElementsByTagName("li");
-//     for (let i = 0; i < playerElements.length; i++) {
-
-//         console.log("innerhtml " + playerElements[i].innerHTML)
-
-//         let currentElementWord = playerElements[i].getElementsByTagName("p")[0];
-//         if (currentElementWord != undefined && currentElementWord.innerHTML == player) {
-//             document.getElementById("players")!.removeChild(playerElements[i]);
-//             break;
-//         }
-//     }
-
-//     let wordInput = document.getElementById("word") as HTMLInputElement;
-//     wordInput.disabled = false;
-//     wordInput.value = "";
-// }
-
 function deletePlayerElementFromUI(player: string) {
     let playerElements = document.getElementById("players")!.getElementsByTagName("div");
     for (let i = 0; i < playerElements.length; i++) {
@@ -254,43 +213,6 @@ function deletePlayerElementFromUI(player: string) {
     wordInput.disabled = false;
     wordInput.value = "";
 }
-
-// function addWordElementToUI(word: string) {
-//     var ul = document.getElementById("words")!;
-//     var li = document.createElement("li");
-//     li.classList.add('wordElement');
-
-//     let p = document.createElement("p");
-//     let text = document.createTextNode(word);
-//     p.appendChild(text);
-
-//     li.appendChild(p);
-
-//     const myButton = document.createElement('button');
-//     myButton.textContent = 'X';
-//     li.appendChild(myButton);
-
-//     ul.appendChild(li);
-
-//     myButton.addEventListener("click", function() { deleteWord(word) });
-// }
-
-// function deleteWordElementFromUI(word: string) {
-//     let wordElements = document.getElementById("words")!.getElementsByTagName("li");
-//     for (let i = 0; i < wordElements.length; i++) {
-
-//         console.log("innerhtml " + wordElements[i].innerHTML)
-
-//         let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
-//         if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
-//             document.getElementById("words")!.removeChild(wordElements[i]);
-//             break;
-//         }
-//     }
-//     let wordInput = document.getElementById("word") as HTMLInputElement;
-//     wordInput.disabled = false;
-//     wordInput.value = "";
-// }
 
 /*  Build the following:
 
