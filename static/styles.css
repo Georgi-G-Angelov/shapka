@@ -265,6 +265,10 @@ body.dark-mode #activeGameBox {
     color: #ffffff;
 }
 
+body.dark-mode #timer {
+    color: #ffffff;
+}
+
 #toggleTimer {
     margin-right: 30px;
 }
@@ -320,6 +324,12 @@ button {
     /* width: 50%; */
     margin-top: auto;
     margin-bottom: 30px;
+}
+
+.button-box button {
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #9c27b0, #7b1fa2);
+    color: #ffffff;
 }
 
 .input-box {
