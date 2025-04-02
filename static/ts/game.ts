@@ -1,9 +1,3 @@
-import { fillGameId } from "./await_and_host";
-import { fillResults } from "./results";
-import { subscribe } from "./utils/general_utils";
-import { showResults, showNextRoundButton, hideTimerAndFetchWordButtons, updateWordsLeftInRound, showError } from "./utils/ui_utils";
-import { getHostUrl, getGameId, getEndpoint, getPlayerName } from "./utils/url_utils";
-
 /*
 Example value for game state:
 {
@@ -41,30 +35,30 @@ Example value for game state:
     "is_game_finished": false
 }
 */
-export var gameState: any;
+var gameState: any;
 
 // Timer variables
-export var isTimerOn = false; // time on/off flag lol
-export var timer: number; // the function on an interval which runs the timer
-export var timerValueMillis: number;
-export var timerValueSeconds: number;
-export var timerDeltaSinceLastServerUpdate: number; // we need to update the server every around 500 millis
-export var timerEndSounds: HTMLAudioElement[] = [];
-export var timerEndSoundsPaths = [
+var isTimerOn = false; // time on/off flag lol
+var timer: number; // the function on an interval which runs the timer
+var timerValueMillis: number;
+var timerValueSeconds: number;
+var timerDeltaSinceLastServerUpdate: number; // we need to update the server every around 500 millis
+var timerEndSounds: HTMLAudioElement[] = [];
+var timerEndSoundsPaths = [
     "/audio/mbt_gadove.ogg",
     "/audio/mbt_nema_kvo.ogg",
     "/audio/mbt_risk.ogg"
 ];
 var hasTimerEndedOnPageLoad = false;
-export var currentTimerEndSound: HTMLAudioElement;
+var currentTimerEndSound: HTMLAudioElement;
 
 // Random globals
-export var isConnectedToEvents = false;
-export var awaitingNextTurn = false;
-export var wordsLeftInRound: number;
-export var totalNumWords: number;
+var isConnectedToEvents = false;
+var awaitingNextTurn = false;
+var wordsLeftInRound: number;
+var totalNumWords: number;
 
-export async function fetchGameState() {
+async function fetchGameState() {
     fetch(getHostUrl() + "/fetch_game_state/" + getGameId(), {
         method: "GET",
         headers: authNoCacheHeaders
@@ -464,7 +458,7 @@ async function nextRound() {
     });
 }
 
-export function cleanDOM() {
+function cleanDOM() {
     document.getElementById("teamsList")!.innerHTML = '';
     document.getElementById("wordsInPlay")!.innerHTML = '';
 
@@ -475,12 +469,12 @@ export function cleanDOM() {
     document.getElementById("undoLastGuess")!.style.display = "none";
 }
 
-export function incrementWordsLeftInRound() {
+function incrementWordsLeftInRound() {
     wordsLeftInRound++;
     updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
 }
 
-export function decrementWordsLeftInRound() {
+function decrementWordsLeftInRound() {
     wordsLeftInRound--;
     updateWordsLeftInRound(wordsLeftInRound, totalNumWords);
 }

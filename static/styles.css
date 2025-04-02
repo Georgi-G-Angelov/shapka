@@ -1,0 +1,646 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom, #1b1b1b, #000000); /* Darker gradient background */
+}
+
+body.dark-mode {
+    background: linear-gradient(to bottom, #000000, #1b1b1b); /* Darker gradient background for dark mode */
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* White background */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+body.dark-mode .container {
+    background-color: #333333; /* Dark grey background for dark mode */
+}
+
+#message {
+    width: 250px;
+    min-height: 40px;
+    font-weight: bold;
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: white;
+    position: fixed;
+    top: -45px;
+    margin-top: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #3B1433;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: top 0.3s linear;
+}
+
+body.dark-mode #message {
+    background-color: #555555; /* Dark grey background for dark mode */
+    color: #ffffff; /* White text for dark mode */
+    border: 2px solid #777777; /* Dark grey border for dark mode */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    background: linear-gradient(to right, #9c27b0, #7b1fa2); /* Gradient purple background */
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #ffffff; /* White text */
+    font-family: 'Metal Mania', cursive; /* Fancy font */
+}
+
+.logo {
+    margin-bottom: 20px;
+}
+
+.logo img {
+    width: 100px;
+    height: auto;
+}
+
+.hat-image {
+    width: 100px;
+    height: 100px;
+    background: url('hat.png') no-repeat center center;
+    background-size: contain;
+    margin: 0 auto 20px;
+}
+
+.input-section {
+    margin-bottom: 20px;
+}
+
+.input-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333333; /* Dark grey color */
+}
+
+body.dark-mode .input-section label {
+    color: #ffffff; /* White text for dark mode */
+}
+
+.input-section input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc; /* Light grey border */
+    border-radius: 5px;
+}
+
+body.dark-mode .input-section input {
+    background-color: #555555; /* Dark grey background for dark mode */
+    color: #ffffff; /* White text for dark mode */
+    border: 1px solid #777777; /* Darker grey border for dark mode */
+}
+
+.word-tiles {
+    display: flex;
+    justify-content: flex-start; /* Align items to the start */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent wrapping */
+    margin-bottom: 20px;
+    padding: 10px; /* Add padding to ensure leftmost words are visible */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+    -ms-overflow-style: none;  /* Hide scrollbar for Internet Explorer and Edge */
+    scrollbar-width: none;  /* Hide scrollbar for Firefox */
+}
+
+.word-tiles::-webkit-scrollbar {
+    display: none;  /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.tile {
+    position: relative;
+    padding: 10px;
+    background: linear-gradient(to bottom, #9c27b0, #7b1fa2); /* Gradient purple background */
+    border: 1px solid #cccccc; /* Light grey border */
+    border-radius: 5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 5px; /* Add margin to prevent overlap */
+    font-size: 18px;
+    color: #ffffff; /* White text */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More shadow */
+}
+
+body.dark-mode .tile {
+    background: linear-gradient(to bottom, #7b1fa2, #9c27b0); /* Darker gradient for dark mode */
+    border: 1px solid #777777; /* Darker grey border for dark mode */
+}
+
+.close-icon {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff0000; /* Red background */
+    color: #ffffff; /* White text */
+    border-radius: 50%;
+    padding: 2px 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.main-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(to bottom, #9c27b0, #7b1fa2); /* Gradient purple background */
+    color: #ffffff; /* White text */
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More shadow */
+}
+
+body.dark-mode .main-btn {
+    background: linear-gradient(to bottom, #7b1fa2, #9c27b0); /* Darker gradient for dark mode */
+}
+
+.main-btn:hover {
+    background: linear-gradient(to bottom, #6a1b9a, #7b1fa2); /* Darker gradient on hover */
+}
+
+.profiles {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping to new lines */
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.profile-icon {
+    font-size: 24px;
+    color: #333333; /* Dark grey color */
+}
+
+body.dark-mode .profile-icon {
+    color: #ffffff; /* White text for dark mode */
+}
+
+.icon-box {
+    position: relative;
+    display: inline-block;
+    padding: 10px;
+    border: 1px solid #cccccc; /* Light grey border */
+    border-radius: 5px;
+    background-color: #ffffff; /* White background */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More shadow */
+    text-align: center;
+    margin: 5px; /* Add margin to prevent overlap */
+}
+
+body.dark-mode .icon-box {
+    background-color: #555555; /* Dark grey background for dark mode */
+    border: 1px solid #777777; /* Darker grey border for dark mode */
+}
+
+.close-icon {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff0000; /* Red background */
+    color: #ffffff; /* White text */
+    border-radius: 50%;
+    padding: 2px 5px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.profile-name {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #333333; /* Dark grey color */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+body.dark-mode .profile-name {
+    color: #ffffff; /* White text for dark mode */
+}
+
+.icon-right {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+body.dark-mode .icon-right {
+    transform: rotate(180deg);
+}
+
+#activeGameBox button {
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #9c27b0, #7b1fa2);
+    color: #ffffff;
+}
+
+#activeGameBox {
+    font-size: 12px;
+}
+
+body.dark-mode #activeGameBox {
+    color: #ffffff;
+}
+
+body.dark-mode #timer {
+    color: #ffffff;
+}
+
+#toggleTimer {
+    margin-right: 30px;
+}
+
+#fetchWord {
+    margin-right: 30px;
+}
+
+#wordsInPlay {
+    padding: 0;
+}
+
+#wordsInPlay>li {
+    display: block;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#wordsInPlay>li>p {
+    padding: 4px;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: azure;
+    border-radius: 10px;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #3B1433;
+    margin-bottom: 0;
+    /* margin-top: 5px; */
+}
+
+#wordsInPlay>li>p>img {
+    float: right;
+    height: 35px;
+}
+
+button {
+    width: 250px;
+    height: 60px;
+    font-size: 22px;
+    font-weight: bold;
+    font-family: andale mono, monospace;
+    border: none;
+}
+
+.button-box {
+    display: flex;
+    justify-content: center;
+    /* margin-left: auto;
+    margin-right: auto; */
+    /* width: 50%; */
+    margin-top: auto;
+    margin-bottom: 30px;
+}
+
+.button-box button {
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #9c27b0, #7b1fa2);
+    color: #ffffff;
+}
+
+.input-box {
+    display: flex;
+    justify-content: center;
+    /* margin-left: auto;
+    margin-right: auto; */
+    /* width: 50%; */
+    margin-top: auto;
+    margin-bottom: auto;
+    border-radius: 10px;
+}
+
+input {
+    width: 350px;
+    height: 60px;
+    font-size: 22px;
+    font-weight: bold;
+    font-family: andale mono, monospace;
+    border: none;
+    color: #000;
+    text-align: center;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    background-color: #ffffff; /* Light mode background */
+    color: #000000; /* Light mode text color */
+    border: 1px solid #cccccc; /* Light mode border */
+}
+
+body.dark-mode input {
+    background-color: #555555; /* Dark mode background */
+    color: #ffffff; /* Dark mode text color */
+    border: 1px solid #777777; /* Dark mode border */
+}
+
+#gameId {
+    text-align: center;
+    margin-top: 0;
+}
+
+body.dark-mode #gameId {
+    color: #ffffff; /* White text for dark mode */
+}
+
+
+.banner {
+    width: 510px;
+    background-color: #fbf2ff; /* Even lighter purple for light mode */
+    color: #000;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: left;
+    clear: both;
+    border-bottom: #3B1433;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-style: solid;
+}
+
+body.dark-mode .banner {
+    background-color: #444444; /* Lighter gray background for dark mode */
+    color: #ffffff; /* White text for dark mode */
+    border-color: #555555; /* Dark grey border for dark mode */
+}
+
+.banner > h3 {
+    display: inline-block;
+}
+
+.banner > ul {
+    padding: 0;
+    background-color: #fbf2ff; /* Even lighter purple for light mode */
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+body.dark-mode .banner > ul {
+    background-color: #444444; /* Lighter gray background for dark mode */
+}
+
+.banner > ul > h4 {
+    margin: 0;
+    border-bottom: #3B1433;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-style: solid;
+}
+
+body.dark-mode .banner > ul > h4 {
+    border-color: #555555; /* Dark grey border for dark mode */
+}
+
+/* .banner > ul > p {
+    display: inline-block;
+} */
+
+.score {
+    /* text-align: right; */
+    float: right;
+}
+
+#top-banner {
+    border-radius: 15px 15px 0 0;
+}
+
+#bot-banner {
+    border-radius: 0 0 15px 15px;
+    min-height: 15px;
+    text-align: center;
+}
+
+#bot-space {
+    min-height: 20px;
+}
+
+#results {
+    color: azure;
+}
+
+.gold {
+    background-image: linear-gradient(to right,
+            #462523 0,
+            #cb9b51 22%,
+            #f6e27a 45%,
+            #f6f2c0 50%,
+            #f6e27a 55%,
+            #cb9b51 78%,
+            #462523 100%);
+}
+
+.silver {
+    background-image: linear-gradient(to right,
+            #758087 0,
+            #a1a8ad 22%,
+            #ccd0d3 45%,
+            #f8f8f9 50%,
+            #ccd0d3 55%,
+            #a1a8ad 78%,
+            #758087 100%);
+}
+
+.bronze {
+    background-image: linear-gradient(to right,
+            #d0722c 0,
+            #e09f6e 22%,
+            #eecbb1 45%,
+            #fcf8f4 50%,
+            #eecbb1 55%,
+            #e09f6e 78%,
+            #d0722c 100%);
+}
+
+#wordsLeftInRound {
+    text-align: right;
+    position: fixed;
+    top: 70px;
+    right: 15px;
+    width: 200px;
+}
+
+body.dark-mode #wordsLeftInRound {
+    color: #ffffff; /* White text for dark mode */
+}
+
+body.dark-mode #turnPlayer {
+    color: #ffffff; /* White text for dark mode */
+}
+
+/* DROPDOWN STUFF */
+/* Dropdown Button */
+.dropbtn {
+    background-color: azure;
+    color: black;
+    padding: 0px;
+    font-size: 22px;
+    border: none;
+    cursor: pointer;
+    width: 530px;
+    text-align: left;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover,
+.dropbtn:focus {
+    background-color: azure;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 530px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: azure;
+    color: #3B1433;
+    width: 530px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-top: #000;
+    border-bottom: #000;
+    border-left-width: 0;
+    border-style: solid;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {
+    display: block;
+}
+
+.teamsMenuButton {
+    width: 35px;
+    height: 5px;
+    background-color: black;
+    /* margin: 6px 0; */
+}
+
+.teamsMenuButtonWhite {
+    width: 35px;
+    height: 5px;
+    background-color: azure;
+    /* margin: 6px 0; */
+}
+
+.teamsMenuAllButtons {
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 16px;
+}
+
+#teamsText {
+    display: inline-block;
+    margin: 10px;
+}
+
+/* END DROPDOWN STUFF */
+
+/* Media query for small screens */
+@media (max-width: 1000px) {
+    .container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        padding: 10px;
+    }
+
+    .hat-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .tile {
+        width: auto;
+        height: auto;
+        font-size: 16px;
+    }
+
+    .main-btn {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .profile-icon {
+        font-size: 20px;
+    }
+
+    .profile-name {
+        font-size: 12px;
+    }
+
+    input {
+        width: 65%;
+        height: 8vh;
+    }
+
+    .banner {
+        width: 90%;
+    }
+
+    .banner > ul {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .score {
+        margin-right: 20px;
+    }
+
+    .team {
+        margin-left: 10px;
+    }
+}

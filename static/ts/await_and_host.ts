@@ -1,7 +1,3 @@
-import { subscribe } from "./utils/general_utils";
-import { addPlayerToUI, showError, deletePlayerElementFromUI } from "./utils/ui_utils";
-import { getHostUrl, getGameId, getPlayerName, getEndpoint } from "./utils/url_utils";
-
 function fillAllAwait() {
     fillAll();
 
@@ -41,7 +37,7 @@ function fillAll() {
     console.log(getGameId());
 }
 
-export function fillGameId() {
+function fillGameId() {
     document.getElementById("gameId")!.textContent = `Game ${getGameId()}`;
 }
 
@@ -231,7 +227,7 @@ function deleteWord(word: string) {
         });
 }
 
-export function kickPlayer(player: string) {
+function kickPlayer(player: string) {
     if (player == "") {
         return;
     }
@@ -258,41 +254,4 @@ export function kickPlayer(player: string) {
                 showError(data);
             }
         });
-}
-
-function addWordElementToUI(word: string) {
-    var ul = document.getElementById("words")!;
-    var li = document.createElement("li");
-    li.classList.add('wordElement');
-
-    let p = document.createElement("p");
-    let text = document.createTextNode(word);
-    p.appendChild(text);
-
-    li.appendChild(p);
-
-    const myButton = document.createElement('button');
-    myButton.textContent = 'X';
-    li.appendChild(myButton);
-
-    ul.appendChild(li);
-
-    myButton.addEventListener("click", function() { deleteWord(word) });
-}
-
-function deleteWordElementFromUI(word: string) {
-    let wordElements = document.getElementById("words")!.getElementsByTagName("li");
-    for (let i = 0; i < wordElements.length; i++) {
-
-        console.log("innerhtml " + wordElements[i].innerHTML)
-
-        let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
-        if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
-            document.getElementById("words")!.removeChild(wordElements[i]);
-            break;
-        }
-    }
-    let wordInput = document.getElementById("word") as HTMLInputElement;
-    wordInput.disabled = false;
-    wordInput.value = "";
 }

@@ -1,11 +1,33 @@
 // UI utils
 // -----------------------------------------------------------------------------------------------------------------------------
 
-import { kickPlayer } from "../await_and_host";
-import { gameState } from "../game";
-import { getEndpoint, getGameId, getHostUrl, getPlayerName } from "./url_utils";
+document.addEventListener('DOMContentLoaded', function() {
+    const darkModeToggle = document.getElementById('dark-mode-toggle')!;
+    const currentTheme = localStorage.getItem('theme');
 
-export function showNextRoundButton() {
+    if (currentTheme) {
+        document.body.classList.add(currentTheme);
+        if (currentTheme === 'dark-mode') {
+            darkModeToggle.textContent = '☀️'; // Sun icon for light mode
+        } else {
+            darkModeToggle.textContent = '🌙'; // Moon icon for dark mode
+        }
+    }
+
+    darkModeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        let theme = 'light-mode';
+        if (document.body.classList.contains('dark-mode')) {
+            theme = 'dark-mode';
+            darkModeToggle.textContent = '☀️'; // Sun icon for light mode
+        } else {
+            darkModeToggle.textContent = '🌙'; // Moon icon for dark mode
+        }
+        localStorage.setItem('theme', theme);
+    });
+});
+
+function showNextRoundButton() {
     if (gameState.round < 3) {
         if (getPlayerName() == gameState.turn_player) {
             document.getElementById("nextRound")!.style.display = "block";
@@ -15,33 +37,33 @@ export function showNextRoundButton() {
     }
 }
 
-export function hideTimerAndFetchWordButtons() {
+function hideTimerAndFetchWordButtons() {
     document.getElementById("toggleTimer")!.style.display = "none";
     document.getElementById("fetchWord")!.style.display = "none";
     document.getElementById("undoLastGuess")!.style.display = "none";
 }
 
-export function showResults() {
+function showResults() {
     window.location.href = getHostUrl() + "/results/" + getGameId() + '/' + getPlayerName();
 }
 
-export function home() {
+function home() {
     window.location.href = getHostUrl();
 }
 
-export function toggleTeams() {
+function toggleTeams() {
     document.getElementById("teamsList")!.classList.toggle("show");
 }
 
-export function showError(errorMessage: string) {
+function showError(errorMessage: string) {
     showMessageElement(errorMessage, RED);
 }
 
-export function showMessage(message: string) {
+function showMessage(message: string) {
     showMessageElement(message, GREEN);
 }
 
-export function showMessageElement(message: string, borderColor: string) {
+function showMessageElement(message: string, borderColor: string) {
     let messageElement = document.getElementById("message")!;
     messageElement.textContent = message;
     messageElement.style.top = "30px";
@@ -51,13 +73,13 @@ export function showMessageElement(message: string, borderColor: string) {
     messageElementTimeout = setTimeout(hideMessageElement, MESSAGE_DURATION_ON_SCREEN);
 }
 
-export function hideMessageElement() {
+function hideMessageElement() {
     let messageElement = document.getElementById("message")!;
     // messageElement.textContent = "";
     messageElement.style.top = "-50px";
 }
 
-export function setConnectedStatus(status: boolean) {
+function setConnectedStatus(status: boolean) {
     // STATE.connected = status;
     let statusDiv = document.getElementById("status")!;
     statusDiv.className = (status) ? "connected" : "reconnecting";
@@ -65,12 +87,12 @@ export function setConnectedStatus(status: boolean) {
     statusMessageDiv.textContent = (status) ? "connected" : "reconnecting";
 }
 
-export function updateWordsLeftInRound(wordsLeftInRound: number, totalNumWords: number) {
+function updateWordsLeftInRound(wordsLeftInRound: number, totalNumWords: number) {
     document.getElementById("wordsLeftInRound")!.innerHTML = "Words left: " + wordsLeftInRound + "/" + totalNumWords;
 }
 
 // On the home page, check local storage, and if the player has an active (in game or in await stage) game, allow them to go there
-export function checkActiveGameExists() {
+function checkActiveGameExists() {
     let playerName = localStorage.getItem(PLAYER_NAME_KEY) ?? "";
     let gameId = localStorage.getItem(GAME_ID_KEY) ?? "";
 
@@ -90,7 +112,6 @@ export function checkActiveGameExists() {
     .then(response => response.text())
     .then(data => {
         if (responseOk) {
-            data = JSON.parse(data);
             let parsedData = JSON.parse(data);
             let isGameActive = parsedData.isGameActive;
             let isHost = parsedData.isHost;
@@ -122,7 +143,7 @@ export function checkActiveGameExists() {
     });
 }
 
-export function goToGame(gameId: string, playerName: string, isGameActive: string, isHost: string) {
+function goToGame(gameId: string, playerName: string, isGameActive: string, isHost: string) {
     window.location.href = getHostUrl() + "/game/" + gameId + '/' + playerName;
 
     if (isGameActive == "true") {
@@ -136,42 +157,182 @@ export function goToGame(gameId: string, playerName: string, isGameActive: strin
     }
 }
 
-export function addPlayerToUI(player: string) {
+// function addPlayerToUI(player: string) {
 
-    var ul = document.getElementById("players")!;
-    var li = document.createElement("li");
-    li.classList.add('playerElement');
+//     var ul = document.getElementById("players")!;
+//     var li = document.createElement("li");
+//     li.classList.add('playerElement');
 
-    let p = document.createElement("p");
-    let text = document.createTextNode(player);
-    p.appendChild(text);
+//     let p = document.createElement("p");
+//     let text = document.createTextNode(player);
+//     p.appendChild(text);
 
-    li.appendChild(p);
+//     li.appendChild(p);
+
+//     if (getEndpoint() == "host" && getPlayerName() != player) {
+//         const myButton = document.createElement('button');
+//         myButton.textContent = 'X';
+//         li.appendChild(myButton);
+        
+//         myButton.addEventListener("click", function() { kickPlayer(player) });
+//     }
+
+//     ul.appendChild(li);
+// }
+
+/*  Build the following:
+
+    <div class="icon-box">
+        <span class="profile-icon">👤</span>
+        <span class="close-icon">✖</span>
+        <span class="profile-name">James</span>
+    </div>
+*/
+function addPlayerToUI(player: string) {
+
+    var playerList = document.getElementById("players")!;
+    var div = document.createElement("div");
+    div.classList.add('icon-box');
+
+    let span = document.createElement("span");
+    span.classList.add('profile-icon');
+    let text = document.createTextNode("👤");
+    span.appendChild(text);
+    div.appendChild(span);
 
     if (getEndpoint() == "host" && getPlayerName() != player) {
-        const myButton = document.createElement('button');
-        myButton.textContent = 'X';
-        li.appendChild(myButton);
+        span = document.createElement('span');
+        span.classList.add('close-icon');
+        text = document.createTextNode("✖");
+        span.appendChild(text);
+        div.appendChild(span);
         
-        myButton.addEventListener("click", function() { kickPlayer(player) });
+        span.addEventListener("click", function() { kickPlayer(player) });
     }
 
-    ul.appendChild(li);
+    span = document.createElement("span");
+    span.classList.add('profile-name');
+    text = document.createTextNode(player);
+    span.appendChild(text);
+    div.appendChild(span);
+
+    playerList.appendChild(div);
 }
 
-export function deletePlayerElementFromUI(player: string) {
-    let playerElements = document.getElementById("players")!.getElementsByTagName("li");
+// function deletePlayerElementFromUI(player: string) {
+//     let playerElements = document.getElementById("players")!.getElementsByTagName("li");
+//     for (let i = 0; i < playerElements.length; i++) {
+
+//         console.log("innerhtml " + playerElements[i].innerHTML)
+
+//         let currentElementWord = playerElements[i].getElementsByTagName("p")[0];
+//         if (currentElementWord != undefined && currentElementWord.innerHTML == player) {
+//             document.getElementById("players")!.removeChild(playerElements[i]);
+//             break;
+//         }
+//     }
+
+//     let wordInput = document.getElementById("word") as HTMLInputElement;
+//     wordInput.disabled = false;
+//     wordInput.value = "";
+// }
+
+function deletePlayerElementFromUI(player: string) {
+    let playerElements = document.getElementById("players")!.getElementsByTagName("div");
     for (let i = 0; i < playerElements.length; i++) {
 
         console.log("innerhtml " + playerElements[i].innerHTML)
 
-        let currentElementWord = playerElements[i].getElementsByTagName("p")[0];
+        let currentElementWord = playerElements[i].getElementsByClassName("profile-name")[0];
         if (currentElementWord != undefined && currentElementWord.innerHTML == player) {
             document.getElementById("players")!.removeChild(playerElements[i]);
             break;
         }
     }
 
+    let wordInput = document.getElementById("word") as HTMLInputElement;
+    wordInput.disabled = false;
+    wordInput.value = "";
+}
+
+// function addWordElementToUI(word: string) {
+//     var ul = document.getElementById("words")!;
+//     var li = document.createElement("li");
+//     li.classList.add('wordElement');
+
+//     let p = document.createElement("p");
+//     let text = document.createTextNode(word);
+//     p.appendChild(text);
+
+//     li.appendChild(p);
+
+//     const myButton = document.createElement('button');
+//     myButton.textContent = 'X';
+//     li.appendChild(myButton);
+
+//     ul.appendChild(li);
+
+//     myButton.addEventListener("click", function() { deleteWord(word) });
+// }
+
+// function deleteWordElementFromUI(word: string) {
+//     let wordElements = document.getElementById("words")!.getElementsByTagName("li");
+//     for (let i = 0; i < wordElements.length; i++) {
+
+//         console.log("innerhtml " + wordElements[i].innerHTML)
+
+//         let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
+//         if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
+//             document.getElementById("words")!.removeChild(wordElements[i]);
+//             break;
+//         }
+//     }
+//     let wordInput = document.getElementById("word") as HTMLInputElement;
+//     wordInput.disabled = false;
+//     wordInput.value = "";
+// }
+
+/*  Build the following:
+
+    <div class="tile">
+        <span class="word">anna</span>
+        <span class="close-icon">✖</span>
+    </div>
+*/
+function addWordElementToUI(word: string) {
+    var wordsDiv = document.getElementById("words")!;
+    var div = document.createElement("div");
+    div.classList.add('tile');
+
+    let span = document.createElement("span");
+    span.classList.add('word');
+    let text = document.createTextNode(word);
+    span.appendChild(text);
+    div.appendChild(span);
+
+    span = document.createElement("span");
+    span.classList.add('close-icon');
+    text = document.createTextNode("✖");
+    span.appendChild(text);
+    div.appendChild(span);
+
+    span.addEventListener("click", function() { deleteWord(word) });
+
+    wordsDiv.appendChild(div);
+}
+
+function deleteWordElementFromUI(word: string) {
+    let wordElements = document.getElementById("words")!.getElementsByClassName("tile");
+    for (let i = 0; i < wordElements.length; i++) {
+
+        console.log("innerhtml " + wordElements[i].innerHTML)
+
+        let currentElementWord = wordElements[i].getElementsByClassName("word")[0];
+        if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
+            document.getElementById("words")!.removeChild(wordElements[i]);
+            break;
+        }
+    }
     let wordInput = document.getElementById("word") as HTMLInputElement;
     wordInput.disabled = false;
     wordInput.value = "";

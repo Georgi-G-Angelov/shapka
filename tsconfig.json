@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "outFile": "./static/js/main.js",
+    "rootDir": "./static/ts", // Set the root directory for TypeScript files
+    "outFile": "./static/js/main.js", // Combine all .ts files into one output file
     "target": "ES6",
-    "module": "none",
+    "module": "none", // Use "none" to avoid module-specific code
     "strict": true
   },
   "include": [
-    "./static/ts/**/*.ts"
+    "./static/ts/**/*.ts", // Include all .ts files under static/ts
+    "./static/ts/*.ts"
   ]
 }
