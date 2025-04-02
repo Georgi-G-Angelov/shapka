@@ -158,42 +158,182 @@ function goToGame(gameId: string, playerName: string, isGameActive: string, isHo
     }
 }
 
+// function addPlayerToUI(player: string) {
+
+//     var ul = document.getElementById("players")!;
+//     var li = document.createElement("li");
+//     li.classList.add('playerElement');
+
+//     let p = document.createElement("p");
+//     let text = document.createTextNode(player);
+//     p.appendChild(text);
+
+//     li.appendChild(p);
+
+//     if (getEndpoint() == "host" && getPlayerName() != player) {
+//         const myButton = document.createElement('button');
+//         myButton.textContent = 'X';
+//         li.appendChild(myButton);
+        
+//         myButton.addEventListener("click", function() { kickPlayer(player) });
+//     }
+
+//     ul.appendChild(li);
+// }
+
+/*  Build the following:
+
+    <div class="icon-box">
+        <span class="profile-icon">👤</span>
+        <span class="close-icon">✖</span>
+        <span class="profile-name">James</span>
+    </div>
+*/
 function addPlayerToUI(player: string) {
 
-    var ul = document.getElementById("players")!;
-    var li = document.createElement("li");
-    li.classList.add('playerElement');
+    var playerList = document.getElementById("players")!;
+    var div = document.createElement("div");
+    div.classList.add('icon-box');
 
-    let p = document.createElement("p");
-    let text = document.createTextNode(player);
-    p.appendChild(text);
-
-    li.appendChild(p);
+    let span = document.createElement("span");
+    span.classList.add('profile-icon');
+    let text = document.createTextNode("👤");
+    span.appendChild(text);
+    div.appendChild(span);
 
     if (getEndpoint() == "host" && getPlayerName() != player) {
-        const myButton = document.createElement('button');
-        myButton.textContent = 'X';
-        li.appendChild(myButton);
+        span = document.createElement('span');
+        span.classList.add('close-icon');
+        text = document.createTextNode("✖");
+        span.appendChild(text);
+        div.appendChild(span);
         
-        myButton.addEventListener("click", function() { kickPlayer(player) });
+        span.addEventListener("click", function() { kickPlayer(player) });
     }
 
-    ul.appendChild(li);
+    span = document.createElement("span");
+    span.classList.add('profile-name');
+    text = document.createTextNode(player);
+    span.appendChild(text);
+    div.appendChild(span);
+
+    playerList.appendChild(div);
 }
 
+// function deletePlayerElementFromUI(player: string) {
+//     let playerElements = document.getElementById("players")!.getElementsByTagName("li");
+//     for (let i = 0; i < playerElements.length; i++) {
+
+//         console.log("innerhtml " + playerElements[i].innerHTML)
+
+//         let currentElementWord = playerElements[i].getElementsByTagName("p")[0];
+//         if (currentElementWord != undefined && currentElementWord.innerHTML == player) {
+//             document.getElementById("players")!.removeChild(playerElements[i]);
+//             break;
+//         }
+//     }
+
+//     let wordInput = document.getElementById("word") as HTMLInputElement;
+//     wordInput.disabled = false;
+//     wordInput.value = "";
+// }
+
 function deletePlayerElementFromUI(player: string) {
-    let playerElements = document.getElementById("players")!.getElementsByTagName("li");
+    let playerElements = document.getElementById("players")!.getElementsByTagName("div");
     for (let i = 0; i < playerElements.length; i++) {
 
         console.log("innerhtml " + playerElements[i].innerHTML)
 
-        let currentElementWord = playerElements[i].getElementsByTagName("p")[0];
+        let currentElementWord = playerElements[i].getElementsByClassName("profile-name")[0];
         if (currentElementWord != undefined && currentElementWord.innerHTML == player) {
             document.getElementById("players")!.removeChild(playerElements[i]);
             break;
         }
     }
 
+    let wordInput = document.getElementById("word") as HTMLInputElement;
+    wordInput.disabled = false;
+    wordInput.value = "";
+}
+
+// function addWordElementToUI(word: string) {
+//     var ul = document.getElementById("words")!;
+//     var li = document.createElement("li");
+//     li.classList.add('wordElement');
+
+//     let p = document.createElement("p");
+//     let text = document.createTextNode(word);
+//     p.appendChild(text);
+
+//     li.appendChild(p);
+
+//     const myButton = document.createElement('button');
+//     myButton.textContent = 'X';
+//     li.appendChild(myButton);
+
+//     ul.appendChild(li);
+
+//     myButton.addEventListener("click", function() { deleteWord(word) });
+// }
+
+// function deleteWordElementFromUI(word: string) {
+//     let wordElements = document.getElementById("words")!.getElementsByTagName("li");
+//     for (let i = 0; i < wordElements.length; i++) {
+
+//         console.log("innerhtml " + wordElements[i].innerHTML)
+
+//         let currentElementWord = wordElements[i].getElementsByTagName("p")[0];
+//         if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
+//             document.getElementById("words")!.removeChild(wordElements[i]);
+//             break;
+//         }
+//     }
+//     let wordInput = document.getElementById("word") as HTMLInputElement;
+//     wordInput.disabled = false;
+//     wordInput.value = "";
+// }
+
+/*  Build the following:
+
+    <div class="tile">
+        <span class="word">anna</span>
+        <span class="close-icon">✖</span>
+    </div>
+*/
+function addWordElementToUI(word: string) {
+    var wordsDiv = document.getElementById("words")!;
+    var div = document.createElement("div");
+    div.classList.add('tile');
+
+    let span = document.createElement("span");
+    span.classList.add('word');
+    let text = document.createTextNode(word);
+    span.appendChild(text);
+    div.appendChild(span);
+
+    span = document.createElement("span");
+    span.classList.add('close-icon');
+    text = document.createTextNode("✖");
+    span.appendChild(text);
+    div.appendChild(span);
+
+    span.addEventListener("click", function() { deleteWord(word) });
+
+    wordsDiv.appendChild(div);
+}
+
+function deleteWordElementFromUI(word: string) {
+    let wordElements = document.getElementById("words")!.getElementsByClassName("tile");
+    for (let i = 0; i < wordElements.length; i++) {
+
+        console.log("innerhtml " + wordElements[i].innerHTML)
+
+        let currentElementWord = wordElements[i].getElementsByClassName("word")[0];
+        if (currentElementWord != undefined && currentElementWord.innerHTML == word) {
+            document.getElementById("words")!.removeChild(wordElements[i]);
+            break;
+        }
+    }
     let wordInput = document.getElementById("word") as HTMLInputElement;
     wordInput.disabled = false;
     wordInput.value = "";

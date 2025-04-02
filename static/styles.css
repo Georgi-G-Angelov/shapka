@@ -27,6 +27,31 @@ body.dark-mode .container {
     background-color: #333333; /* Dark grey background for dark mode */
 }
 
+#message {
+    width: 250px;
+    min-height: 40px;
+    font-weight: bold;
+    border: 2px solid red;
+    border-radius: 10px;
+    background-color: white;
+    position: fixed;
+    top: -45px;
+    margin-top: 20px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #3B1433;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: top 0.3s linear;
+}
+
+body.dark-mode #message {
+    background-color: #555555; /* Dark grey background for dark mode */
+    color: #ffffff; /* White text for dark mode */
+    border: 2px solid #777777; /* Dark grey border for dark mode */
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -245,13 +270,163 @@ button {
     margin-bottom: 30px;
 }
 
+.input-box {
+    display: flex;
+    justify-content: center;
+    /* margin-left: auto;
+    margin-right: auto; */
+    /* width: 50%; */
+    margin-top: auto;
+    margin-bottom: auto;
+    border-radius: 10px;
+}
+
+input {
+    width: 350px;
+    height: 60px;
+    font-size: 22px;
+    font-weight: bold;
+    font-family: andale mono, monospace;
+    border: none;
+    color: #000;
+    text-align: center;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    background-color: #ffffff; /* Light mode background */
+    color: #000000; /* Light mode text color */
+    border: 1px solid #cccccc; /* Light mode border */
+}
+
+body.dark-mode input {
+    background-color: #555555; /* Dark mode background */
+    color: #ffffff; /* Dark mode text color */
+    border: 1px solid #777777; /* Dark mode border */
+}
+
 #gameId {
     text-align: center;
     margin-top: 0;
 }
 
+body.dark-mode #gameId {
+    color: #ffffff; /* White text for dark mode */
+}
+
+
+.banner {
+    width: 510px;
+    background-color: #fbf2ff; /* Even lighter purple for light mode */
+    color: #000;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    text-align: left;
+    clear: both;
+    border-bottom: #3B1433;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-style: solid;
+}
+
+body.dark-mode .banner {
+    background-color: #444444; /* Lighter gray background for dark mode */
+    color: #ffffff; /* White text for dark mode */
+    border-color: #555555; /* Dark grey border for dark mode */
+}
+
+.banner > h3 {
+    display: inline-block;
+}
+
+.banner > ul {
+    padding: 0;
+    background-color: #fbf2ff; /* Even lighter purple for light mode */
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+body.dark-mode .banner > ul {
+    background-color: #444444; /* Lighter gray background for dark mode */
+}
+
+.banner > ul > h4 {
+    margin: 0;
+    border-bottom: #3B1433;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 0;
+    border-style: solid;
+}
+
+body.dark-mode .banner > ul > h4 {
+    border-color: #555555; /* Dark grey border for dark mode */
+}
+
+/* .banner > ul > p {
+    display: inline-block;
+} */
+
+.score {
+    /* text-align: right; */
+    float: right;
+}
+
+#top-banner {
+    border-radius: 15px 15px 0 0;
+}
+
+#bot-banner {
+    border-radius: 0 0 15px 15px;
+    min-height: 15px;
+    text-align: center;
+}
+
+#bot-space {
+    min-height: 20px;
+}
+
+#results {
+    color: azure;
+}
+
+.gold {
+    background-image: linear-gradient(to right,
+            #462523 0,
+            #cb9b51 22%,
+            #f6e27a 45%,
+            #f6f2c0 50%,
+            #f6e27a 55%,
+            #cb9b51 78%,
+            #462523 100%);
+}
+
+.silver {
+    background-image: linear-gradient(to right,
+            #758087 0,
+            #a1a8ad 22%,
+            #ccd0d3 45%,
+            #f8f8f9 50%,
+            #ccd0d3 55%,
+            #a1a8ad 78%,
+            #758087 100%);
+}
+
+.bronze {
+    background-image: linear-gradient(to right,
+            #d0722c 0,
+            #e09f6e 22%,
+            #eecbb1 45%,
+            #fcf8f4 50%,
+            #eecbb1 55%,
+            #e09f6e 78%,
+            #d0722c 100%);
+}
+
 /* Media query for small screens */
-@media (max-width: 480px) {
+@media (max-width: 1000px) {
     .container {
         width: 100%;
         height: 100%;
@@ -281,5 +456,27 @@ button {
 
     .profile-name {
         font-size: 12px;
+    }
+
+    input {
+        width: 65%;
+        height: 8vh;
+    }
+
+    .banner {
+        width: 90%;
+    }
+
+    .banner > ul {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .score {
+        margin-right: 20px;
+    }
+
+    .team {
+        margin-left: 10px;
     }
 }

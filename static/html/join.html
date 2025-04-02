@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -21,4 +21,43 @@
     </div>
     <p id="message"></p>
   </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Shapka</title>
+    <link rel="icon" type="image/x-icon" href="/icon.ico">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="../../js/main.js" charset="utf-8" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+</head>
+<body onload="checkActiveGameExists()">
+    <div class="container">
+        <header class="header">
+            <span class="icon-left">👤</span>
+            <h1>shapka</h1>
+            <span class="icon-right" id="dark-mode-toggle">🌙</span>
+        </header>
+
+        <div class="logo">
+            <img src="shapka-logo-big.png" alt="Logo" onclick="home()">
+        </div>
+
+        <div class="input-box">
+          <input type="text" id="name" name="name" placeholder="Your name"><br><br>
+        </div>
+        <div class="input-box">
+          <input type="text" id="game_id" name="game_id" placeholder="Game ID"><br><br>
+        </div>
+
+        <div class="button-box">
+          <button class="main-btn" id="join_game" onclick="joinGame()">Join game</button>
+        </div>
+
+        <p id="message"></p>
+    </div>
+</body>
 </html>
