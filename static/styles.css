@@ -251,6 +251,58 @@ body.dark-mode .icon-right {
     transform: rotate(180deg);
 }
 
+#activeGameBox button {
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #9c27b0, #7b1fa2);
+    color: #ffffff;
+}
+
+#activeGameBox {
+    font-size: 12px;
+}
+
+body.dark-mode #activeGameBox {
+    color: #ffffff;
+}
+
+#toggleTimer {
+    margin-right: 30px;
+}
+
+#fetchWord {
+    margin-right: 30px;
+}
+
+#wordsInPlay {
+    padding: 0;
+}
+
+#wordsInPlay>li {
+    display: block;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#wordsInPlay>li>p {
+    padding: 4px;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: azure;
+    border-radius: 10px;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    color: #3B1433;
+    margin-bottom: 0;
+    /* margin-top: 5px; */
+}
+
+#wordsInPlay>li>p>img {
+    float: right;
+    height: 35px;
+}
+
 button {
     width: 250px;
     height: 60px;
@@ -424,6 +476,108 @@ body.dark-mode .banner > ul > h4 {
             #e09f6e 78%,
             #d0722c 100%);
 }
+
+#wordsLeftInRound {
+    text-align: right;
+    position: fixed;
+    top: 70px;
+    right: 15px;
+    width: 200px;
+}
+
+body.dark-mode #wordsLeftInRound {
+    color: #ffffff; /* White text for dark mode */
+}
+
+body.dark-mode #turnPlayer {
+    color: #ffffff; /* White text for dark mode */
+}
+
+/* DROPDOWN STUFF */
+/* Dropdown Button */
+.dropbtn {
+    background-color: azure;
+    color: black;
+    padding: 0px;
+    font-size: 22px;
+    border: none;
+    cursor: pointer;
+    width: 530px;
+    text-align: left;
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover,
+.dropbtn:focus {
+    background-color: azure;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 530px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: azure;
+    color: #3B1433;
+    width: 530px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-top: #000;
+    border-bottom: #000;
+    border-left-width: 0;
+    border-style: solid;
+    border-width: 1px;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {
+    display: block;
+}
+
+.teamsMenuButton {
+    width: 35px;
+    height: 5px;
+    background-color: black;
+    /* margin: 6px 0; */
+}
+
+.teamsMenuButtonWhite {
+    width: 35px;
+    height: 5px;
+    background-color: azure;
+    /* margin: 6px 0; */
+}
+
+.teamsMenuAllButtons {
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 16px;
+}
+
+#teamsText {
+    display: inline-block;
+    margin: 10px;
+}
+
+/* END DROPDOWN STUFF */
 
 /* Media query for small screens */
 @media (max-width: 1000px) {

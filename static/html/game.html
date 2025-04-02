@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -30,7 +30,6 @@
         </div>
         <div id="teamsText"> Teams</div>
       </div>
-      <!-- <button onclick="toggleTeams()" class="dropbtn">Teams</button> -->
 
       <div id="teamsList" class="dropdown-content">
       </div>
@@ -58,4 +57,87 @@
       <button id="showResults" style="display: none;" onclick="showResults()">Show results</button>
     </div>
   </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Shapka</title>
+    <link rel="icon" type="image/x-icon" href="/icon.ico">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="../../js/main.js" charset="utf-8" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap" rel="stylesheet">
+</head>
+<body onload="fetchGameState()">
+    <div class="container">
+        <!-- <div id="status" class="pending"></div>
+        <div id="statusMessage">pending</div> -->
+
+        <header class="header">
+            <span class="icon-left">👤</span>
+            <h1>shapka</h1>
+            <span class="icon-right" id="dark-mode-toggle">🌙</span>
+        </header>
+
+        <div class="logo">
+            <img src="/shapka-logo.png" alt="Logo" onclick="home()">
+        </div>
+
+        <!-- <ul id="words">
+        </ul>
+        <hr>
+        <ul id="players">
+        </ul> -->
+        <p id="message"></p>
+
+        <!-- <div id="status" class="pending"></div>
+        <div id="statusMessage">pending</div> -->
+    
+        <div id="wordsLeftInRound"></div>
+    
+        <h1 id="gameId"></h1>
+        <h3 id="turnPlayer"></h3>
+    
+        <div class="dropdown" id="teams">
+    
+          <div onclick="toggleTeams()" class="dropbtn">
+            <div class="teamsMenuAllButtons">
+              <div class="teamsMenuButton"></div>
+              <div class="teamsMenuButtonWhite"></div>
+              <div class="teamsMenuButton"></div>
+              <div class="teamsMenuButtonWhite"></div>
+              <div class="teamsMenuButton"></div>
+            </div>
+            <div id="teamsText"> Teams</div>
+          </div>
+    
+          <div id="teamsList" class="dropdown-content">
+          </div>
+        </div>
+    
+        <h2 id="timer"></h2>
+        <div class="button-box">
+          <button id="toggleTimer" style="display: none;" onclick="toggleTimer()">Toggle timer</button>
+          <button id="fetchWord" style="display: none;" onclick="fetchWord()">Fetch word</button>
+          <button id="undoLastGuess" style="display: none;" onclick="undoLastGuess()">Undo last guess</button>
+    
+        </div>
+        <p id="message"></p>
+    
+        <ul id="wordsInPlay">
+    
+        </ul>
+        <div class="button-box">
+          <button id="nextTurn" style="display: none;" onclick="nextTurn()">Next turn</button>
+        </div>
+        <div class="button-box">
+          <button id="nextRound" style="display: none;" onclick="nextRound()">Next round</button>
+        </div>
+        <div class="button-box">
+          <button id="showResults" style="display: none;" onclick="showResults()">Show results</button>
+        </div>
+    </div>
+</body>
 </html>
