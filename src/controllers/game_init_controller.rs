@@ -26,10 +26,17 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
     }
 
     // Init id
-    let mut id: i32 = rng.gen_range(0..MAX_GAME_ID);
-    while games.contains_key(&id) {
-        id = rng.gen_range(0..MAX_GAME_ID);
+    // Generate all IDs from 0 to MAX_GAME_ID and exclude existing keys
+    let all_ids: HashSet<i32> = (0..MAX_GAME_ID).collect();
+    let existing_ids: HashSet<i32> = games.keys().collect();
+    let available_ids: Vec<i32> = all_ids.difference(&existing_ids).collect();
+
+    if available_ids.is_empty() {
+        return Err(BadRequest("No available game IDs.".to_string()));
     }
+
+    // Select a random ID from the available IDs
+    let id = available_ids[rng.gen_range(0..available_ids.len())];
 
     let game: Game = init_game(id, player_name, word_limit);
     let auth_secret: String = game.auth_secret.to_string();
