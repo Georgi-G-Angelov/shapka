@@ -1,6 +1,9 @@
 #[macro_use] extern crate rocket;
 
 mod auth;
+use std::collections::HashSet;
+use std::sync::Mutex;
+
 use auth::authenticator::*;
 mod models;
 use auth::utils::*;
@@ -26,10 +29,12 @@ use chashmap::CHashMap;
 #[launch]
 fn rocket() -> Rocket<Build> {
     let games: CHashMap<i32, Game> = CHashMap::new();
+    let game_ids: Mutex<HashSet<i32>> = Mutex::new(HashSet::new());
     let authenticator = Authenticator::new();
 
     rocket::build()
         .manage(games)
+        .manage(game_ids)
         .mount("/", routes![home, create_game, create,
                             join_game, join, host, await_game, in_game, fetch_players, fetch_player_words,
                             game_events, add_word, delete_word, start_game, fetch_game_state, update_timer_state,
