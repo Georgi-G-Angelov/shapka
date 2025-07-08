@@ -1,3 +1,6 @@
+use std::collections::HashSet;
+use std::sync::Mutex;
+
 use crate::auth::utils::generate_token;
 use crate::extentions::vec_utils::RemoveElem;
 use crate::models::game::init_game;
@@ -16,7 +19,7 @@ use rocket::response::content;
 // Creates a game given a player name and a word limit (per player)
 // Returns a json with the game id and the generated auth token for this player
 #[get("/create_game/<player_name>/<word_limit>")]
-pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>>{
+pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<i32, Game>>, existing_game_ids: &State<Mutex<HashSet<i32>>>) -> Result<content::RawJson<String>, BadRequest<String>>{
     let mut rng = rand::thread_rng();
 
     if word_limit < MIN_WORDS_PER_PLAYER {
@@ -26,10 +29,18 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
     }
 
     // Init id
-    let mut id: i32 = rng.gen_range(0..MAX_GAME_ID);
-    while games.contains_key(&id) {
-        id = rng.gen_range(0..MAX_GAME_ID);
+    // Generate all IDs from 0 to MAX_GAME_ID and exclude existing ids
+    let all_ids: HashSet<i32> = (0..MAX_GAME_ID).collect();
+    let mut existing_game_ids = existing_game_ids.lock().unwrap();
+    let available_ids: Vec<&i32> = all_ids.difference(&existing_game_ids).collect();
+
+    if available_ids.is_empty() {
+        return Err(BadRequest("No available game IDs.".to_string()));
     }
+
+    // Select a random ID from the available IDs
+    let id = available_ids[rng.gen_range(0..available_ids.len())].to_owned();
+    existing_game_ids.insert(id);
 
     let game: Game = init_game(id, player_name, word_limit);
     let auth_secret: String = game.auth_secret.to_string();
