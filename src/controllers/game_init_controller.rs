@@ -1,7 +1,9 @@
 use std::collections::HashSet;
+use std::sync::Arc;
 use std::sync::Mutex;
 
 use crate::auth::utils::generate_token;
+use crate::extentions::arc_string::ArcString;
 use crate::extentions::vec_utils::RemoveElem;
 use crate::models::game::init_game;
 use crate::models::game::Game;
@@ -66,11 +68,12 @@ pub async fn join_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32,
     };
 
     let mut players = game.players.lock().unwrap();
+    let name_arc = ArcString(Arc::new(name.to_string()));
 
-    if players.contains(&name.to_string()) {
+    if players.contains(&name_arc) {
         Err(BadRequest("Name already exists"))
     } else {
-        players.push(name.to_string());
+        players.push(name_arc.clone());
 
         // Tell all other people in the game that a new player has joined
         let mut event: String = NEW_PLAYER_EVENT_PREFIX.to_owned();
@@ -82,7 +85,7 @@ pub async fn join_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32,
             gameId: game_id,
             authToken: generate_token(game_id, name.to_string(), game.auth_secret.to_string())
         };
-        game.game_state.lock().unwrap().words_per_player.insert(name.to_string(), Vec::new());
+        game.game_state.lock().unwrap().words_per_player.insert(name_arc, Vec::new());
     
         Ok(content::RawJson(response.to_string()))
     }
@@ -97,22 +100,23 @@ pub async fn leave_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32
     };
 
     let mut players = game.players.lock().unwrap();
+    let name_arc = ArcString(Arc::new(name.to_string()));
 
-    if !players.contains(&name.to_string()) {
+    if !players.contains(&name_arc) {
         Err(BadRequest("Player not in game"))
     } else {
         // Remove the player
-        players.remove_element(name.to_string());
+        players.remove_element(name_arc.clone());
 
         // If player has added words, get rid of them
         let words_per_player = &mut game.game_state.lock().unwrap().words_per_player;
-        match words_per_player.get(name) {
+        match words_per_player.get(&name_arc) {
             Some(words) => {
                 let mut game_words = game.words.lock().unwrap();
                 for word in words {
-                    game_words.remove_element(word.to_string());
+                    game_words.remove_element(word.clone());
                 }
-                words_per_player.remove(name);
+                words_per_player.remove(&name_arc.clone());
             },
             None => ()
         };
@@ -135,26 +139,28 @@ pub async fn kick_player<'a>(game_id: i32, name: &str, player_to_kick: &str, gam
     };
 
     let mut players = game.players.lock().unwrap();
+    let name_arc = ArcString(Arc::new(name.to_string()));
+    let player_to_kick_arc = ArcString(Arc::new(player_to_kick.to_string()));
 
-    if game.host_name != name.to_string() {
+    if game.host_name != name_arc {
         return Err(BadRequest("Only the host can kick people"))
     }
 
-    if !players.contains(&player_to_kick.to_string()) {
+    if !players.contains(&player_to_kick_arc) {
         return Err(BadRequest("Player not in game"))
     } else {
         // Remove the player
-        players.remove_element(player_to_kick.to_string());
+        players.remove_element(player_to_kick_arc.clone());
 
         // If player has added words, get rid of them
         let words_per_player = &mut game.game_state.lock().unwrap().words_per_player;
-        match words_per_player.get(player_to_kick) {
+        match words_per_player.get(&player_to_kick_arc) {
             Some(words) => {
                 let mut game_words = game.words.lock().unwrap();
                 for word in words {
-                    game_words.remove_element(word.to_string());
+                    game_words.remove_element(word.clone());
                 }
-                words_per_player.remove(player_to_kick);
+                words_per_player.remove(&player_to_kick_arc);
             },
             None => ()
         };
