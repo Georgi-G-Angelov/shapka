@@ -31,8 +31,9 @@ impl RateLimiter {
             endpoints.insert(route_uri.clone(), ArcString(Arc::new(route_uri)));
         }
 
+        // Set override limits for specific endpoints if needed
         let per_endpoint_override_limits: CHashMap<ArcString, u64> = CHashMap::new();
-        per_endpoint_override_limits.insert(ArcString(Arc::new("create".to_string())), 2);
+        per_endpoint_override_limits.insert(ArcString(Arc::new("create_game".to_string())), 5);
 
         Self {
             per_ip_requests: CHashMap::new(),
@@ -54,7 +55,8 @@ impl Fairing for RateLimiter {
     }
 
     async fn on_request(&self, request: &mut Request<'_>, _: &mut Data<'_>) {
-        let sender_ip = request.remote().unwrap().to_string();
+        let sender_ip = request.remote().unwrap().ip().to_string();
+        // println!("Request from IP: {}", sender_ip);
         let current_minute = (chrono::Utc::now().timestamp_millis() / 60000) as u64;
 
         // println!("endpoint: {}", request.uri().path().segments().get(0).unwrap_or(&""));
@@ -75,6 +77,8 @@ impl Fairing for RateLimiter {
         if self.per_ip_requests.contains_key(&sender_ip) {
             let mut counter = self.per_ip_requests.get_mut(&sender_ip).unwrap();
             
+            // println!("Current minute: {}, Counter minute: {}", current_minute, counter.minute);
+
             // If it's a new minute, reset and don't throttle
             if counter.minute != current_minute {
                 counter.reset(current_minute);
@@ -85,6 +89,8 @@ impl Fairing for RateLimiter {
                     Some(limit) => *limit,
                     None => self.per_endpoint_default_requests_limit,
                 };
+
+                // println!("Current endpoint requests: {}, Current endpoint limit: {}", current_endpoint_requests, current_endpoint_limit);
 
                 if counter.total_requests >= self.total_requests_limit
                 || current_endpoint_requests >= current_endpoint_limit {
