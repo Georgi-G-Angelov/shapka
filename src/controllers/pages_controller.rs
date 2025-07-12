@@ -1,8 +1,8 @@
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 use chashmap::CHashMap;
 use rocket::{fs::NamedFile, State};
 
-use crate::models::game::Game;
+use crate::{extentions::arc_string::ArcString, models::game::Game};
 
 #[get("/")]
 pub async fn home() -> Option<NamedFile> {
@@ -26,10 +26,12 @@ pub async fn host(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) 
         return Option::<NamedFile>::None;
     }
     let game = games.get(&game_id).unwrap();
+    let name_arc = ArcString(Arc::new(name.to_string()));
+
     if !game.players
         .lock()
         .expect("locked game")
-        .contains(&name.to_string()) {
+        .contains(&name_arc) {
         return Option::<NamedFile>::None;
     }
     if game.game_state.lock().unwrap().is_game_finished {
@@ -45,10 +47,12 @@ pub async fn await_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Ga
         return Option::<NamedFile>::None;
     }
     let game = games.get(&game_id).unwrap();
+    let name_arc = ArcString(Arc::new(name.to_string()));
+    
     if !game.players
         .lock()
         .expect("locked game")
-        .contains(&name.to_string()) {
+        .contains(&name_arc) {
         return Option::<NamedFile>::None;
     }
     if game.game_state.lock().unwrap().is_game_finished {
@@ -64,10 +68,12 @@ pub async fn in_game(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>
         return Option::<NamedFile>::None;
     }
     let game = games.get(&game_id).unwrap();
+    let name_arc = ArcString(Arc::new(name.to_string()));
+    
     if !game.players
         .lock()
         .expect("locked game")
-        .contains(&name.to_string()) {
+        .contains(&name_arc) {
         return Option::<NamedFile>::None;
     }
     NamedFile::open(Path::new("static/html/game.html")).await.ok()
@@ -80,10 +86,12 @@ pub async fn results(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>
         return Option::<NamedFile>::None;
     }
     let game = games.get(&game_id).unwrap();
+    let name_arc = ArcString(Arc::new(name.to_string()));
+    
     if !game.players
         .lock()
         .expect("locked game")
-        .contains(&name.to_string()) {
+        .contains(&name_arc) {
         return Option::<NamedFile>::None;
     }
     NamedFile::open(Path::new("static/html/results.html")).await.ok()
