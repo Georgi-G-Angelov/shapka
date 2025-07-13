@@ -28,6 +28,8 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
         return Err(BadRequest(format!("Word count per player is too low. Lower limit is {}", MIN_WORDS_PER_PLAYER)));
     } else if word_limit > MAX_WORDS_PER_PLAYER {
         return Err(BadRequest(format!("Word count per player is too high. Upper limit is {}", MAX_WORDS_PER_PLAYER)));
+    } else if player_name.len() > MAX_PLAYER_NAME_LENGTH {
+        return Err(BadRequest(format!("Player name is too long. Max length is {}", MAX_PLAYER_NAME_LENGTH)));
     }
 
     // Init id
@@ -61,17 +63,24 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
 // Returns a json with the game id and the generated auth token for this player
 // or plain text error if game id is not found or player name in this game already exists
 #[get("/join_game/<game_id>/<name>")]
-pub async fn join_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
+pub async fn join_game<'a>(game_id: i32, name: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+    if name.len() > MAX_PLAYER_NAME_LENGTH {
+        return Err(BadRequest(format!("Player name is too long. Max length is {}", MAX_PLAYER_NAME_LENGTH)));
+    }
+
     let game = match games.get(&game_id) {
         Some(game) => game,
-        None => return Err(BadRequest("Game not found")),
+        None => return Err(BadRequest("Game not found".to_string())),
     };
 
     let mut players = game.players.lock().unwrap();
+    if players.len() >= MAX_PLAYERS_PER_GAME {
+        return Err(BadRequest(format!("Game is full. Max players per game is {}", MAX_PLAYERS_PER_GAME)));
+    }
     let name_arc = ArcString(Arc::new(name.to_string()));
 
     if players.contains(&name_arc) {
-        Err(BadRequest("Name already exists"))
+        Err(BadRequest("Name already exists".to_string()))
     } else {
         players.push(name_arc.clone());
 

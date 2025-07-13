@@ -17,10 +17,14 @@ use crate::extentions::vec_utils::*;
 // Before the start of the game, the players will use this to add words to the game
 // Returns a plain text message if the word has been added or if the player has reached their limit
 #[get("/add_word/<game_id>/<name>/<word>")]
-pub fn add_word<'a>(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<&'a str>> {
+pub fn add_word<'a>(game_id: i32, name: &str, word: &str, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, BadRequest<String>> {
+    if word.len() > MAX_WORD_LENGTH {
+        return Err(BadRequest(format!("Word is too long. Max length is {}", MAX_WORD_LENGTH)));
+    }
+
     let game = match games.get(&game_id) {
         Some(game) => game,
-        None => return Err(BadRequest("Game not found")),
+        None => return Err(BadRequest("Game not found".to_string())),
     };
     let name_arc = ArcString(Arc::new(name.to_string()));
     let word_arc = ArcString(Arc::new(word.to_string()));
@@ -28,7 +32,7 @@ pub fn add_word<'a>(game_id: i32, name: &str, word: &str, games: &State<CHashMap
     let players = game.players.lock().unwrap();
 
     if !players.contains(&name_arc.clone()) {
-        return Err(BadRequest("Player not in game"));
+        return Err(BadRequest("Player not in game".to_string()));
     }
 
     // Init number of words added per player if necessary
@@ -64,7 +68,7 @@ pub fn add_word<'a>(game_id: i32, name: &str, word: &str, games: &State<CHashMap
         };
         Ok(content::RawJson(response.to_string()))
     } else { 
-        Err(BadRequest("You can't add more words"))
+        Err(BadRequest("You can't add more words".to_string()))
     }
 }
 

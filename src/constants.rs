@@ -3,6 +3,9 @@ pub const TIMER_START_VALUE: i32 = 60000;
 pub const MAX_WORDS_IN_PLAY: usize = 2;
 pub const MIN_WORDS_PER_PLAYER: usize = 4;
 pub const MAX_WORDS_PER_PLAYER: usize = 7;
+pub const MAX_WORD_LENGTH: usize = 100;
+pub const MAX_PLAYER_NAME_LENGTH: usize = 100;
+pub const MAX_PLAYERS_PER_GAME: usize = 20;
 pub const NUM_ROUNDS: i32 = 3;
 
 pub const NEW_PLAYER_EVENT_PREFIX: &str = "new_player:";
