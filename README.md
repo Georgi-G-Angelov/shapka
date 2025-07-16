@@ -25,12 +25,9 @@ Features:
 - delete games
 - slider for words limit (maybe also random button)
 - custom time limit
-- maybe max players?
 - num rounds for sure
 - frond end improvements
-    kick players
     teams menu is not very intuitive
-- allow host to kick players
 - generally fix players missing SSEs - fixed for start of game, not for switching turns, and ending game
 
 
