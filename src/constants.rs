@@ -1,12 +1,13 @@
 pub const MAX_GAME_ID: i32 = 100000;
-pub const TIMER_START_VALUE: i32 = 60000;
+pub const TIMER_START_VALUE: i32 = 60000; // default turn length
+pub const ALLOWED_TURN_SECONDS: [i32; 5] = [30, 45, 60, 90, 120];
 pub const MAX_WORDS_IN_PLAY: usize = 2;
 pub const MIN_WORDS_PER_PLAYER: usize = 4;
 pub const MAX_WORDS_PER_PLAYER: usize = 7;
 pub const MAX_WORD_LENGTH: usize = 100;
 pub const MAX_PLAYER_NAME_LENGTH: usize = 100;
 pub const MAX_PLAYERS_PER_GAME: usize = 20;
-pub const NUM_ROUNDS: i32 = 3;
+pub const NUM_ROUNDS: i32 = 3; // number of round kinds; a game plays any non-empty subset of them
 
 pub const NEW_PLAYER_EVENT_PREFIX: &str = "new_player:";
 pub const NEW_WORD_EVENT_PREFIX: &str = "new_word:";

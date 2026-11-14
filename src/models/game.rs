@@ -7,7 +7,7 @@ use rand::thread_rng;
 use rand::seq::SliceRandom;
 use guid_create::GUID;
 
-use crate::constants::{NUM_ROUNDS, TIMER_START_VALUE};
+use crate::constants::{ALLOWED_TURN_SECONDS, NUM_ROUNDS};
 use crate::extentions::arc_string::ArcString;
 
 // Basic struct for a game, mostly used before a game has started
@@ -26,7 +26,9 @@ pub struct Game {
 // State of a game with all details needed to run the turns
 #[derive(Serialize)]
 pub struct GameState {
-    pub timer: i32, // number from 0 to TIMER_START_VALUE
+    pub timer: i32, // number from 0 to turn_length
+    pub turn_length: i32, // milliseconds per turn, chosen by the host
+    pub rounds: Vec<i32>, // round kinds played, in order, e.g. [1, 3]; `round` is a 1-based position in this list
     pub turn_player: ArcString,
     pub turn_player_index: usize,
     pub words_guessed_per_team_per_round: HashMap<i32, HashMap<i32, Vec<ArcString>>>,
@@ -38,15 +40,15 @@ pub struct GameState {
     pub words_guessed: Vec<ArcString>,
     pub words_in_play: Vec<ArcString>, // from 0 to 2 elements
     pub words_to_guess: Vec<ArcString>,
-    pub round: i32, // from 1 to 3
+    pub round: i32, // from 1 to rounds.len()
     pub is_turn_active: bool,
     pub is_round_active: bool,
     pub is_game_finished: bool,
     pub has_game_started: bool
 }
 
-// Initialize game with the owner (host) name and a word limit per player
-pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Game {
+// Initialize game with the owner (host) name, a word limit per player, the turn length and the rounds to play
+pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize, turn_length: i32, rounds: Vec<i32>) -> Game {
     let (tx, _) = channel::<String>(1024);
     let owner_arc = Arc::new(owner_name.to_string());
     let owner_name = ArcString(owner_arc);
@@ -58,7 +60,7 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
         words: Mutex::new(vec![]),
         words_per_player_limit,
         num_words_per_player: Mutex::new(HashMap::new()),
-        game_state: Mutex::new(init_game_state(owner_name.clone())),
+        game_state: Mutex::new(init_game_state(owner_name.clone(), turn_length, rounds)),
         host_name: owner_name.clone(),
         auth_secret: GUID::rand().to_string() // generate random string to use for auth tokens for players
     };
@@ -68,10 +70,39 @@ pub fn init_game(id: i32, owner_name: &str, words_per_player_limit: usize) -> Ga
     game
 }
 
+// Turn length in seconds -> milliseconds, if it is one of the allowed values
+pub fn parse_turn_seconds(turn_seconds: i32) -> Result<i32, String> {
+    if ALLOWED_TURN_SECONDS.contains(&turn_seconds) {
+        Ok(turn_seconds * 1000)
+    } else {
+        Err(format!("Turn length must be one of {:?} seconds", ALLOWED_TURN_SECONDS))
+    }
+}
+
+// Rounds to play as digits, e.g. "13" -> [1, 3]. Each digit is a round kind from 1 to NUM_ROUNDS.
+// Rounds are always played in ascending order and at most once, so "31" and "113" also mean [1, 3].
+pub fn parse_rounds(rounds: &str) -> Result<Vec<i32>, String> {
+    let mut parsed: Vec<i32> = Vec::new();
+    for c in rounds.chars() {
+        let kind = c.to_digit(10)
+            .map(|d| d as i32)
+            .filter(|d| *d >= 1 && *d <= NUM_ROUNDS)
+            .ok_or_else(|| format!("Rounds must be digits from 1 to {}", NUM_ROUNDS))?;
+        if !parsed.contains(&kind) {
+            parsed.push(kind);
+        }
+    }
+    if parsed.is_empty() {
+        return Err("Pick at least one round".to_string());
+    }
+    parsed.sort();
+    Ok(parsed)
+}
+
 // Initialize the game state
-pub fn init_game_state(owner_name: ArcString) -> GameState {
+pub fn init_game_state(owner_name: ArcString, turn_length: i32, rounds: Vec<i32>) -> GameState {
     let mut words_guessed_per_team_per_round: HashMap<i32, HashMap<i32, Vec<ArcString>>> = HashMap::new();
-    for i in 1..NUM_ROUNDS+1 {
+    for i in 1..rounds.len() as i32 + 1 {
         words_guessed_per_team_per_round.insert(i, HashMap::new());
     }
 
@@ -79,7 +110,9 @@ pub fn init_game_state(owner_name: ArcString) -> GameState {
     words_per_player.insert(owner_name.clone(), Vec::new());
 
     GameState {
-        timer: TIMER_START_VALUE,
+        timer: turn_length,
+        turn_length,
+        rounds,
         turn_player: owner_name.clone(),
         turn_player_index: 0,
         words_guessed_per_team_per_round,
@@ -159,5 +192,41 @@ pub fn init_teams(game_state: &Mutex<GameState>, players: &Mutex<Vec<ArcString>>
             print!(" ");
         }
         println!("");
+    }
+}
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn turn_seconds_must_be_an_allowed_value() {
+        assert_eq!(parse_turn_seconds(45), Ok(45000));
+        assert_eq!(parse_turn_seconds(120), Ok(120000));
+        assert!(parse_turn_seconds(50).is_err());
+        assert!(parse_turn_seconds(0).is_err());
+        assert!(parse_turn_seconds(-60).is_err());
+    }
+
+    #[test]
+    fn rounds_are_sorted_deduplicated_and_non_empty() {
+        assert_eq!(parse_rounds("123"), Ok(vec![1, 2, 3]));
+        assert_eq!(parse_rounds("31"), Ok(vec![1, 3]));
+        assert_eq!(parse_rounds("2"), Ok(vec![2]));
+        assert_eq!(parse_rounds("3113"), Ok(vec![1, 3]));
+        assert!(parse_rounds("").is_err());
+        assert!(parse_rounds("0").is_err());
+        assert!(parse_rounds("14").is_err());
+        assert!(parse_rounds("1a").is_err());
+    }
+
+    #[test]
+    fn game_state_uses_the_chosen_turn_length_and_rounds() {
+        let state = init_game_state(ArcString(Arc::new("host".to_string())), 30000, vec![1, 3]);
+        assert_eq!(state.timer, 30000);
+        assert_eq!(state.turn_length, 30000);
+        assert_eq!(state.rounds, vec![1, 3]);
+        let mut round_keys: Vec<&i32> = state.words_guessed_per_team_per_round.keys().collect();
+        round_keys.sort();
+        assert_eq!(round_keys, vec![&1, &2]);
     }
 }

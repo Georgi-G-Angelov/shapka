@@ -137,7 +137,7 @@
 
   // ── Lobby — game_init_controller.rs, words_controller.rs ─────────────────────
 
-  // models/game.rs init_game_state. Proposed new fields (need a server change):
+  // models/game.rs init_game_state, including the host settings:
   // turn_length (ms) and rounds (the chosen round kinds, e.g. [1, 3]).
   // `round` stays a 1-based position in `rounds`.
   function initState(host, turnMs = LIMITS.timerStartMs, rounds = [1, 2, 3]) {
@@ -166,7 +166,8 @@
     };
   }
 
-  // GET /create_game/<name>/<word_limit>  (proposed: …/<turn_seconds>/<rounds>, e.g. /60/123)
+  // GET /create_game/<name>/<word_limit>/<turn_seconds>/<rounds>, e.g. …/60/123
+  // (GET /create_game/<name>/<word_limit> keeps the defaults: 60s, all rounds)
   function createGame({ id, host, wordLimit = LIMITS.defaultWordsPerPlayer, turnSeconds, rounds }) {
     const limit = validateWordLimit(wordLimit);
     if (!limit.ok) return limit;

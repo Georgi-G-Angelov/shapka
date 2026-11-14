@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showNextRoundButton() {
-    if (gameState.round < 3) {
+    if (gameState.round < gameState.rounds.length) {
         if (getPlayerName() == gameState.turn_player) {
             document.getElementById("nextRound")!.style.display = "block";
         }

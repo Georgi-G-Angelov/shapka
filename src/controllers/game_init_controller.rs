@@ -5,7 +5,7 @@ use std::sync::Mutex;
 use crate::auth::utils::generate_token;
 use crate::extentions::arc_string::ArcString;
 use crate::extentions::vec_utils::RemoveElem;
-use crate::models::game::init_game;
+use crate::models::game::{init_game, parse_rounds, parse_turn_seconds};
 use crate::models::game::Game;
 use crate::constants::*;
 
@@ -18,10 +18,26 @@ use rocket::response::status::BadRequest;
 use rocket::State;
 use rocket::response::content;
 
-// Creates a game given a player name and a word limit (per player)
+// Creates a game given a player name and a word limit (per player), with the default
+// turn length (60 seconds) and all rounds
 // Returns a json with the game id and the generated auth token for this player
 #[get("/create_game/<player_name>/<word_limit>")]
 pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<i32, Game>>, existing_game_ids: &State<Mutex<HashSet<i32>>>) -> Result<content::RawJson<String>, BadRequest<String>>{
+    let all_rounds: Vec<i32> = (1..NUM_ROUNDS + 1).collect();
+    new_game(player_name, word_limit, TIMER_START_VALUE, all_rounds, games, existing_game_ids)
+}
+
+// Creates a game with the host's advanced settings: the turn length in seconds (one of
+// ALLOWED_TURN_SECONDS) and the rounds to play as digits, e.g. "13" for rounds 1 and 3
+// Returns a json with the game id and the generated auth token for this player
+#[get("/create_game/<player_name>/<word_limit>/<turn_seconds>/<rounds>")]
+pub fn create_game_with_settings(player_name: &str, word_limit: usize, turn_seconds: i32, rounds: &str, games: &State<CHashMap<i32, Game>>, existing_game_ids: &State<Mutex<HashSet<i32>>>) -> Result<content::RawJson<String>, BadRequest<String>>{
+    let turn_length = parse_turn_seconds(turn_seconds).map_err(BadRequest)?;
+    let rounds = parse_rounds(rounds).map_err(BadRequest)?;
+    new_game(player_name, word_limit, turn_length, rounds, games, existing_game_ids)
+}
+
+fn new_game(player_name: &str, word_limit: usize, turn_length: i32, rounds: Vec<i32>, games: &State<CHashMap<i32, Game>>, existing_game_ids: &State<Mutex<HashSet<i32>>>) -> Result<content::RawJson<String>, BadRequest<String>>{
     let mut rng = rand::thread_rng();
 
     if word_limit < MIN_WORDS_PER_PLAYER {
@@ -46,7 +62,7 @@ pub fn create_game(player_name: &str, word_limit: usize, games: &State<CHashMap<
     let id = available_ids[rng.gen_range(0..available_ids.len())].to_owned();
     existing_game_ids.insert(id);
 
-    let game: Game = init_game(id, player_name, word_limit);
+    let game: Game = init_game(id, player_name, word_limit, turn_length, rounds);
     let auth_secret: String = game.auth_secret.to_string();
     games.insert(id, game);
 

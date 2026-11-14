@@ -97,14 +97,14 @@ the header counts the chosen ones ("Round 2/2 · Act it out"). Change the copy t
   *Got it*, a heavy haptic + alarm at time's up, and play sounds through the
   media channel so a silent switch doesn't hide the alarm on Android.
 
-## Backend changes the design needs
+## Game settings API
 
-Advanced settings aren't supported by the server yet (`TIMER_START_VALUE` and
-`NUM_ROUNDS` are constants). The rules port models the proposed change:
+Create → Advanced maps to the server's settings route (the web client keeps using
+the original route, which means 60s turns and all three rounds):
 
 - `create_game/<name>/<word_limit>/<turn_seconds>/<rounds>`, e.g. `/60/123` or
-  `/45/13`; validate seconds against 30/45/60/90/120 and rounds as a non-empty
-  subset of 1–3.
+  `/45/13`. Seconds must be 30/45/60/90/120; rounds are digits 1–3, played in
+  ascending order, at least one.
 - `GameState` gains `turn_length` (ms) and `rounds` (e.g. `[1, 3]`). `round`
   stays a 1-based position in `rounds`; `next_turn` and `next_round` reset the
   timer to `turn_length`, and the game ends after `rounds.len()` rounds.
@@ -122,7 +122,7 @@ Worth fixing before (or alongside) the app; the design avoids relying on them.
    and `leave_game` / `kick_player` mid-game leave the rotation pointing at
    missing players. The app only offers leave/remove in the lobby.
 3. `next_turn`, `next_round` and `update_timer_state` only check the game, not
-   that the caller is the turn player; `next_round` also never stops at round 3.
+   that the caller is the turn player.
 4. `guess_word` doesn't set `is_round_active = false` when the hat empties; it
    relies on the client reporting it. The design derives "round over" from the
    hat being empty as well.

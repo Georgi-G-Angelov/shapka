@@ -1,6 +1,7 @@
 use std::sync::{Arc, MutexGuard};
 
-use rocket::response::status::{BadRequest, NotFound};
+use rocket::http::Status;
+use rocket::response::status::{BadRequest, Custom, NotFound};
 use rocket::response::content;
 use rocket::State;
 use serde_json;
@@ -165,7 +166,7 @@ pub async fn guess_word<'a>(game_id: i32, name: &str, word: &str, games: &State<
 
         // If there are no more words to guess, round is over
         if game_state.words_to_guess.len() == 0 && game_state.words_in_play.len() == 0 {
-            if game_state.round == NUM_ROUNDS {
+            if game_state.round == game_state.rounds.len() as i32 {
                 game_state.is_game_finished = true;
             }
 
@@ -241,7 +242,7 @@ pub async fn next_turn<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> 
     rotate_to_next_turn_player(game_state);
 
     // Reset timer and words in play
-    game_state.timer = TIMER_START_VALUE;
+    game_state.timer = game_state.turn_length;
     let mut removed_words_in_play: Vec<ArcString> = Vec::new();
     removed_words_in_play.append(&mut game_state.words_in_play);
     game_state.words_to_guess.append(&mut removed_words_in_play);
@@ -256,13 +257,18 @@ pub async fn next_turn<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> 
 // The turn player switches to the next round
 // It is still their turn, unless they have less than a second left
 #[get("/next_round/<game_id>")]
-pub async fn next_round<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, NotFound<&'a str>> {
+pub async fn next_round<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) -> Result<content::RawJson<String>, Custom<&'a str>> {
     let game = match games.get(&game_id) {
         Some(game) => game,
-        None => return Err(NotFound("Game not found")),
+        None => return Err(Custom(Status::NotFound, "Game not found")),
     };
 
     let game_state: &mut std::sync::MutexGuard<'_, GameState> = &mut game.game_state.lock().unwrap();
+
+    // There is no round after the last one the host chose
+    if game_state.is_game_finished || game_state.round >= game_state.rounds.len() as i32 {
+        return Err(Custom(Status::BadRequest, "Game is finished"));
+    }
 
     // Reset words
     let mut guessed_words: Vec<ArcString> = Vec::new();
@@ -276,7 +282,7 @@ pub async fn next_round<'a>(game_id: i32, games: &State<CHashMap<i32, Game>>) ->
 
     // If less than a second left in round, don't bother
     if game_state.timer < 1000 {
-        game_state.timer = TIMER_START_VALUE;
+        game_state.timer = game_state.turn_length;
         rotate_to_next_turn_player(game_state);
     }
 

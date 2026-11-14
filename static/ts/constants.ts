@@ -9,7 +9,6 @@ const WORD_GUESSED_PREFIX = "word_guessed:";
 const UNDO_GUESS_PREFIX = "undo_guess:";
 const OUT_OF_WORDS_EVENT = "out_of_words";
 const INITIAL_TIMER = 5000;
-const NUM_ROUNDS = 3;
 const MAX_WORDS_IN_PLAY = 2;
 const NEXT_TURN_EVENT = "next_turn";
 const NEXT_ROUND_EVENT = "next_round";

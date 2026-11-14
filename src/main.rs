@@ -19,6 +19,8 @@ use controllers::words_controller::*;
 use controllers::periodic_checks_controller::*;
 mod constants;
 mod extentions;
+#[cfg(test)]
+mod tests;
 
 use rocket::fairing::AdHoc;
 use rocket::http::Header;
@@ -37,7 +39,7 @@ fn rocket() -> Rocket<Build> {
     let game_ids: Mutex<HashSet<i32>> = Mutex::new(HashSet::new());
 
     let routes: Vec<Route> = routes![
-        home, create_game, create,
+        home, create_game, create_game_with_settings, create,
         join_game, join, host, await_game, in_game, fetch_players, fetch_player_words,
         game_events, add_word, delete_word, start_game, fetch_game_state, update_timer_state,
         fetch_word_to_guess, guess_word, undo_last_guess, next_turn, next_round, results, leave_game,
