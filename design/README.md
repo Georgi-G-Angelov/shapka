@@ -26,7 +26,7 @@ Add `theme=dark|light|system`, `platform=android`, `phone=compact`,
 
 The whole game is playable: create a game, add words, wait for the simulated
 friends, start, and play all three rounds. Join with code **4821**; other codes
-show "game not found", and Ani or Bobi are taken names.
+show "game not found", and Ani or Joro are taken names.
 
 ## Visual language
 
@@ -58,7 +58,7 @@ Taken from the web client and pushed further:
 | Team reveal | — | New. Teams are random, so everyone sees "Your teammate is Pesho", all teams and who explains first. |
 | Score strip | teams dropdown | Header chips per team; scrolls sideways with many teams and keeps the explaining team in view. |
 | Explainer | `game.html` (turn player) | Ready: partner, 60s ring, Start (the round name is in the header). Live: compact ring (tap to pause; words blur while paused), a huge word card with a full-width **Got it**, "draw a second word" (the server's two-words-in-play rule, framed as a skip), and undo for the last guess. Time's up: alarm, the turn's words, **Pass to Ani**. |
-| Guesser | `game.html` | "You're guessing! Listen to Bobi", big ring and a live count. Never shows the words. |
+| Guesser | `game.html` | "You're guessing! Listen to Joro", big ring and a live count. Never shows the words. |
 | Spectator | `game.html` | "Other team's turn", the same live ring and count, and when you play next. |
 | Round over | `nextRound` button | The hat is empty, per-team score for the round, the next round's name. The explainer starts the next round and silently keeps their remaining time (≥ 1s), as the server does. |
 | Results | `results.html` | Winner hero, standings with shared places on ties, gold/silver/bronze. Tap a team to see its words per round (collapsed by default). Play again. |
@@ -142,3 +142,25 @@ Worth fixing before (or alongside) the app; the design avoids relying on them.
 - `project/shapka-app.jsx` — navigation, themes, simulation, tweaks.
 - `project/ios-frame.jsx`, `project/tweaks-panel.jsx` — copied unchanged from Scroll-App-Design.
 - `tools/serve.py` — no-cache preview server; `tools/*.test.cjs` — `node --test`.
+
+## App Store assets
+
+`design/store/` holds the App Store images, rendered from this prototype:
+
+| File | Size | Use |
+| --- | --- | --- |
+| `screenshot-1-explain.png` … `screenshot-6-winners.png` | 1320 × 2868 | iPhone 6.9" screenshots (App Store Connect scales them for smaller iPhones) |
+| `iphone-6.3/screenshot-*.png` | 1206 × 2622 | iPhone 6.3" screenshots ("iPhone with Dynamic Island, medium display") |
+| `product-page-header.png` | 3840 × 1646 | Product page header artwork |
+| `search-results.png` | 3840 × 2560 | Search results artwork |
+
+To change them, edit `project/store/store.html` (one short caption per image)
+and re-render with the preview server running:
+
+```sh
+python3 design/tools/serve.py &
+node design/tools/store_capture.mjs
+```
+
+The script captures the phone screens from deep links at 3× into
+`project/store/screens/`, then composes each asset in headless Chrome.

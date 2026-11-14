@@ -167,7 +167,7 @@ function App() {
 
   useEffect(() => { if (query.get("screen")) load(query.get("screen")); }, []);
 
-  const random = useMemo(() => G.rng(Date.now() & 0xffff), []);
+  const random = useMemo(() => G.rng(Number(query.get("seed")) || (Date.now() & 0xffff)), []);
   const unusedWord = () => {
     const g = gameRef.current;
     const used = new Set(Object.values(g.state.words_per_player).flat().map(w => w.toLowerCase()));
@@ -297,7 +297,7 @@ function App() {
     // GET /join_game/<id>/<name>
     join: ({ code, name }) => {
       if (code !== 4821) return { ok: false, error: G.ERRORS.gameNotFound };
-      const g = S.buildLobby({ host: S.HOST, others: ["Bobi"], filled: [S.HOST], me: S.HOST });
+      const g = S.buildLobby({ host: S.HOST, others: ["Joro"], filled: [S.HOST], me: S.HOST });
       const r = G.joinGame(g, name);
       if (!r.ok) return r;
       gameRef.current = g; setMe(name); setSavedName(name); setLive("player"); setResume(null);
@@ -457,7 +457,7 @@ function App() {
           toastFn({ text: `${g.host} removed you from game ${g.id}`, icon: "person_remove", kind: "error", ms: 3500 });
         }} />
         <p style={{ fontSize: 11, color: "#8a8190", lineHeight: 1.5, margin: 0 }}>
-          Other players are simulated with the real server rules. Join with code <b>4821</b>; any other code shows “game not found”, and the names Ani or Bobi are taken.
+          Other players are simulated with the real server rules. Join with code <b>4821</b>; any other code shows “game not found”, and the names Ani or Joro are taken.
         </p>
       </TweaksPanel>
     </>
