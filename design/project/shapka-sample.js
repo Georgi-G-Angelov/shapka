@@ -10,7 +10,7 @@
 
   const ME = "Maya";
   const HOST = "Ani";
-  const FRIENDS = ["Bobi", "Dimi", "Pesho", "Joro", "Vesi", "Niki", "Rado", "Tedi", "Kali"];
+  const FRIENDS = ["Joro", "Dimi", "Pesho", "Bobi", "Vesi", "Niki", "Rado", "Tedi", "Kali"];
 
   // Single words only (the client rejects spaces, digits and punctuation).
   const WORDS = [
@@ -39,9 +39,9 @@
     return game;
   }
 
-  // A started 4-player game where Maya explains first to Bobi; Ani & Dimi are the other team.
-  // Rotation: Maya, Ani, Bobi, Dimi.
-  function buildStarted({ limit = 5, seed = 21, players = [ME, "Bobi", HOST, "Dimi"], turnSeconds, rounds } = {}) {
+  // A started 4-player game where Maya explains first to Joro; Ani & Dimi are the other team.
+  // Rotation: Maya, Ani, Joro, Dimi.
+  function buildStarted({ limit = 5, seed = 21, players = [ME, "Joro", HOST, "Dimi"], turnSeconds, rounds } = {}) {
     const game = buildLobby({ host: HOST, others: players.filter(p => p !== HOST), limit, filled: players, turnSeconds, rounds });
     game.players.splice(0, game.players.length, ...players);
     G.startGame(game, keepOrder);
@@ -61,9 +61,9 @@
 
   // Plays a whole game with uneven turns so the results table has a story.
   function buildFinished({ seed = 7 } = {}) {
-    const game = buildStarted({ seed, limit: 4, players: [ME, "Bobi", HOST, "Dimi", "Pesho", "Vesi"] });
+    const game = buildStarted({ seed, limit: 4, players: [ME, "Joro", HOST, "Dimi", "Pesho", "Vesi"] });
     const random = G.rng(seed);
-    const pace = { Maya: 4, Bobi: 4, Ani: 5, Dimi: 3, Pesho: 2, Vesi: 3 };
+    const pace = { Maya: 4, Joro: 4, Ani: 5, Dimi: 3, Pesho: 2, Vesi: 3 };
     let safety = 200;
     while (!game.state.is_game_finished && safety--) {
       const s = game.state;
@@ -83,15 +83,15 @@
     lobby: () => ({ phase: "lobby", me: ME, game: buildLobby({ host: ME }), live: "host" }),
     lobbyReady: () => ({
       phase: "lobby", me: ME, live: false,
-      game: buildLobby({ host: ME, others: ["Bobi", "Dimi", "Pesho"], filled: [ME, "Bobi", "Dimi", "Pesho"] }),
+      game: buildLobby({ host: ME, others: ["Joro", "Dimi", "Pesho"], filled: [ME, "Joro", "Dimi", "Pesho"] }),
     }),
     lobbyOdd: () => ({
       phase: "lobby", me: ME, live: false,
-      game: buildLobby({ host: ME, others: ["Bobi", "Dimi"], filled: [ME, "Bobi", "Dimi"] }),
+      game: buildLobby({ host: ME, others: ["Joro", "Dimi"], filled: [ME, "Joro", "Dimi"] }),
     }),
     lobbyPlayer: () => ({
       phase: "lobby", me: ME, live: "player",
-      game: buildLobby({ host: HOST, others: ["Bobi"], filled: [HOST] }),
+      game: buildLobby({ host: HOST, others: ["Joro"], filled: [HOST] }),
     }),
     explainer: () => ({ phase: "game", me: ME, game: buildStarted() }),
     explainerLive: () => {
@@ -145,7 +145,7 @@
       return { phase: "game", me: ME, game };
     },
     bigGame: () => {
-      const game = buildStarted({ limit: 4, players: [ME, "Bobi", HOST, "Dimi", "Pesho", "Vesi", "Joro", "Niki", "Rado", "Tedi"] });
+      const game = buildStarted({ limit: 4, players: [ME, "Joro", HOST, "Dimi", "Pesho", "Vesi", "Bobi", "Niki", "Rado", "Tedi"] });
       for (let turn = 0; turn < 6; turn++) { guessSome(game, 1 + (turn % 3)); G.updateTimer(game, 0); G.nextTurn(game, G.rng(turn)); }
       G.updateTimer(game, 44000, { turnActive: true });
       return { phase: "game", me: ME, game, live: true };

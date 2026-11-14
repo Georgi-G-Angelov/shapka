@@ -23,7 +23,7 @@ const PHONES = {
   explainer: { screen: "explainerLive", wait: 1200 },
   guesser: { screen: "guesser", wait: 1500 },
   lobby: { screen: "lobbyReady", wait: 800 },
-  reveal: { screen: "lobbyReady", click: "Start game · 2 teams", wait: 1200 },
+  reveal: { screen: "lobbyReady", seed: 10, click: "Start game · 2 teams", wait: 1200 },
   roundOver: { screen: "roundOver", wait: 900 },
   results: { screen: "results", wait: 2200 },
   create: { screen: "create", click: "Advanced settings", wait: 700 },
@@ -81,7 +81,7 @@ const b = await browser();
 // 1. Phone screens at 3x.
 await b.send("Emulation.setDeviceMetricsOverride", { width: 1000, height: 1000, deviceScaleFactor: 3, mobile: false });
 for (const [name, p] of Object.entries(PHONES)) {
-  await b.send("Page.navigate", { url: `${BASE}/Shapka.html?screen=${p.screen}&theme=light` });
+  await b.send("Page.navigate", { url: `${BASE}/Shapka.html?screen=${p.screen}&theme=light${p.seed ? `&seed=${p.seed}` : ""}` });
   await sleep(3500);
   if (p.click) {
     await b.evaluate(`[...document.querySelectorAll('[aria-label]')].find(e => e.getAttribute('aria-label') === ${JSON.stringify(p.click)} && !e.closest('[inert]'))?.click()`);
