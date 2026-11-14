@@ -47,6 +47,7 @@ class FakeServer {
         final seg = req.url.pathSegments;
         http.Response ok(Object body) => http.Response.bytes(utf8.encode(body is String ? body : jsonEncode(body)), 200);
         http.Response bad(String m) => http.Response.bytes(utf8.encode(m), 400);
+        if (seg.isEmpty) return ok('<!DOCTYPE html>'); // the home page, used to wake the server
         switch (seg.first) {
           case 'create_game':
             if (createError != null) return bad(createError!);

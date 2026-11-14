@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'api/shapka_api.dart';
@@ -33,6 +35,8 @@ class AppState extends ChangeNotifier {
   GameController? game;
 
   Future<void> init() async {
+    final waker = apiFactory();
+    unawaited(waker.warmUp().whenComplete(waker.close));
     await theme.load();
     savedName = await store.lastName() ?? '';
     await checkResume();
