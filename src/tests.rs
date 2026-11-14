@@ -151,3 +151,28 @@ fn a_single_round_game_finishes_after_its_only_round() {
     let (status, _) = game.get(&format!("/next_round/{}", game.id), "ana");
     assert_eq!(status, Status::BadRequest);
 }
+
+#[test]
+fn a_removed_player_asking_for_their_words_does_not_break_the_game() {
+    let client = Client::tracked(rocket()).expect("valid rocket instance");
+    let (_, body) = create(&client, "/create_game/ana/4");
+    let created: Value = serde_json::from_str(&body).unwrap();
+    let id = created["gameId"].as_i64().unwrap();
+    let (_, body) = create(&client, &format!("/join_game/{}/bobi", id));
+    let joined: Value = serde_json::from_str(&body).unwrap();
+    let mut tokens = HashMap::new();
+    tokens.insert("ana".to_string(), created["authToken"].as_str().unwrap().to_string());
+    tokens.insert("bobi".to_string(), joined["authToken"].as_str().unwrap().to_string());
+    let game = TestGame { client, id, tokens };
+
+    let (status, _) = game.get(&format!("/kick_player/{}/ana/bobi", id), "ana");
+    assert_eq!(status, Status::Ok);
+    let (status, _) = game.get(&format!("/fetch_player_words/{}/bobi", id), "bobi");
+    assert_eq!(status, Status::NotFound);
+
+    // The game's lock is not poisoned: the host carries on.
+    let (status, body) = game.get(&format!("/add_word/{}/ana/kite", id), "ana");
+    assert_eq!(status, Status::Ok, "{}", body);
+    let (status, body) = game.get(&format!("/fetch_player_words/{}/ana", id), "ana");
+    assert_eq!(status, Status::Ok, "{}", body);
+}

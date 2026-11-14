@@ -37,7 +37,11 @@ pub fn fetch_player_words<'a>(game_id: i32, name: &str, games: &State<CHashMap<i
     let name_arc = ArcString(Arc::new(name.to_string()));
 
     let words_per_player = &game.game_state.lock().unwrap().words_per_player;
-    let words = words_per_player.get(&name_arc).unwrap();
+    // A player who was kicked or left may still ask; panicking here would poison the game's lock for everyone
+    let words = match words_per_player.get(&name_arc) {
+        Some(words) => words,
+        None => return Err(NotFound("Player not in game")),
+    };
 
     let response = object! {
         words: words.to_vec(),

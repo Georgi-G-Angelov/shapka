@@ -1,6 +1,6 @@
 # shapka
 
-Flutter app design prototype: see [design/README.md](design/README.md) (`python3 design/tools/serve.py`).
+Flutter app: see [app/README.md](app/README.md). Design prototype: see [design/README.md](design/README.md) (`python3 design/tools/serve.py`).
 
 to run in separate background shell:
 fuser -k 8000/tcp
