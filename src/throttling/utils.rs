@@ -31,7 +31,8 @@ pub async fn too_many_requests() -> Custom<&'static str>{
 pub struct PerMinuteRequestsCounter {
     pub minute: u64,
     pub total_requests: u64,
-    pub per_endpoint_requests: HashMap<ArcString, u64>
+    pub per_endpoint_requests: HashMap<ArcString, u64>,
+    pub throttled_logged: bool // so a throttled client is logged once per minute, not per request
 }
 
 impl PerMinuteRequestsCounter {
@@ -39,7 +40,8 @@ impl PerMinuteRequestsCounter {
         Self {
             minute: current_minute,
             total_requests: 0,
-            per_endpoint_requests: HashMap::new()
+            per_endpoint_requests: HashMap::new(),
+            throttled_logged: false
         }
     }
 
@@ -56,6 +58,7 @@ impl PerMinuteRequestsCounter {
         self.minute = current_minute;
         self.total_requests = 0;
         self.per_endpoint_requests.clear();
+        self.throttled_logged = false;
     }
 }
 #[cfg(test)]

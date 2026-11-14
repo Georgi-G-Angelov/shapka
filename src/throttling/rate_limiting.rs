@@ -103,6 +103,10 @@ impl Fairing for RateLimiter {
                 if counter.total_requests >= self.total_requests_limit
                 || current_endpoint_requests >= current_endpoint_limit {
                     // If the limit is reached, redirect to the too many requests endpoint
+                    if !counter.throttled_logged {
+                        counter.throttled_logged = true;
+                        eprintln!("Throttling {} until the end of the minute (endpoint: {})", sender_ip, endpoint_for_throttling);
+                    }
                     request.set_uri(Origin::parse(TOO_MANY_REQUESTS_URI).unwrap());
                     return;
                 }
