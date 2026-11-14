@@ -150,6 +150,7 @@ Worth fixing before (or alongside) the app; the design avoids relying on them.
 | File | Size | Use |
 | --- | --- | --- |
 | `screenshot-1-explain.png` … `screenshot-6-winners.png` | 1320 × 2868 | iPhone 6.9" screenshots (App Store Connect scales them for smaller iPhones) |
+| `iphone-6.3/screenshot-*.png` | 1206 × 2622 | iPhone 6.3" screenshots ("iPhone with Dynamic Island, medium display") |
 | `product-page-header.png` | 3840 × 1646 | Product page header artwork |
 | `search-results.png` | 3840 × 2560 | Search results artwork |
 

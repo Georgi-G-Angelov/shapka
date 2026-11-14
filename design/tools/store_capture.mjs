@@ -6,7 +6,8 @@
 // 1. Captures phone screens from Shapka.html at 3x into design/project/store/screens.
 // 2. Composes design/project/store/store.html into screenshots (1320x2868, 6.9" iPhone),
 //    the product page header (3840x1646) and the search image (3840x2560).
-import { spawn } from "node:child_process";
+// 3. Renders the screenshots again for the 6.3" iPhone (1206x2622) into design/store/iphone-6.3.
+import { execFileSync, spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -101,6 +102,19 @@ for (const [name, [width, height]] of Object.entries(ASSETS)) {
   await sleep(400);
   await shoot(b, join(OUT, `${name}.png`));
   console.log(`asset ${name} ${width}x${height}`);
+}
+
+// 3. 6.3" screenshots: same layout at the 1206x2622 aspect ratio (1320 wide), scaled down exactly.
+mkdirSync(join(OUT, "iphone-6.3"), { recursive: true });
+for (const name of Object.keys(ASSETS).filter(n => n.startsWith("screenshot-"))) {
+  await b.send("Emulation.setDeviceMetricsOverride", { width: 1320, height: 2870, deviceScaleFactor: 1, mobile: false });
+  await b.send("Page.navigate", { url: `${BASE}/store/store.html?asset=${name}` });
+  await b.evaluate("document.fonts.ready.then(() => Promise.all([...document.images].map(i => i.decode().catch(() => {}))))");
+  await sleep(400);
+  const file = join(OUT, "iphone-6.3", `${name}.png`);
+  await shoot(b, file);
+  execFileSync("sips", ["-z", "2622", "1206", file], { stdio: "ignore" });
+  console.log(`asset iphone-6.3/${name} 1206x2622`);
 }
 
 if (b.errors.length) console.error(b.errors.join("\n"));
