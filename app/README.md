@@ -8,12 +8,13 @@ The Flutter client for Shapka, the hat game. It follows the design in
 ```sh
 cargo run                       # in the repo root: the server on :8000
 cd app && flutter run           # debug builds use http://127.0.0.1:8000 (10.0.2.2 on the Android emulator)
-flutter run --dart-define=SHAPKA_SERVER=https://shapka-server.agreeablebeach-1eae2480.polandcentral.azurecontainerapps.io   # production
+flutter run --release           # release builds use the production server
+flutter run --dart-define=SHAPKA_SERVER=https://other.server      # any other server
 ```
 
-Release builds need `SHAPKA_SERVER` pointing at an https server (iOS only
-allows plain http for local networking; Android only in debug builds). The
-production server is described in [`../DEPLOYMENT.md`](../DEPLOYMENT.md).
+The production server is described in [`../DEPLOYMENT.md`](../DEPLOYMENT.md).
+Plain http only works for local networking on iOS, and only in debug builds on
+Android.
 
 ## Tests
 
@@ -64,3 +65,44 @@ and widget tests, and `server_flow_test` against a freshly built server.
 alarms (m4a plays on iOS and Android), and `assets/fonts/MetalMania-*` the
 wordmark font with its OFL licence. Launcher icons are generated from
 `assets/launcher_icon/` with `dart run flutter_launcher_icons`.
+
+## Releasing (iOS)
+
+App Store Connect app **Shapka**, bundle id `com.shapka.shapkaapp`, team
+BrightEdge Digital Ltd (`ZQ3TCXTVPF`). iPhone only, portrait, iOS 15+.
+
+**Actions → Release (iOS) → Run workflow** (`.github/workflows/release-ios.yml`)
+builds a signed `.ipa` on a GitHub-hosted Mac and uploads it, like Sharp's
+release workflow:
+
+| Input | What it does |
+| --- | --- |
+| `destination` | `testflight` uploads the build. `app_store_review` also creates the App Store version from `pubspec.yaml`, attaches the build and submits it for review, released by hand after approval. |
+| `upload` | Uncheck to only build and attach the `.ipa` to the run. |
+| `beta_group` | Optional external TestFlight group to submit the build to. |
+| `build_number` | Blank = commit count. Set it when re-running on a commit whose number was already uploaded. |
+| `release_notes` | What's New (en-US). Required for `app_store_review`. |
+
+The version comes from `pubspec.yaml` (`version: 1.0.0+1` → 1.0.0); bump it after
+each App Store release. Release builds talk to the production server.
+
+### One-time setup: repository secrets
+
+The workflow signs with [codemagic-cli-tools](https://github.com/codemagic-ci-cd/cli-tools)
+and the App Store Connect API, the same way as Sharp. Sharp is in the same team,
+so **its four secrets work here unchanged**: copy them from wherever you keep
+them (GitHub won't show secret values).
+
+| Secret | Value |
+| --- | --- |
+| `APP_STORE_CONNECT_ISSUER_ID` | Issuer ID (App Store Connect → Users and Access → Integrations → Team Keys) |
+| `APP_STORE_CONNECT_KEY_IDENTIFIER` | The key's Key ID (App Manager or Admin role) |
+| `APP_STORE_CONNECT_PRIVATE_KEY` | The full `AuthKey_<id>.p8`, including the BEGIN/END lines |
+| `IOS_DISTRIBUTION_CERT_PRIVATE_KEY` | The RSA key Sharp's distribution certificate was issued for. Reusing it means no new certificate (a team can hold at most three). A new key (`ssh-keygen -t rsa -b 2048 -m PEM -f key -N ""`) also works and creates a certificate on the first run. |
+
+### Uploading from a Mac instead
+
+```sh
+flutter build ipa --release --build-number=$(git rev-list --count HEAD)
+# then Xcode → Window → Organizer → Distribute App, or Transporter with build/ios/ipa/*.ipa
+```

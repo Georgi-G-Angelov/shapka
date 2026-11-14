@@ -1,0 +1,203 @@
+name: Release (iOS)
+
+# Builds a signed App Store .ipa of app/ on a GitHub-hosted Mac and uploads it
+# to App Store Connect (bundle id com.shapka.shapkaapp, BrightEdge Digital Ltd).
+# Runs only by hand: Actions → Release (iOS) → Run workflow. See app/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      destination:
+        description: 'testflight = upload only; app_store_review = upload and submit for review (released by hand after approval)'
+        type: choice
+        options: [testflight, app_store_review]
+        default: testflight
+      upload:
+        description: 'Upload to App Store Connect. Uncheck to build and attach the .ipa only.'
+        type: boolean
+        default: true
+      beta_group:
+        description: 'Optional external TestFlight group: submit the build for beta review and add it to this group.'
+        type: string
+        default: ''
+      build_number:
+        description: 'Override the build number (blank = commit count). Needed when re-running on the same commit.'
+        type: string
+        default: ''
+      release_notes:
+        description: "What's New (en-US). Required for app_store_review; shown to TestFlight testers as What to Test."
+        type: string
+        default: ''
+
+concurrency:
+  group: release-ios
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build and publish .ipa
+    runs-on: macos-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: app
+    env:
+      BUNDLE_ID: com.shapka.shapkaapp
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      CERTIFICATE_PRIVATE_KEY: ${{ secrets.IOS_DISTRIBUTION_CERT_PRIVATE_KEY }}
+      UPLOAD: ${{ inputs.upload }}
+      DESTINATION: ${{ inputs.destination }}
+      BETA_GROUP: ${{ inputs.beta_group }}
+    steps:
+      - name: Check required secrets and inputs
+        env:
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+        working-directory: .
+        run: |
+          set -eu
+          missing=""
+          [ -n "${APP_STORE_CONNECT_ISSUER_ID:-}" ] || missing="$missing APP_STORE_CONNECT_ISSUER_ID"
+          [ -n "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] || missing="$missing APP_STORE_CONNECT_KEY_IDENTIFIER"
+          [ -n "${APP_STORE_CONNECT_PRIVATE_KEY:-}" ] || missing="$missing APP_STORE_CONNECT_PRIVATE_KEY"
+          [ -n "${CERTIFICATE_PRIVATE_KEY:-}" ] || missing="$missing IOS_DISTRIBUTION_CERT_PRIVATE_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "Add them under Settings → Secrets and variables → Actions (see app/README.md)."
+            exit 1
+          fi
+          if [ "$UPLOAD" = "true" ] && [ "$DESTINATION" = "app_store_review" ] && [ -z "${RELEASE_NOTES:-}" ]; then
+            echo "::error::release_notes (What's New) is required for app_store_review."
+            exit 1
+          fi
+          echo "All required secrets are present."
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the build number is the commit count
+
+      - name: Resolve build number and version
+        id: version
+        env:
+          OVERRIDE: ${{ inputs.build_number }}
+        run: |
+          set -eu
+          override="${OVERRIDE:-}"
+          if [ -n "$override" ]; then
+            case "$override" in
+              *[!0-9]*)
+                echo "::error::build_number must be a positive integer, got '$override'"
+                exit 1 ;;
+            esac
+            number="$override"
+          else
+            number="$(git rev-list --count HEAD)"
+          fi
+          name="$(sed -n 's/^version: *\([0-9.]*\).*/\1/p' pubspec.yaml)"
+          echo "Version $name ($number)"
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.6
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install codemagic-cli-tools
+        run: python -m pip install --upgrade codemagic-cli-tools
+
+      # Fetches (or creates) the Apple Distribution certificate for
+      # IOS_DISTRIBUTION_CERT_PRIVATE_KEY and an App Store profile for the app.
+      - name: Fetch signing files
+        run: |
+          set -eu
+          keychain initialize --path "$RUNNER_TEMP/signing.keychain-db"
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --platform IOS \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates --path "$RUNNER_TEMP/signing.keychain-db"
+          xcode-project use-profiles \
+            --export-options-plist "$RUNNER_TEMP/export_options.plist"
+
+      # Release builds talk to the production server (lib/api/shapka_api.dart).
+      - name: Build .ipa
+        run: |
+          set -eu
+          flutter build ipa --release \
+            --build-number="${{ steps.version.outputs.number }}" \
+            --export-options-plist="$RUNNER_TEMP/export_options.plist"
+          ls -l build/ios/ipa/
+
+      - name: Attach .ipa as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-${{ steps.version.outputs.name }}-${{ steps.version.outputs.number }}
+          path: app/build/ios/ipa/*.ipa
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload to App Store Connect
+        if: ${{ env.UPLOAD == 'true' }}
+        env:
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+          VERSION_NAME: ${{ steps.version.outputs.name }}
+        run: |
+          set -eu
+          args=(--path "build/ios/ipa/*.ipa")
+          if [ -n "${RELEASE_NOTES:-}" ]; then
+            args+=(--whats-new @env:RELEASE_NOTES)
+          fi
+          if [ -n "${BETA_GROUP:-}" ]; then
+            args+=(--testflight --beta-group "$BETA_GROUP")
+          fi
+          if [ "$DESTINATION" = "app_store_review" ]; then
+            args+=(--app-store \
+                   --version-string "$VERSION_NAME" \
+                   --release-type MANUAL)
+          fi
+          if [ -n "${BETA_GROUP:-}" ] || [ "$DESTINATION" = "app_store_review" ]; then
+            args+=(--max-build-processing-wait 60)
+          fi
+          app-store-connect publish "${args[@]}"
+
+      - name: Explain a duplicate-build failure
+        if: ${{ failure() }}
+        run: |
+          echo "::notice::If App Store Connect rejected this upload because the build number" \
+               "was already used, re-run with the build_number input set above" \
+               "${{ steps.version.outputs.number }}."
+
+      - name: Remove key material
+        if: ${{ always() }}
+        run: |
+          set -u
+          if [ -e "$RUNNER_TEMP/signing.keychain-db" ]; then
+            keychain delete --path "$RUNNER_TEMP/signing.keychain-db" || true
+          fi
+          rm -rf "$HOME/Library/MobileDevice/Certificates" \
+                 "$RUNNER_TEMP/export_options.plist"
+          echo "Key material removed."
