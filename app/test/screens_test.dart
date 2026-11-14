@@ -85,7 +85,8 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'Maya');
     await tapText(tester, 'Create game');
     await settle(tester);
-    expect(server.requests.first.path, '/create_game/Maya/5/45/3');
+    expect(server.requests.first.path, '', reason: 'the app wakes the server on launch');
+    expect(server.requests.map((u) => u.path), contains('/create_game/Maya/5/45/3'));
     expect(find.text('Your game'), findsOneWidget);
     expect(find.text('4821'), findsOneWidget);
     expect(find.text('Invite at least one more player'), findsOneWidget);

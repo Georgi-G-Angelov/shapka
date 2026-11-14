@@ -1,0 +1,9 @@
+.git
+.github
+.DS_Store
+**/.DS_Store
+target
+app
+design
+static/js
+server.log

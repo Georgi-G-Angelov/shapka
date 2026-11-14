@@ -1,0 +1,95 @@
+name: Container App
+
+# Builds the server image on every PR, and on merge to master pushes it to
+# ghcr.io and rolls it out to the Azure Container App (see DEPLOYMENT.md).
+
+on:
+  push:
+    branches: [ "master" ]
+    paths-ignore: [ "app/**", "design/**", "**.md" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+env:
+  IMAGE: ghcr.io/georgi-g-angelov/shapka
+
+jobs:
+  image:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Image tag
+      id: tag
+      run: echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+    - uses: docker/setup-buildx-action@v3
+    # Pull requests from forks can't push; theirs is a build check only.
+    - name: Can push
+      id: push
+      run: echo "push=${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}" >> "$GITHUB_OUTPUT"
+    - uses: docker/login-action@v3
+      if: steps.push.outputs.push == 'true'
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: ${{ steps.push.outputs.push == 'true' }}
+        tags: |
+          ${{ env.IMAGE }}:${{ steps.tag.outputs.tag }}
+          ${{ github.ref == 'refs/heads/master' && format('{0}:latest', env.IMAGE) || '' }}
+        labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Azure Container Apps
+    needs: image
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-container-app
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write   # OIDC login to Azure with the federated managed identity
+    env:
+      RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      CONTAINER_APP: ${{ vars.AZURE_CONTAINER_APP }}
+    steps:
+    - uses: azure/login@v2
+      with:
+        client-id: ${{ vars.AZURE_CLIENT_ID }}
+        tenant-id: ${{ vars.AZURE_TENANT_ID }}
+        subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+    - name: Roll out the new revision
+      run: |
+        az extension add --name containerapp --upgrade --only-show-errors
+        az containerapp update \
+          --name "$CONTAINER_APP" \
+          --resource-group "$RESOURCE_GROUP" \
+          --image "$IMAGE:${{ needs.image.outputs.tag }}" \
+          --revision-suffix "${{ needs.image.outputs.tag }}" \
+          --only-show-errors \
+          --output none
+    - name: Smoke test
+      run: |
+        fqdn=$(az containerapp show --name "$CONTAINER_APP" --resource-group "$RESOURCE_GROUP" --query properties.configuration.ingress.fqdn -o tsv)
+        # The app scales to zero: the first request may wait for a cold start.
+        for i in $(seq 20); do
+          if curl -sf --max-time 30 "https://$fqdn/create" -o /dev/null; then
+            echo "https://$fqdn is up"
+            exit 0
+          fi
+          sleep 6
+        done
+        echo "https://$fqdn did not respond"
+        exit 1

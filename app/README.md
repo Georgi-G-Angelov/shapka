@@ -8,11 +8,12 @@ The Flutter client for Shapka, the hat game. It follows the design in
 ```sh
 cargo run                       # in the repo root: the server on :8000
 cd app && flutter run           # debug builds use http://127.0.0.1:8000 (10.0.2.2 on the Android emulator)
-flutter run --dart-define=SHAPKA_SERVER=https://your.server   # any other server
+flutter run --dart-define=SHAPKA_SERVER=https://shapka-server.agreeablebeach-1eae2480.polandcentral.azurecontainerapps.io   # production
 ```
 
 Release builds need `SHAPKA_SERVER` pointing at an https server (iOS only
-allows plain http for local networking; Android only in debug builds).
+allows plain http for local networking; Android only in debug builds). The
+production server is described in [`../DEPLOYMENT.md`](../DEPLOYMENT.md).
 
 ## Tests
 

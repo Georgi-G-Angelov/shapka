@@ -3,7 +3,7 @@ use std::sync::Arc;
 use chashmap::CHashMap;
 use rocket::{fairing::{Fairing, Info, Kind}, http::uri::Origin, Data, Request, Route};
 
-use crate::{extentions::arc_string::ArcString, throttling::utils::{PerMinuteRequestsCounter, TOO_MANY_REQUESTS_URI}};
+use crate::{extentions::arc_string::ArcString, throttling::utils::{client_ip, PerMinuteRequestsCounter, TOO_MANY_REQUESTS_URI, TRUST_FORWARDED_FOR_ENV}};
 
 // per minute limits
 const TOTAL_REQUESTS_LIMIT: u64 = 400;
@@ -17,7 +17,12 @@ pub(crate) struct RateLimiter {
     // Limits per minute
     total_requests_limit: u64, // This can be set to a specific value if needed
     per_endpoint_default_requests_limit: u64, // This can be set to a specific value if needed
-    per_endpoint_override_limits: CHashMap<ArcString, u64> // This can be used to override the default limit for specific endpoints
+    per_endpoint_override_limits: CHashMap<ArcString, u64>, // This can be used to override the default limit for specific endpoints
+
+    // Behind a reverse proxy (e.g. Azure Container Apps ingress) every request comes from the proxy,
+    // so the client is the address the proxy appended to X-Forwarded-For. Only enable this when such a
+    // proxy is guaranteed to be in front: otherwise clients could pick their own address.
+    trust_forwarded_for: bool
 }
 
 impl RateLimiter {
@@ -40,7 +45,8 @@ impl RateLimiter {
             endpoints: endpoints,
             total_requests_limit: TOTAL_REQUESTS_LIMIT,
             per_endpoint_default_requests_limit: PER_ENDPOINT_DEFAULT_REQUESTS_LIMIT,
-            per_endpoint_override_limits: per_endpoint_override_limits
+            per_endpoint_override_limits: per_endpoint_override_limits,
+            trust_forwarded_for: std::env::var(TRUST_FORWARDED_FOR_ENV).map(|v| v == "true" || v == "1").unwrap_or(false)
         }
     }
 }
@@ -55,7 +61,9 @@ impl Fairing for RateLimiter {
     }
 
     async fn on_request(&self, request: &mut Request<'_>, _: &mut Data<'_>) {
-        let sender_ip = request.remote().unwrap().ip().to_string();
+        let forwarded_for = request.headers().get_one("X-Forwarded-For");
+        let socket_ip = request.remote().map(|remote| remote.ip());
+        let sender_ip = client_ip(self.trust_forwarded_for, forwarded_for, socket_ip);
         // println!("Request from IP: {}", sender_ip);
         let current_minute = (chrono::Utc::now().timestamp_millis() / 60000) as u64;
 
@@ -95,6 +103,10 @@ impl Fairing for RateLimiter {
                 if counter.total_requests >= self.total_requests_limit
                 || current_endpoint_requests >= current_endpoint_limit {
                     // If the limit is reached, redirect to the too many requests endpoint
+                    if !counter.throttled_logged {
+                        counter.throttled_logged = true;
+                        eprintln!("Throttling {} until the end of the minute (endpoint: {})", sender_ip, endpoint_for_throttling);
+                    }
                     request.set_uri(Origin::parse(TOO_MANY_REQUESTS_URI).unwrap());
                     return;
                 }

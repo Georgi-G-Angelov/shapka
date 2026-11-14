@@ -75,7 +75,9 @@ class ShapkaApi {
   final http.Client _client;
   String? token;
 
-  static const _timeout = Duration(seconds: 12);
+  /// Long enough for a cold start: the hosted server scales to zero when idle
+  /// and takes about 25 seconds to start again (see DEPLOYMENT.md).
+  static const _timeout = Duration(seconds: 40);
 
   Uri uri(List<Object> segments) => baseUrl.replace(
         pathSegments: [...baseUrl.pathSegments.where((s) => s.isNotEmpty), ...segments.map((s) => '$s')],
@@ -98,6 +100,16 @@ class ShapkaApi {
 
   Future<Map<String, dynamic>> _json(List<Object> segments, {bool auth = true}) async =>
       jsonDecode(await _get(segments, auth: auth)) as Map<String, dynamic>;
+
+  /// Wakes a server that scaled to zero, so it is ready by the time someone
+  /// creates or joins a game. Failures don't matter.
+  Future<void> warmUp() async {
+    try {
+      await _client.get(uri([])).timeout(_timeout);
+    } on Exception {
+      // The next real request reports any problem.
+    }
+  }
 
   // ── Lobby ──
 

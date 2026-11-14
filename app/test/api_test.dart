@@ -64,6 +64,18 @@ void main() {
       expect(await api.isInGame(1, 'a'), (active: true, host: false));
     });
 
+    test('warm-up pings the server root and ignores failures', () async {
+      final urls = <Uri>[];
+      final api = ShapkaApi(baseUrl: 'https://example.com', client: MockClient((req) async {
+        urls.add(req.url);
+        return http.Response('', 503);
+      }));
+      await api.warmUp();
+      expect(urls.single.toString(), 'https://example.com');
+      final offline = ShapkaApi(baseUrl: 'http://h', client: MockClient((req) async => throw const SocketLike()));
+      await offline.warmUp();
+    });
+
     test('timer reports never send negative milliseconds', () async {
       late Uri url;
       final api = ShapkaApi(baseUrl: 'http://h', client: MockClient((req) async {
