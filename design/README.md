@@ -142,3 +142,24 @@ Worth fixing before (or alongside) the app; the design avoids relying on them.
 - `project/shapka-app.jsx` — navigation, themes, simulation, tweaks.
 - `project/ios-frame.jsx`, `project/tweaks-panel.jsx` — copied unchanged from Scroll-App-Design.
 - `tools/serve.py` — no-cache preview server; `tools/*.test.cjs` — `node --test`.
+
+## App Store assets
+
+`design/store/` holds the App Store images, rendered from this prototype:
+
+| File | Size | Use |
+| --- | --- | --- |
+| `screenshot-1-explain.png` … `screenshot-6-winners.png` | 1320 × 2868 | iPhone 6.9" screenshots (App Store Connect scales them for smaller iPhones) |
+| `product-page-header.png` | 3840 × 1646 | Product page header artwork |
+| `search-results.png` | 3840 × 2560 | Search results artwork |
+
+To change them, edit `project/store/store.html` (one short caption per image)
+and re-render with the preview server running:
+
+```sh
+python3 design/tools/serve.py &
+node design/tools/store_capture.mjs
+```
+
+The script captures the phone screens from deep links at 3× into
+`project/store/screens/`, then composes each asset in headless Chrome.

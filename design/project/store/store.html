@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Shapka App Store assets</title>
+  <style>
+    @font-face {
+      font-family: "Metal Mania";
+      src: url("../assets/fonts/MetalMania-Regular.ttf") format("truetype");
+      font-display: block;
+    }
+
+    :root {
+      --stage: #3A0D48;
+      --stage-2: #8E24AA;
+      --deep: #1E0626;
+      --accent: #FDE68A;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--deep);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .asset {
+      position: relative;
+      display: none;
+      overflow: hidden;
+      color: white;
+      isolation: isolate;
+      background:
+        radial-gradient(70% 45% at 50% 18%, rgba(206, 147, 216, .42), transparent 70%),
+        radial-gradient(120% 90% at 50% 0%, var(--stage-2), var(--stage) 55%, var(--deep) 100%);
+    }
+    .asset.active { display: block; }
+
+    /* Paper slips drifting into the hat. */
+    .slip {
+      position: absolute;
+      z-index: 0;
+      width: var(--w, 120px);
+      height: calc(var(--w, 120px) * .42);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, var(--o, .10));
+      transform: rotate(var(--r, 0deg));
+    }
+
+    .brand {
+      font-family: "Metal Mania", cursive;
+      line-height: .9;
+      letter-spacing: .02em;
+      text-shadow: 0 10px 50px rgba(206, 147, 216, .55);
+    }
+
+    h1 {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -.035em;
+      line-height: 1.02;
+      text-wrap: balance;
+    }
+    h1 span { color: var(--accent); }
+
+    .phone {
+      position: absolute;
+      z-index: 3;
+      overflow: hidden;
+      border-radius: 12.6% / 5.8%;
+      background: #14061A;
+      outline: 10px solid rgba(255, 255, 255, .96);
+      box-shadow:
+        0 80px 160px rgba(10, 0, 20, .55),
+        0 0 0 22px rgba(225, 190, 231, .22);
+    }
+    .phone img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    .hat {
+      position: absolute;
+      z-index: 2;
+      filter: drop-shadow(0 40px 60px rgba(10, 0, 20, .5));
+    }
+
+    /* ── Screenshots: 1320 x 2868 (6.9" iPhone) ─────────────────────────── */
+    .shot { width: 1320px; height: 2868px; }
+    .shot h1 {
+      position: absolute;
+      z-index: 4;
+      top: 250px;
+      left: 90px;
+      right: 90px;
+      text-align: center;
+      font-size: 142px;
+      white-space: nowrap;
+    }
+    .shot .phone {
+      left: 50%;
+      top: 560px;
+      width: 1060px;
+      height: 2294px;
+      margin-left: -530px;
+    }
+    .shot .hat {
+      width: 260px;
+      right: 30px;
+      top: 330px;
+      transform: rotate(14deg);
+      z-index: 4;
+    }
+
+    /* ── Product page header: 3840 x 1646 ──────────────────────────────── */
+    .header { width: 3840px; height: 1646px; }
+    .header .copy {
+      position: absolute;
+      z-index: 4;
+      top: 300px;
+      left: 300px;
+    }
+    .header .brand { font-size: 330px; }
+    .header h1 { margin-top: 70px; font-size: 168px; }
+    .header .hat { width: 430px; left: 1560px; top: 150px; transform: rotate(-9deg); }
+    .header .phone-a { width: 760px; height: 1645px; right: 260px; top: 70px; transform: rotate(5deg); }
+    .header .phone-b { width: 640px; height: 1385px; right: 1000px; top: 250px; transform: rotate(-6deg); z-index: 2; outline-width: 8px; }
+
+    /* ── Search results: 3840 x 2560 ───────────────────────────────────── */
+    .search { width: 3840px; height: 2560px; }
+    .search .copy {
+      position: absolute;
+      z-index: 4;
+      top: 330px;
+      left: 290px;
+    }
+    .search .brand { font-size: 340px; }
+    .search h1 { margin-top: 90px; font-size: 210px; }
+    .search .hat { width: 620px; left: 520px; top: 1520px; transform: rotate(-8deg); }
+    .search .phone-a { width: 1060px; height: 2294px; right: 250px; top: 360px; transform: rotate(4deg); }
+    .search .phone-b { width: 860px; height: 1861px; right: 1180px; top: 640px; transform: rotate(-7deg); z-index: 2; outline-width: 8px; }
+  </style>
+</head>
+<body>
+  <!-- Screenshots: one idea each. -->
+  <main class="asset shot" data-asset="screenshot-1-explain">
+    <h1>Explain it <span>fast</span></h1>
+    <div class="phone"><img src="screens/explainer.png" alt=""></div>
+  </main>
+  <main class="asset shot" data-asset="screenshot-2-guess">
+    <h1>Guess <span>together</span></h1>
+    <div class="phone"><img src="screens/guesser.png" alt=""></div>
+  </main>
+  <main class="asset shot" data-asset="screenshot-3-fill-the-hat">
+    <h1>Fill the <span>hat</span></h1>
+    <div class="phone"><img src="screens/lobby.png" alt=""></div>
+    <img class="hat" src="../assets/shapka-logo.png" alt="">
+  </main>
+  <main class="asset shot" data-asset="screenshot-4-teams">
+    <h1>Random <span>teams</span></h1>
+    <div class="phone"><img src="screens/reveal.png" alt=""></div>
+  </main>
+  <main class="asset shot" data-asset="screenshot-5-rounds">
+    <h1>Three <span>rounds</span></h1>
+    <div class="phone"><img src="screens/roundOver.png" alt=""></div>
+  </main>
+  <main class="asset shot" data-asset="screenshot-6-winners">
+    <h1>Crown the <span>champs</span></h1>
+    <div class="phone"><img src="screens/results.png" alt=""></div>
+  </main>
+
+  <main class="asset header" data-asset="product-page-header">
+    <div class="copy">
+      <div class="brand">shapka</div>
+      <h1>The hat game<br><span>for parties</span></h1>
+    </div>
+    <img class="hat" src="../assets/shapka-logo.png" alt="">
+    <div class="phone phone-b"><img src="screens/reveal.png" alt=""></div>
+    <div class="phone phone-a"><img src="screens/explainer.png" alt=""></div>
+  </main>
+
+  <main class="asset search" data-asset="search-results">
+    <div class="copy">
+      <div class="brand">shapka</div>
+      <h1>The party<br><span>word game</span></h1>
+    </div>
+    <img class="hat" src="../assets/shapka-logo.png" alt="">
+    <div class="phone phone-b"><img src="screens/guesser.png" alt=""></div>
+    <div class="phone phone-a"><img src="screens/explainer.png" alt=""></div>
+  </main>
+
+  <script>
+    // A few paper slips scattered behind each asset; deterministic so re-renders match.
+    let seed = 7;
+    const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const name = new URLSearchParams(location.search).get("asset") || "screenshot-1-explain";
+    const asset = document.querySelector(`[data-asset="${name}"]`) || document.querySelector(".asset");
+    asset.classList.add("active");
+    const big = asset.classList.contains("shot") ? 1 : 2.4;
+    for (let i = 0; i < 14; i++) {
+      const slip = document.createElement("div");
+      slip.className = "slip";
+      slip.style.left = `${rand() * 100}%`;
+      slip.style.top = `${rand() * 100}%`;
+      slip.style.setProperty("--w", `${(90 + rand() * 90) * big}px`);
+      slip.style.setProperty("--r", `${-40 + rand() * 80}deg`);
+      slip.style.setProperty("--o", (0.05 + rand() * 0.08).toFixed(3));
+      asset.prepend(slip);
+    }
+  </script>
+</body>
+</html>
