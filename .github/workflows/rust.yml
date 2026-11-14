@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install TypeScript
-      run: npm install -g typescript
+      run: npm install -g typescript@5.8.3 # tsconfig uses outFile + module none, removed in TypeScript 6
     - name: Build frontend
       run: tsc
     - name: Build backend
