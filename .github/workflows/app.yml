@@ -1,0 +1,48 @@
+name: App
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths: [ "app/**", "src/**", "Cargo.*", ".github/workflows/app.yml" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: stable
+        flutter-version: 3.44.6
+        cache: true
+    - name: Install packages
+      run: flutter pub get
+    - name: Analyze
+      run: flutter analyze
+    - name: Unit and widget tests
+      run: flutter test
+    # A full four-player game through the app's controllers against the real server.
+    - name: Start the server
+      working-directory: .
+      run: |
+        cargo build
+        ./target/debug/shapka > server.log 2>&1 &
+        for i in $(seq 30); do curl -sf http://127.0.0.1:8000/ >/dev/null && exit 0; sleep 1; done
+        cat server.log; exit 1
+    - name: End-to-end game against the server
+      run: flutter test test/server_flow_test.dart
+      env:
+        SHAPKA_TEST_SERVER: http://127.0.0.1:8000
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+    - name: Build Android
+      run: flutter build apk --debug
