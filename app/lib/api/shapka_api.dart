@@ -6,12 +6,16 @@ import 'package:http/http.dart' as http;
 
 import '../game/rules.dart';
 
-/// Server base URL: `flutter run --dart-define=SHAPKA_SERVER=https://example.com`.
-/// Without it, debug builds talk to a local `cargo run` (the Android emulator
-/// reaches the host machine at 10.0.2.2).
+/// The hosted server (DEPLOYMENT.md).
+const productionServerUrl = 'https://shapka-server.agreeablebeach-1eae2480.polandcentral.azurecontainerapps.io';
+
+/// Server base URL: `--dart-define=SHAPKA_SERVER=https://example.com` wins.
+/// Otherwise release builds use [productionServerUrl] and debug builds a local
+/// `cargo run` (the Android emulator reaches the host machine at 10.0.2.2).
 String defaultServerUrl() {
   const configured = String.fromEnvironment('SHAPKA_SERVER');
   if (configured.isNotEmpty) return configured;
+  if (kReleaseMode) return productionServerUrl;
   if (!kIsWeb && Platform.isAndroid) return 'http://10.0.2.2:8000';
   return 'http://127.0.0.1:8000';
 }
