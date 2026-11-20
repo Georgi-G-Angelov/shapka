@@ -1,0 +1,228 @@
+name: Release (Android)
+
+# Builds a release app bundle of app/ signed with the UPLOAD key and (optionally)
+# uploads it to a Google Play track (package com.shapka.shapkaapp). Play then
+# re-signs the delivered app with the Play App Signing key.
+# Runs only by hand: Actions → Release (Android) → Run workflow. Modelled on
+# Sharp's Android release workflow. See app/README.md.
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Play track to publish to'
+        type: choice
+        options: [internal, alpha, beta, production]
+        default: internal
+      status:
+        description: 'completed = live on the track, draft = promote by hand'
+        type: choice
+        options: [completed, draft]
+        default: completed
+      upload:
+        description: 'Upload to Play. Uncheck to build and attach the bundle only.'
+        type: boolean
+        default: true
+      version_code:
+        description: 'Override versionCode (blank = above everything already on Play, and never below the commit count).'
+        type: string
+        default: ''
+      release_notes:
+        description: 'Release notes (en-US). Optional.'
+        type: string
+        default: ''
+
+# One release at a time: two concurrent runs would race for the same
+# versionCode and the second would be rejected by Play.
+concurrency:
+  group: release-android
+  cancel-in-progress: false
+
+env:
+  PACKAGE_NAME: com.shapka.shapkaapp
+
+jobs:
+  release:
+    name: Build and publish app bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      # Fail in seconds with a named secret rather than an opaque Gradle error later.
+      - name: Check required secrets
+        working-directory: .
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          UPLOAD: ${{ inputs.upload }}
+        run: |
+          set -eu
+          missing=""
+          [ -n "${KEYSTORE_BASE64:-}" ] || missing="$missing ANDROID_KEYSTORE_BASE64"
+          [ -n "${KEYSTORE_PASSWORD:-}" ] || missing="$missing ANDROID_KEYSTORE_PASSWORD"
+          [ -n "${KEY_PASSWORD:-}" ] || missing="$missing ANDROID_KEY_PASSWORD"
+          [ -n "${KEY_ALIAS:-}" ] || missing="$missing ANDROID_KEY_ALIAS"
+          # Only needed when we actually publish.
+          if [ "$UPLOAD" = "true" ] && [ -z "${PLAY_SERVICE_ACCOUNT_JSON:-}" ]; then
+            missing="$missing GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"
+          fi
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "Add them under Settings → Secrets and variables → Actions (see app/README.md)."
+            exit 1
+          fi
+          echo "All required secrets are present."
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # the commit count is the versionCode's floor
+
+      - name: Test versionCode script
+        run: python3 -m unittest discover -s scripts -p test_play_version_code.py
+
+      - name: Resolve versionCode
+        id: version
+        # Inputs go through env, never interpolated into the script.
+        env:
+          OVERRIDE: ${{ inputs.version_code }}
+          UPLOAD: ${{ inputs.upload }}
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -eu
+          override="${OVERRIDE:-}"
+          count="$(git rev-list --count HEAD)"
+          if [ -n "$override" ]; then
+            case "$override" in
+              *[!0-9]*)
+                echo "::error::version_code must be a positive integer, got '$override'"
+                exit 1 ;;
+            esac
+            code="$override"
+            echo "Using overridden versionCode: $code"
+          elif [ "$UPLOAD" = "true" ]; then
+            # Above everything Play has accepted, and never below the commit count.
+            code="$(python3 scripts/play_version_code.py "$PACKAGE_NAME" "$count")"
+          else
+            code="$count"
+            echo "Using commit-count versionCode: $code"
+          fi
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.6
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Decode signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -eu
+          # Outside the workspace so it can never be swept into an artifact.
+          keystore="$RUNNER_TEMP/upload-keystore.jks"
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$keystore"
+          chmod 600 "$keystore"
+          cat > android/key.properties <<EOF
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=$keystore
+          EOF
+          echo "Wrote android/key.properties"
+
+      # Release builds talk to the production server (lib/api/shapka_api.dart).
+      - name: Build app bundle
+        run: |
+          set -eu
+          # versionName stays in pubspec.yaml; only the build number is set here.
+          flutter build appbundle --release --build-number="${{ steps.version.outputs.code }}"
+
+      - name: Verify signing certificate
+        run: |
+          set -eu
+          aab="build/app/outputs/bundle/release/app-release.aab"
+          # Play rejects a debug-signed bundle with a far less obvious message.
+          if keytool -printcert -jarfile "$aab" | grep -q "CN=Android Debug"; then
+            echo "::error::$aab is signed with the debug key"
+            exit 1
+          fi
+          keytool -printcert -jarfile "$aab" | grep -i "SHA1:" || {
+            echo "::error::Could not read a signing certificate from $aab"
+            exit 1
+          }
+
+      - name: Prepare release notes
+        id: notes
+        env:
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+        run: |
+          set -eu
+          notes="${RELEASE_NOTES:-}"
+          if [ -n "$notes" ]; then
+            mkdir -p whatsnew
+            printf '%s\n' "$notes" > whatsnew/whatsnew-en-US
+            echo "dir=app/whatsnew" >> "$GITHUB_OUTPUT"
+          else
+            # The action treats an empty string as "not provided".
+            echo "dir=" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Attached on every run, so the exact binary is always recoverable.
+      - name: Attach bundle as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ steps.version.outputs.code }}
+          path: app/build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload to Google Play
+        if: ${{ inputs.upload }}
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: app/build/app/outputs/bundle/release/app-release.aab
+          track: ${{ inputs.track }}
+          status: ${{ inputs.status }}
+          whatsNewDirectory: ${{ steps.notes.outputs.dir }}
+
+      - name: Explain a duplicate-versionCode failure
+        if: ${{ failure() }}
+        run: |
+          echo "::notice::If Play rejected this upload as a duplicate versionCode," \
+               "re-run (the code is re-read from Play) or set version_code above" \
+               "${{ steps.version.outputs.code }}; Play permanently reserves each value."
+
+      # Runs even when an earlier step fails, so key material never outlives the job.
+      - name: Remove key material
+        if: ${{ always() }}
+        run: |
+          rm -f "$RUNNER_TEMP/upload-keystore.jks" android/key.properties
+          echo "Key material removed."

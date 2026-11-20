@@ -67,7 +67,16 @@ async function browser() {
   await send("Runtime.enable");
   await send("Page.enable");
   const evaluate = async expression => (await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true })).result?.result?.value;
-  return { send, evaluate, errors, close: () => { ws.close(); proc.kill(); } };
+  // Browser.close lets Chrome exit cleanly; a killed Chrome leaves a copy of itself
+  // in $TMPDIR/../X/com.google.Chrome.code_sign_clone on every run.
+  const close = async () => {
+    const exited = new Promise(r => (proc.exitCode !== null ? r() : proc.once("exit", r)));
+    await Promise.race([send("Browser.close"), sleep(3000)]);
+    ws.close();
+    await Promise.race([exited, sleep(5000)]);
+    if (proc.exitCode === null) proc.kill();
+  };
+  return { send, evaluate, errors, close };
 }
 
 async function shoot(b, file, clip) {
@@ -118,5 +127,5 @@ for (const name of Object.keys(ASSETS).filter(n => n.startsWith("screenshot-")))
 }
 
 if (b.errors.length) console.error(b.errors.join("\n"));
-b.close();
+await b.close();
 process.exit(b.errors.length ? 1 : 0);

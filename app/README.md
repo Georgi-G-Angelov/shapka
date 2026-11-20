@@ -106,3 +106,51 @@ them (GitHub won't show secret values).
 flutter build ipa --release --build-number=$(git rev-list --count HEAD)
 # then Xcode → Window → Organizer → Distribute App, or Transporter with build/ios/ipa/*.ipa
 ```
+
+## Releasing (Android)
+
+Google Play app **Shapka**, package `com.shapka.shapkaapp` (the same id as iOS;
+Play never lets it change), in the same Play developer account as Sharp.
+
+**Actions → Release (Android) → Run workflow** (`.github/workflows/release-android.yml`)
+builds a release app bundle signed with the upload key and uploads it, like
+Sharp's Android release workflow:
+
+| Input | What it does |
+| --- | --- |
+| `track` | `internal`, `alpha` (closed testing), `beta` (open testing) or `production`. |
+| `status` | `completed` rolls the release out on the track. `draft` leaves it for you to roll out in Play Console; Play only accepts `draft` until the app's first release has been reviewed. |
+| `upload` | Uncheck to only build and attach the `.aab` to the run. |
+| `version_code` | Blank = above everything already on Play and never below the commit count (`scripts/play_version_code.py`). |
+| `release_notes` | Release notes (en-US). Optional. |
+
+The version name comes from `pubspec.yaml`, as on iOS. Play App Signing holds the
+real app signing key; the workflow signs with the **upload key** only.
+
+### First release
+
+Play only accepts uploads through the API once a first bundle has been uploaded by
+hand: run the workflow with `upload` unchecked, download the `.aab` from the run's
+artifacts, and upload it in Play Console (Testing → Internal testing → Create new
+release). After that, the workflow can publish every release.
+
+### One-time setup: repository secrets
+
+| Secret | Value |
+| --- | --- |
+| `ANDROID_KEYSTORE_BASE64` | `base64 -i android/app/upload-keystore.jks` (already set) |
+| `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_PASSWORD` | Passwords from `android/key.properties` (already set) |
+| `ANDROID_KEY_ALIAS` | `upload` (already set) |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Sharp's Play service account key (`sharp-app@sharp-app-501714.iam.gserviceaccount.com`), the same value as Sharp's secret of that name (already set). The account has access to every app in the Play developer account. |
+
+The upload keystore (`android/app/upload-keystore.jks`) and `android/key.properties`
+are gitignored. Keep a copy of both in a password manager: without them, the upload
+key has to be reset through Play Console. Upload key fingerprints:
+
+```
+SHA-1:   CB:68:78:E7:D2:02:09:D5:B3:50:29:38:FB:83:B0:17:00:21:01:A6
+SHA-256: F8:56:C5:BC:60:B6:66:9B:D6:98:C3:8D:4A:D2:AF:7A:05:A9:5E:A0:12:6F:0C:8B:87:D2:11:DB:F4:91:97:B4
+```
+
+Without `android/key.properties`, release builds fall back to the debug key, so
+`flutter run --release` still works on any machine.
