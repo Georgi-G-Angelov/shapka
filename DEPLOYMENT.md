@@ -21,10 +21,16 @@ are untouched.
 
 ## Scaling and what it means for games
 
-- **Min 0 instances:** with no traffic the app scales to zero (about 5 minutes
-  after the last request), costing nothing. The first request then waits for a
-  cold start of a few seconds. During a game every phone holds a live-updates
-  connection, which keeps the instance awake.
+- **Min 1 instance:** one instance always runs, so there is no cold start
+  (kept for store reviews and launch). With `--min-replicas 0` instead, the app
+  scales to zero about 5 minutes after the last request and costs nothing
+  while idle, but the first request waits for a cold start of a few seconds:
+
+  ```sh
+  az containerapp update -g rg-shapka -n shapka-server --min-replicas 0   # or 1
+  ```
+
+  Deploys only change the image, so this setting survives them.
 - **Max 2 instances, scaling at 200 concurrent requests per instance.** Games
   live in the server's memory and Azure's load balancer can't route by game,
   so with two instances a player can land on the one that doesn't know their
@@ -34,15 +40,17 @@ are untouched.
   games, and a second only starts beyond that.
   To use more than one instance safely, game state needs to move out of
   memory (e.g. Redis).
-- **Games are lost when the instance stops:** on a deploy, or when it scales
-  to zero (only after everyone has disconnected for ~5 minutes).
+- **Games are lost when the instance stops:** on a deploy, or (with min 0)
+  when it scales to zero after everyone has disconnected for ~5 minutes.
 
 ## Cost
 
 Consumption pricing with a monthly free grant per subscription (180,000
 vCPU-seconds, 360,000 GiB-seconds, 2 million requests). At 0.25 vCPU, an
-instance running 4 hours uses 3,600 vCPU-seconds, so typical use stays inside
-the free grant. Scaled to zero, nothing is billed. The image registry (public
+instance running 4 hours uses 3,600 vCPU-seconds. With one instance always
+running, idle time is billed at the lower idle rate: roughly $4–5 a month after
+the free grant. With min 0 instances, typical use stays inside the free grant
+and nothing is billed while scaled to zero. The image registry (public
 GitHub package) and logs (streaming only) are free.
 
 ## Rate limiting behind the ingress
@@ -99,7 +107,7 @@ az containerapp env create -n shapka-env -g rg-shapka -l polandcentral --logs-de
 az containerapp create -n shapka-server -g rg-shapka --environment shapka-env \
   --image ghcr.io/georgi-g-angelov/shapka:latest \
   --ingress external --target-port 8000 --cpu 0.25 --memory 0.5Gi \
-  --min-replicas 0 --max-replicas 2 \
+  --min-replicas 1 --max-replicas 2 \
   --scale-rule-name http-concurrency --scale-rule-type http --scale-rule-http-concurrency 200
 az identity create -n shapka-github-deploy -g rg-shapka
 az identity federated-credential create --name github-master --identity-name shapka-github-deploy -g rg-shapka \
