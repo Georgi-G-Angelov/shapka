@@ -44,5 +44,6 @@ jobs:
       with:
         distribution: temurin
         java-version: 17
-    - name: Build Android
-      run: flutter build apk --debug
+    # Release config (R8, launch screen); debug-signed here since key.properties is absent.
+    - name: Build Android release bundle
+      run: flutter build appbundle --release
