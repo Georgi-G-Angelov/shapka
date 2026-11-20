@@ -145,7 +145,7 @@ Worth fixing before (or alongside) the app; the design avoids relying on them.
 
 ## App Store assets
 
-`design/store/` holds the App Store images, rendered from this prototype:
+`design/store/` holds the App Store and Google Play images, rendered from this prototype:
 
 | File | Size | Use |
 | --- | --- | --- |
@@ -153,6 +153,9 @@ Worth fixing before (or alongside) the app; the design avoids relying on them.
 | `iphone-6.3/screenshot-*.png` | 1206 × 2622 | iPhone 6.3" screenshots ("iPhone with Dynamic Island, medium display") |
 | `product-page-header.png` | 3840 × 1646 | Product page header artwork |
 | `search-results.png` | 3840 × 2560 | Search results artwork |
+| `google-play/phone-*.png` | 1080 × 1920 | Google Play phone screenshots, from the prototype's Android mode (`platform=android`) in an Android frame |
+| `google-play/feature-graphic.png` | 1024 × 500 | Google Play feature graphic |
+| `google-play/icon-512.png` | 512 × 512 | Google Play app icon (from `app/assets/launcher_icon/app_icon.png`) |
 
 To change them, edit `project/store/store.html` (one short caption per image)
 and re-render with the preview server running:
@@ -163,4 +166,4 @@ node design/tools/store_capture.mjs
 ```
 
 The script captures the phone screens from deep links at 3× into
-`project/store/screens/`, then composes each asset in headless Chrome.
+`project/store/screens/` (and `screens-android/`), then composes each asset in headless Chrome.
