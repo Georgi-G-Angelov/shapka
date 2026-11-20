@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Shapka App Store assets</title>
+  <title>Shapka store assets (App Store and Google Play)</title>
   <style>
     @font-face {
       font-family: "Metal Mania";
@@ -139,6 +139,38 @@
     .search .hat { width: 620px; left: 520px; top: 1520px; transform: rotate(-8deg); }
     .search .phone-a { width: 1060px; height: 2294px; right: 250px; top: 360px; transform: rotate(4deg); }
     .search .phone-b { width: 860px; height: 1861px; right: 1180px; top: 640px; transform: rotate(-7deg); z-index: 2; outline-width: 8px; }
+    /* ── Google Play phone screenshots: 1080 x 1920, Android frame ─────── */
+    .shot.play { width: 1080px; height: 1920px; }
+    .shot.play h1 { top: 140px; left: 60px; right: 60px; font-size: 104px; }
+    .shot.play .phone {
+      top: 330px;
+      width: 694px;
+      height: 1502px;
+      margin-left: -347px;
+      border-radius: 7% / 3.3%;
+      outline-width: 8px;
+      box-shadow: 0 60px 120px rgba(10, 0, 20, .55), 0 0 0 18px rgba(225, 190, 231, .22);
+    }
+    /* Punch-hole camera. */
+    .shot.play .phone::after {
+      content: "";
+      position: absolute;
+      top: 13px;
+      left: 50%;
+      width: 22px;
+      height: 22px;
+      margin-left: -11px;
+      border-radius: 50%;
+      background: #050108;
+    }
+    .shot.play .hat { width: 190px; right: 40px; top: 210px; }
+
+    /* ── Google Play feature graphic: 1024 x 500 ───────────────────────── */
+    .feature { width: 1024px; height: 500px; }
+    .feature .copy { position: absolute; z-index: 4; top: 92px; left: 90px; }
+    .feature .brand { font-size: 132px; }
+    .feature h1 { margin-top: 26px; font-size: 64px; }
+    .feature .hat { width: 330px; right: 80px; top: 70px; transform: rotate(-8deg); }
   </style>
 </head>
 <body>
@@ -189,14 +221,34 @@
     <div class="phone phone-a"><img src="screens/explainer.png" alt=""></div>
   </main>
 
+  <main class="asset feature" data-asset="play-feature-graphic">
+    <div class="copy">
+      <div class="brand">shapka</div>
+      <h1>The party<br><span>word game</span></h1>
+    </div>
+    <img class="hat" src="../assets/shapka-logo.png" alt="">
+  </main>
+
   <script>
+    // Google Play phone screenshots reuse the App Store ones with the Android screens.
+    const params = new URLSearchParams(location.search);
+    const play = (params.get("asset") || "").match(/^play-phone-(.+)$/);
+    if (play) {
+      const source = document.querySelector(`[data-asset="screenshot-${play[1]}"]`);
+      const copy = source.cloneNode(true);
+      copy.dataset.asset = params.get("asset");
+      copy.classList.add("play");
+      copy.querySelectorAll(".phone img").forEach(img => img.src = img.getAttribute("src").replace("screens/", "screens-android/"));
+      source.after(copy);
+    }
+
     // A few paper slips scattered behind each asset; deterministic so re-renders match.
     let seed = 7;
     const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     const name = new URLSearchParams(location.search).get("asset") || "screenshot-1-explain";
     const asset = document.querySelector(`[data-asset="${name}"]`) || document.querySelector(".asset");
     asset.classList.add("active");
-    const big = asset.classList.contains("shot") ? 1 : 2.4;
+    const big = asset.classList.contains("shot") ? 1 : asset.classList.contains("feature") ? 0.7 : 2.4;
     for (let i = 0; i < 14; i++) {
       const slip = document.createElement("div");
       slip.className = "slip";
