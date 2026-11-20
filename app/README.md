@@ -141,7 +141,7 @@ release). After that, the workflow can publish every release.
 | `ANDROID_KEYSTORE_BASE64` | `base64 -i android/app/upload-keystore.jks` (already set) |
 | `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_PASSWORD` | Passwords from `android/key.properties` (already set) |
 | `ANDROID_KEY_ALIAS` | `upload` (already set) |
-| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | The same service account JSON key as Sharp's secret of the same name. In Play Console → Users and permissions, give that service account access to Shapka (release permissions) if it doesn't already have account-wide access. |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Sharp's Play service account key (`sharp-app@sharp-app-501714.iam.gserviceaccount.com`), the same value as Sharp's secret of that name (already set). The account has access to every app in the Play developer account. |
 
 The upload keystore (`android/app/upload-keystore.jks`) and `android/key.properties`
 are gitignored. Keep a copy of both in a password manager: without them, the upload
